@@ -35,6 +35,14 @@ extern "C" {
 extern LTDC_HandleTypeDef hltdc;
 
 /* USER CODE BEGIN Private defines */
+#define RK050HR18_WIDTH 800
+#define RK050HR18_HEIGHT 480
+#define RK050HR18_HSYNC 4
+#define RK050HR18_HBP 8
+#define RK050HR18_HFP 8
+#define RK050HR18_VSYNC 4
+#define RK050HR18_VBP 8
+#define RK050HR18_VFP 8
 
 /* USER CODE END Private defines */
 

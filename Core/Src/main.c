@@ -24,6 +24,7 @@
 #include "ltdc.h"
 #include "dma2d.h"
 #include "lvgl.h"
+#include "demos/lv_demos.h"
 #include "lvgl_port_display.h"
 /* USER CODE END Includes */
 
@@ -130,18 +131,31 @@ int main(void)
   /* USER CODE BEGIN 2 */
   lv_init();
   lvgl_display_init();
+  lv_demo_benchmark();
+
+  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 2U * 50);
+  if (HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4) != HAL_OK)
+  {
+	  /* PWM Generation Error */
+	  Error_Handler();
+  }
+
+  /* reset display */
+  HAL_GPIO_WritePin(LCD_ON_GPIO_Port, LCD_ON_Pin, GPIO_PIN_SET);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	lv_task_handler();
 	HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GREEN_LED_GPIO_Port, GREEN_LED_Pin, GPIO_PIN_RESET);
-	HAL_Delay(200);
+	HAL_Delay(50);
 	HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GREEN_LED_GPIO_Port, GREEN_LED_Pin, GPIO_PIN_SET);
-	HAL_Delay(200);
+	HAL_Delay(50);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

@@ -48,17 +48,17 @@ void MX_LTDC_Init(void)
   hltdc.Init.VSPolarity = LTDC_VSPOLARITY_AL;
   hltdc.Init.DEPolarity = LTDC_DEPOLARITY_AL;
   hltdc.Init.PCPolarity = LTDC_PCPOLARITY_IPC;
-  hltdc.Init.HorizontalSync = 3;
-  hltdc.Init.VerticalSync = 3;
-  hltdc.Init.AccumulatedHBP = 11;
-  hltdc.Init.AccumulatedVBP = 11;
-  hltdc.Init.AccumulatedActiveW = 811;
-  hltdc.Init.AccumulatedActiveH = 491;
-  hltdc.Init.TotalWidth = 819;
-  hltdc.Init.TotalHeigh = 499;
-  hltdc.Init.Backcolor.Blue = 0;
-  hltdc.Init.Backcolor.Green = 0;
-  hltdc.Init.Backcolor.Red = 0;
+  hltdc.Init.HorizontalSync     = RK050HR18_HSYNC - 1U;
+  hltdc.Init.AccumulatedHBP     = RK050HR18_HSYNC + RK050HR18_HBP - 1U;
+  hltdc.Init.AccumulatedActiveW = RK050HR18_HSYNC + RK050HR18_WIDTH + RK050HR18_HBP - 1U;
+  hltdc.Init.TotalWidth         = RK050HR18_HSYNC + RK050HR18_WIDTH + RK050HR18_HBP + RK050HR18_HFP - 1U;
+  hltdc.Init.VerticalSync       = RK050HR18_VSYNC - 1U;
+  hltdc.Init.AccumulatedVBP     = RK050HR18_VSYNC + RK050HR18_VBP - 1U;
+  hltdc.Init.AccumulatedActiveH = RK050HR18_VSYNC + RK050HR18_HEIGHT + RK050HR18_VBP - 1U;
+  hltdc.Init.TotalHeigh         = RK050HR18_VSYNC + RK050HR18_HEIGHT + RK050HR18_VBP + RK050HR18_VFP - 1U;
+  hltdc.Init.Backcolor.Blue = 0xFF;
+  hltdc.Init.Backcolor.Green = 0xFF;
+  hltdc.Init.Backcolor.Red = 0xFF;
   if (HAL_LTDC_Init(&hltdc) != HAL_OK)
   {
     Error_Handler();
@@ -75,9 +75,9 @@ void MX_LTDC_Init(void)
   pLayerCfg.FBStartAdress = 0;
   pLayerCfg.ImageWidth = 800;
   pLayerCfg.ImageHeight = 480;
-  pLayerCfg.Backcolor.Blue = 0;
-  pLayerCfg.Backcolor.Green = 0;
-  pLayerCfg.Backcolor.Red = 0;
+  pLayerCfg.Backcolor.Blue = 0xFF;
+  pLayerCfg.Backcolor.Green = 0xFF;
+  pLayerCfg.Backcolor.Red = 0xFF;
   if (HAL_LTDC_ConfigLayer(&hltdc, &pLayerCfg, 0) != HAL_OK)
   {
     Error_Handler();
