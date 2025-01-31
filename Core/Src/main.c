@@ -34,6 +34,7 @@
 #include "ltdc.h"
 #include "dma2d.h"
 #include "lvgl.h"
+#include "ui.h"
 #include "demos/lv_demos.h"
 #include "lvgl_port_display.h"
 /* USER CODE END Includes */
@@ -114,7 +115,6 @@ int main(void)
   /* USER CODE BEGIN 2 */
   lv_init();
   lvgl_display_init();
-  lv_demo_benchmark();
 
   __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 2U * 50);
   if (HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4) != HAL_OK)
@@ -125,6 +125,8 @@ int main(void)
 
   /* reset display */
   HAL_GPIO_WritePin(LCD_ON_GPIO_Port, LCD_ON_Pin, GPIO_PIN_SET);
+
+  ui_init();
 
   /* USER CODE END 2 */
 
