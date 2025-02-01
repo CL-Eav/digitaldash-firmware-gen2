@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "dma2d.h"
+#include "gpu2d.h"
 #include "hspi.h"
 #include "i2c.h"
 #include "icache.h"
@@ -27,6 +28,7 @@
 #include "rtc.h"
 #include "tim.h"
 #include "usart.h"
+#include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -112,6 +114,7 @@ int main(void)
   MX_RTC_Init();
   MX_TIM3_Init();
   MX_USART1_UART_Init();
+  MX_GPU2D_Init();
   /* USER CODE BEGIN 2 */
   lv_init();
   lv_tick_set_cb(HAL_GetTick);
@@ -149,10 +152,11 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  HAL_Delay(5);
 	lv_timer_handler();
 	if( delay < HAL_GetTick() )
 	{
-		delay = HAL_GetTick() + 50;
+		delay = HAL_GetTick() + 10;
 		//lv_slider_set_value(ui_bar, i, LV_ANIM_OFF);
 		//i = i + 5;
 		iat = iat + 0.8;
