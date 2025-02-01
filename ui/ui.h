@@ -22,17 +22,6 @@ extern lv_obj_t * ui_Splash;
 extern lv_obj_t * ui_SplashMessage;
 // CUSTOM VARIABLES
 
-// SCREEN: ui_View1
-void ui_View1_screen_init(void);
-extern lv_obj_t * ui_View1;
-extern lv_obj_t * ui_Guage1;
-extern lv_obj_t * ui_Gauge2;
-extern lv_obj_t * ui_Gauge3;
-extern lv_obj_t * ui_Needle1;
-extern lv_obj_t * ui_Needle2;
-extern lv_obj_t * ui_Needle3;
-// CUSTOM VARIABLES
-
 // EVENTS
 
 extern lv_obj_t * ui____initial_actions0;

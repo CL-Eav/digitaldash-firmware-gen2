@@ -15,18 +15,6 @@ lv_obj_t * ui_Splash;
 lv_obj_t * ui_SplashMessage;
 // CUSTOM VARIABLES
 
-
-// SCREEN: ui_View1
-void ui_View1_screen_init(void);
-lv_obj_t * ui_View1;
-lv_obj_t * ui_Guage1;
-lv_obj_t * ui_Gauge2;
-lv_obj_t * ui_Gauge3;
-lv_obj_t * ui_Needle1;
-lv_obj_t * ui_Needle2;
-lv_obj_t * ui_Needle3;
-// CUSTOM VARIABLES
-
 // EVENTS
 lv_obj_t * ui____initial_actions0;
 
@@ -52,7 +40,6 @@ void ui_init(void)
                                                true, LV_FONT_DEFAULT);
     lv_disp_set_theme(dispp, theme);
     ui_Splash_screen_init();
-    ui_View1_screen_init();
     ui____initial_actions0 = lv_obj_create(NULL);
     lv_disp_load_scr(ui_Splash);
 }

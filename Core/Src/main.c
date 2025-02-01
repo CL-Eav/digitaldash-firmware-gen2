@@ -131,7 +131,7 @@ int main(void)
 
   HAL_Delay(1000);
 
-  _ui_screen_change(&ui_View1, LV_SCR_LOAD_ANIM_FADE_IN, 500, 0, NULL);
+  //_ui_screen_change(&ui_View1, LV_SCR_LOAD_ANIM_FADE_IN, 500, 0, NULL);
   //lv_screen_load(ui_View1);
 
   /* USER CODE END 2 */
@@ -140,12 +140,13 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	lv_timer_handler();
 	HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GREEN_LED_GPIO_Port, GREEN_LED_Pin, GPIO_PIN_RESET);
-	HAL_Delay(50);
+	HAL_Delay(5);
 	HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GREEN_LED_GPIO_Port, GREEN_LED_Pin, GPIO_PIN_SET);
-	HAL_Delay(50);
+	//HAL_Delay(50);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

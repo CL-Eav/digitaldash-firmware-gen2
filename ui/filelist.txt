@@ -1,5 +1,4 @@
 screens/ui_Splash.c
-screens/ui_View1.c
 ui.c
 components/ui_comp_hook.c
 ui_helpers.c
