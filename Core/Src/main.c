@@ -27,7 +27,6 @@
 #include "rtc.h"
 #include "tim.h"
 #include "usart.h"
-#include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -37,6 +36,7 @@
 #include "ui.h"
 #include "demos/lv_demos.h"
 #include "lvgl_port_display.h"
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -129,10 +129,19 @@ int main(void)
 
   ui_init();
 
-  HAL_Delay(1000);
+  //HAL_Delay(1000);
 
   //_ui_screen_change(&ui_View1, LV_SCR_LOAD_ANIM_FADE_IN, 500, 0, NULL);
   //lv_screen_load(ui_View1);
+  uint8_t i = 0;
+  uint32_t delay = HAL_GetTick();
+
+	float iat = 38;
+	float boost = -10.2;
+	uint8_t oil = 65.6;
+	float slider = 50;
+	uint8_t gauge = 0;
+	uint8_t alert_active = 0;
 
   /* USER CODE END 2 */
 
@@ -141,12 +150,85 @@ int main(void)
   while (1)
   {
 	lv_timer_handler();
-	HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(GREEN_LED_GPIO_Port, GREEN_LED_Pin, GPIO_PIN_RESET);
-	HAL_Delay(5);
-	HAL_GPIO_WritePin(RED_LED_GPIO_Port, RED_LED_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GREEN_LED_GPIO_Port, GREEN_LED_Pin, GPIO_PIN_SET);
-	//HAL_Delay(50);
+	if( delay < HAL_GetTick() )
+	{
+		delay = HAL_GetTick() + 50;
+		//lv_slider_set_value(ui_bar, i, LV_ANIM_OFF);
+		//i = i + 5;
+		iat = iat + 0.8;
+		if( iat > 150 )
+			iat = 30;
+
+		boost = boost + 0.1;
+		if( boost > 25.6 )
+			boost = -14.6;
+
+		oil = oil + 2;
+		if( oil > 198 )
+			oil = 32.5;
+
+		slider = slider + 0.5;
+		if( slider > 100 )
+			slider = 0;
+
+		/*
+		if( boost > 60 )
+		{
+			if( lv_disp_get_scr_act(NULL) != ui_View2)
+			{
+				lv_disp_load_scr(ui_View2);
+			}
+		} else {
+			if( lv_disp_get_scr_act(NULL) != ui_View1)
+			{
+				lv_disp_load_scr(ui_View1);
+			}
+		}
+		*/
+
+		/*
+		if( oil > 80 )
+		{
+			if( alert_active == 0 ) {
+				alert_active = 1;
+				_ui_flag_modify(ui_ALERT, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_REMOVE);
+			}
+		} else {
+			if( alert_active == 1 ) {
+				alert_active = 0;
+				_ui_flag_modify(ui_ALERT, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_ADD);
+			}
+		}
+		*/
+
+		switch( gauge )
+		{
+			case 0:
+			//lv_arc_set_value(ui_gauge1, iat);
+			lv_img_set_angle(ui_needle1, (iat*10)-600);
+			lv_label_set_text_fmt(ui_value1, "%.1f", iat);
+			break;
+
+			case 1:
+			//lv_arc_set_value(ui_Gauge2, boost);
+			lv_img_set_angle(ui_needle2, (boost*10)-600);
+			lv_label_set_text_fmt(ui_value2, "%.2f psi", boost);
+			break;
+
+			case 2:
+			//lv_arc_set_value(ui_Gauge3, oil);
+			lv_img_set_angle(ui_needle3, (oil*10)-600);
+			lv_label_set_text_fmt(ui_value3, "%d F", oil);
+			break;
+
+			case 3:
+			//lv_slider_set_value(ui_Slider1, slider, LV_ANIM_OFF);
+			//lv_label_set_text_fmt(ui_VALUE4, "%.2f psi", boost);
+			break;
+		}
+
+		gauge = (gauge >= 2) ? 0 : gauge + 1;
+	}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

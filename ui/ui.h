@@ -21,6 +21,25 @@ void ui_Splash_screen_init(void);
 extern lv_obj_t * ui_Splash;
 extern lv_obj_t * ui_SplashMessage;
 extern lv_obj_t * ui_bar;
+extern lv_obj_t * ui_gauge1;
+extern lv_obj_t * ui_gauge2;
+extern lv_obj_t * ui_gauge3;
+extern lv_obj_t * ui_needle1;
+extern lv_obj_t * ui_needle2;
+extern lv_obj_t * ui_needle3;
+extern lv_obj_t * ui_value1;
+extern lv_obj_t * ui_value2;
+extern lv_obj_t * ui_value3;
+extern lv_obj_t * ui_pid1;
+extern lv_obj_t * ui_pid2;
+extern lv_obj_t * ui_pid3;
+extern lv_obj_t * ui_version;
+extern lv_obj_t * ui_min1;
+extern lv_obj_t * ui_max1;
+extern lv_obj_t * ui_min2;
+extern lv_obj_t * ui_max2;
+extern lv_obj_t * ui_min3;
+extern lv_obj_t * ui_max4;
 // CUSTOM VARIABLES
 
 // EVENTS
@@ -29,8 +48,8 @@ extern lv_obj_t * ui____initial_actions0;
 
 // IMAGES AND IMAGE SETS
 LV_IMG_DECLARE(ui_img_flare_png);    // assets/Flare.png
-LV_IMG_DECLARE(ui_img_gauge125_png);    // assets/gauge125.png
-LV_IMG_DECLARE(ui_img_needle125_png);    // assets/needle125.png
+LV_IMG_DECLARE(ui_img_gauge200_png);    // assets/gauge200.png
+LV_IMG_DECLARE(ui_img_needle200_png);    // assets/needle200.png
 
 // UI INIT
 void ui_init(void);

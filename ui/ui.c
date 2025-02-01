@@ -14,14 +14,33 @@ void ui_Splash_screen_init(void);
 lv_obj_t * ui_Splash;
 lv_obj_t * ui_SplashMessage;
 lv_obj_t * ui_bar;
+lv_obj_t * ui_gauge1;
+lv_obj_t * ui_gauge2;
+lv_obj_t * ui_gauge3;
+lv_obj_t * ui_needle1;
+lv_obj_t * ui_needle2;
+lv_obj_t * ui_needle3;
+lv_obj_t * ui_value1;
+lv_obj_t * ui_value2;
+lv_obj_t * ui_value3;
+lv_obj_t * ui_pid1;
+lv_obj_t * ui_pid2;
+lv_obj_t * ui_pid3;
+lv_obj_t * ui_version;
+lv_obj_t * ui_min1;
+lv_obj_t * ui_max1;
+lv_obj_t * ui_min2;
+lv_obj_t * ui_max2;
+lv_obj_t * ui_min3;
+lv_obj_t * ui_max4;
 // CUSTOM VARIABLES
 
 // EVENTS
 lv_obj_t * ui____initial_actions0;
 
 // IMAGES AND IMAGE SETS
-const lv_image_dsc_t * ui_imgset_gauge[1] = {&ui_img_gauge125_png};
-const lv_image_dsc_t * ui_imgset_needle[1] = {&ui_img_needle125_png};
+const lv_image_dsc_t * ui_imgset_gauge[1] = {&ui_img_gauge200_png};
+const lv_image_dsc_t * ui_imgset_needle[1] = {&ui_img_needle200_png};
 
 ///////////////////// TEST LVGL SETTINGS ////////////////////
 #if LV_COLOR_DEPTH != 32
