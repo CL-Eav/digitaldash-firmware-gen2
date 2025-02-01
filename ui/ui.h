@@ -20,6 +20,7 @@ extern "C" {
 void ui_Splash_screen_init(void);
 extern lv_obj_t * ui_Splash;
 extern lv_obj_t * ui_SplashMessage;
+extern lv_obj_t * ui_bar;
 // CUSTOM VARIABLES
 
 // EVENTS

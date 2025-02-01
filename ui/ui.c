@@ -13,6 +13,7 @@
 void ui_Splash_screen_init(void);
 lv_obj_t * ui_Splash;
 lv_obj_t * ui_SplashMessage;
+lv_obj_t * ui_bar;
 // CUSTOM VARIABLES
 
 // EVENTS
