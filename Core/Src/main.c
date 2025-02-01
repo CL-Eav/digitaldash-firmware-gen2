@@ -205,19 +205,19 @@ int main(void)
 		{
 			case 0:
 			//lv_arc_set_value(ui_gauge1, iat);
-			lv_img_set_angle(ui_needle1, (iat*10)-600);
+			//lv_img_set_angle(ui_needle1, (iat*10)-600);
 			lv_label_set_text_fmt(ui_value1, "%.1f", iat);
 			break;
 
 			case 1:
 			//lv_arc_set_value(ui_Gauge2, boost);
-			lv_img_set_angle(ui_needle2, (boost*10)-600);
+			//lv_img_set_angle(ui_needle2, (boost*10)-600);
 			lv_label_set_text_fmt(ui_value2, "%.2f psi", boost);
 			break;
 
 			case 2:
 			//lv_arc_set_value(ui_Gauge3, oil);
-			lv_img_set_angle(ui_needle3, (oil*10)-600);
+			//lv_img_set_angle(ui_needle3, (oil*10)-600);
 			lv_label_set_text_fmt(ui_value3, "%d F", oil);
 			break;
 
