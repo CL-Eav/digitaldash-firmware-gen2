@@ -78,6 +78,14 @@ static void switch_screen(struct _lv_obj_t * scr)
 		lv_screen_load(scr);
 	}
 }
+
+static uint8_t screen_active(struct _lv_obj_t * scr)
+{
+	if( lv_display_get_screen_active(NULL) == scr)
+		return 1;
+	else
+		return 0;
+}
 /* USER CODE END 0 */
 
 /**
@@ -161,18 +169,18 @@ int main(void)
 	lv_timer_handler();
 	if( delay < HAL_GetTick() )
 	{
-		delay = HAL_GetTick() + 10;
+		delay = HAL_GetTick() + 4;
 		//lv_slider_set_value(ui_bar, i, LV_ANIM_OFF);
 		//i = i + 5;
-		iat = iat + 0.8;
+		iat = iat + 0.2;
 		if( iat > 150 )
 			iat = 30;
 
-		boost = boost + 0.1;
+		boost = boost + 0.05;
 		if( boost > 25 )
 			boost = -14.6;
 
-		oil = oil + 2;
+		oil = oil + 1;
 		if( oil > 198 )
 			oil = 32.5;
 
@@ -205,34 +213,46 @@ int main(void)
 		{
 			case 0:
 			//lv_arc_set_value(ui_gauge1, iat);
-			lv_img_set_angle(ui_needle1, (iat*10)-600);
-			lv_label_set_text_fmt(ui_value1, "%.1f", iat);
+			if(screen_active(ui_view1)) {
+				lv_img_set_angle(ui_needle1, (iat*10)-600);
+				lv_label_set_text_fmt(ui_value1, "%.1f", iat);
+			}
 			break;
 
 			case 1:
 			//lv_arc_set_value(ui_Gauge2, boost);
-			lv_img_set_angle(ui_needle2, (boost*10)-600);
-			lv_label_set_text_fmt(ui_value2, "%.2f psi", boost);
+			if(screen_active(ui_view1)) {
+				lv_img_set_angle(ui_needle2, (boost*10)-600);
+				lv_label_set_text_fmt(ui_value2, "%.2f psi", boost);
+			}
 			break;
 
 			case 2:
-			//lv_arc_set_value(ui_Gauge3, oil);
-			lv_img_set_angle(ui_needle3, (oil*10)-600);
-			lv_label_set_text_fmt(ui_value3, "%d F", oil);
+			if(screen_active(ui_view1)) {
+				//lv_arc_set_value(ui_Gauge3, oil);
+				lv_img_set_angle(ui_needle3, (oil*10)-600);
+				lv_label_set_text_fmt(ui_value3, "%d F", oil);
+			}
 			break;
 
 			case 3:
-			lv_slider_set_value(ui_linear1, boost*10, LV_ANIM_OFF);
-			lv_label_set_text_fmt(ui_value4, "%.2f psi", boost);
+			if(screen_active(ui_view2)) {
+				lv_slider_set_value(ui_linear1, boost*10, LV_ANIM_ON);
+				lv_label_set_text_fmt(ui_value4, "%.2f psi", boost);
+			}
 			break;
 
 			case 4:
-			lv_arc_set_value(ui_arc1, (boost+15)*10);
-			lv_label_set_text_fmt(ui_value5, "%.2f psi", boost);
+			if(screen_active(ui_view3)) {
+				lv_arc_set_value(ui_arc1, (boost+15)*10);
+				lv_label_set_text_fmt(ui_value5, "%.2f psi", boost);
+			}
 			break;
 
 			case 5:
-			lv_obj_set_style_shadow_color(ui_gauge4, lv_color_hex((boost+15)*0x6EB3E), LV_PART_MAIN | LV_STATE_DEFAULT);
+			if(screen_active(ui_view3)) {
+				lv_obj_set_style_shadow_color(ui_gauge4, lv_color_hex((boost+15)*0x6EB3E), LV_PART_MAIN | LV_STATE_DEFAULT);
+			}
 			break;
 		}
 
