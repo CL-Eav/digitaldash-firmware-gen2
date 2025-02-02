@@ -19,8 +19,6 @@ extern "C" {
 // SCREEN: ui_Splash
 void ui_Splash_screen_init(void);
 extern lv_obj_t * ui_Splash;
-extern lv_obj_t * ui_SplashMessage;
-extern lv_obj_t * ui_bar;
 extern lv_obj_t * ui_gauge1;
 extern lv_obj_t * ui_gauge2;
 extern lv_obj_t * ui_gauge3;

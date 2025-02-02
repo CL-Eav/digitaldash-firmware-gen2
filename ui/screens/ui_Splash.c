@@ -11,34 +11,6 @@ void ui_Splash_screen_init(void)
     lv_obj_remove_flag(ui_Splash, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_obj_set_style_bg_image_src(ui_Splash, &ui_img_flare_png, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_SplashMessage = lv_label_create(ui_Splash);
-    lv_obj_set_width(ui_SplashMessage, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_height(ui_SplashMessage, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_SplashMessage, 0);
-    lv_obj_set_y(ui_SplashMessage, -125);
-    lv_obj_set_align(ui_SplashMessage, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_SplashMessage, "KE FORD FOCUS DIGITAL DASH");
-    lv_obj_add_flag(ui_SplashMessage, LV_OBJ_FLAG_HIDDEN);     /// Flags
-    lv_obj_set_style_text_font(ui_SplashMessage, &lv_font_montserrat_48, LV_PART_MAIN | LV_STATE_DEFAULT);
-
-    ui_bar = lv_bar_create(ui_Splash);
-    lv_bar_set_range(ui_bar, 0, 255);
-    lv_bar_set_value(ui_bar, 25, LV_ANIM_OFF);
-    lv_bar_set_start_value(ui_bar, 0, LV_ANIM_OFF);
-    lv_obj_set_width(ui_bar, 720);
-    lv_obj_set_height(ui_bar, 20);
-    lv_obj_set_x(ui_bar, -1);
-    lv_obj_set_y(ui_bar, 80);
-    lv_obj_set_align(ui_bar, LV_ALIGN_CENTER);
-    lv_obj_set_style_radius(ui_bar, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-
-    lv_obj_set_style_radius(ui_bar, 0, LV_PART_INDICATOR | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_color(ui_bar, lv_color_hex(0xFFFF00), LV_PART_INDICATOR | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(ui_bar, 255, LV_PART_INDICATOR | LV_STATE_DEFAULT);
-
-    //Compensating for LVGL9.1 draw crash with bar/slider max value when top-padding is nonzero and right-padding is 0
-    if(lv_obj_get_style_pad_top(ui_bar, LV_PART_MAIN) > 0) lv_obj_set_style_pad_right(ui_bar,
-                                                                                          lv_obj_get_style_pad_right(ui_bar, LV_PART_MAIN) + 1, LV_PART_MAIN);
     ui_gauge1 = lv_image_create(ui_Splash);
     lv_image_set_src(ui_gauge1, &ui_img_gauge200_png);
     lv_obj_set_width(ui_gauge1, LV_SIZE_CONTENT);   /// 125

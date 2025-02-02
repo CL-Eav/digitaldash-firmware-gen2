@@ -12,8 +12,6 @@
 // SCREEN: ui_Splash
 void ui_Splash_screen_init(void);
 lv_obj_t * ui_Splash;
-lv_obj_t * ui_SplashMessage;
-lv_obj_t * ui_bar;
 lv_obj_t * ui_gauge1;
 lv_obj_t * ui_gauge2;
 lv_obj_t * ui_gauge3;
