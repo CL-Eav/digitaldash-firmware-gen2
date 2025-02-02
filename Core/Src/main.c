@@ -71,7 +71,13 @@ static void SystemPower_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+static void switch_screen(struct _lv_obj_t * scr)
+{
+	if( lv_display_get_screen_active(NULL) != scr)
+	{
+		lv_screen_load(scr);
+	}
+}
 /* USER CODE END 0 */
 
 /**
@@ -163,46 +169,37 @@ int main(void)
 			iat = 30;
 
 		boost = boost + 0.1;
-		if( boost > 25.6 )
+		if( boost > 25 )
 			boost = -14.6;
 
 		oil = oil + 2;
 		if( oil > 198 )
 			oil = 32.5;
 
-		slider = slider + 0.5;
-		if( slider > 100 )
-			slider = 0;
 
-		/*
-		if( boost > 60 )
-		{
-			if( lv_disp_get_scr_act(NULL) != ui_View2)
-			{
-				lv_disp_load_scr(ui_View2);
-			}
+		if( HAL_GetTick() < 5000) {
+			switch_screen(ui_splash);
+		} else if( boost > 10 ){
+			switch_screen(ui_view2);
+		} else if( boost > 0 ) {
+			switch_screen(ui_view3);
 		} else {
-			if( lv_disp_get_scr_act(NULL) != ui_View1)
-			{
-				lv_disp_load_scr(ui_View1);
-			}
+			switch_screen(ui_view1);
 		}
-		*/
 
-		/*
+
 		if( oil > 80 )
 		{
 			if( alert_active == 0 ) {
 				alert_active = 1;
-				_ui_flag_modify(ui_ALERT, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_REMOVE);
+				_ui_flag_modify(ui_alertContainer, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_REMOVE);
 			}
 		} else {
 			if( alert_active == 1 ) {
 				alert_active = 0;
-				_ui_flag_modify(ui_ALERT, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_ADD);
+				_ui_flag_modify(ui_alertContainer, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_ADD);
 			}
 		}
-		*/
 
 		switch( gauge )
 		{
@@ -225,12 +222,21 @@ int main(void)
 			break;
 
 			case 3:
-			//lv_slider_set_value(ui_Slider1, slider, LV_ANIM_OFF);
-			//lv_label_set_text_fmt(ui_VALUE4, "%.2f psi", boost);
+			lv_slider_set_value(ui_linear1, boost*10, LV_ANIM_OFF);
+			lv_label_set_text_fmt(ui_value4, "%.2f psi", boost);
+			break;
+
+			case 4:
+			lv_arc_set_value(ui_arc1, (boost+15)*10);
+			lv_label_set_text_fmt(ui_value5, "%.2f psi", boost);
+			break;
+
+			case 5:
+			lv_obj_set_style_shadow_color(ui_gauge4, lv_color_hex((boost+15)*0x6EB3E), LV_PART_MAIN | LV_STATE_DEFAULT);
 			break;
 		}
 
-		gauge = (gauge >= 2) ? 0 : gauge + 1;
+		gauge = (gauge >= 5) ? 0 : gauge + 1;
 	}
     /* USER CODE END WHILE */
 

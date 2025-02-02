@@ -1,7 +1,11 @@
-SET(SOURCES screens/ui_Splash.c
+SET(SOURCES screens/ui_splash.c
+    screens/ui_view1.c
+    screens/ui_view2.c
+    screens/ui_view3.c
     ui.c
     components/ui_comp_hook.c
     ui_helpers.c
+    images/ui_img_splash_png.c
     images/ui_img_flare_png.c
     images/ui_img_gauge200_png.c
     images/ui_img_needle200_png.c)

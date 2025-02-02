@@ -16,9 +16,14 @@ extern "C" {
 #include "ui_events.h"
 
 
-// SCREEN: ui_Splash
-void ui_Splash_screen_init(void);
-extern lv_obj_t * ui_Splash;
+// SCREEN: ui_splash
+void ui_splash_screen_init(void);
+extern lv_obj_t * ui_splash;
+// CUSTOM VARIABLES
+
+// SCREEN: ui_view1
+void ui_view1_screen_init(void);
+extern lv_obj_t * ui_view1;
 extern lv_obj_t * ui_gauge1;
 extern lv_obj_t * ui_gauge2;
 extern lv_obj_t * ui_gauge3;
@@ -38,6 +43,24 @@ extern lv_obj_t * ui_min2;
 extern lv_obj_t * ui_max2;
 extern lv_obj_t * ui_min3;
 extern lv_obj_t * ui_max4;
+extern lv_obj_t * ui_alertContainer;
+extern lv_obj_t * ui_alert;
+// CUSTOM VARIABLES
+
+// SCREEN: ui_view2
+void ui_view2_screen_init(void);
+extern lv_obj_t * ui_view2;
+extern lv_obj_t * ui_linear1;
+extern lv_obj_t * ui_pid4;
+extern lv_obj_t * ui_value4;
+// CUSTOM VARIABLES
+
+// SCREEN: ui_view3
+void ui_view3_screen_init(void);
+extern lv_obj_t * ui_view3;
+extern lv_obj_t * ui_arc1;
+extern lv_obj_t * ui_value5;
+extern lv_obj_t * ui_gauge4;
 // CUSTOM VARIABLES
 
 // EVENTS
@@ -45,6 +68,7 @@ extern lv_obj_t * ui_max4;
 extern lv_obj_t * ui____initial_actions0;
 
 // IMAGES AND IMAGE SETS
+LV_IMG_DECLARE(ui_img_splash_png);    // assets/splash.png
 LV_IMG_DECLARE(ui_img_flare_png);    // assets/Flare.png
 LV_IMG_DECLARE(ui_img_gauge200_png);    // assets/gauge200.png
 LV_IMG_DECLARE(ui_img_needle200_png);    // assets/needle200.png

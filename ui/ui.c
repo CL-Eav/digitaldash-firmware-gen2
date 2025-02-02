@@ -9,9 +9,15 @@
 ///////////////////// VARIABLES ////////////////////
 
 
-// SCREEN: ui_Splash
-void ui_Splash_screen_init(void);
-lv_obj_t * ui_Splash;
+// SCREEN: ui_splash
+void ui_splash_screen_init(void);
+lv_obj_t * ui_splash;
+// CUSTOM VARIABLES
+
+
+// SCREEN: ui_view1
+void ui_view1_screen_init(void);
+lv_obj_t * ui_view1;
 lv_obj_t * ui_gauge1;
 lv_obj_t * ui_gauge2;
 lv_obj_t * ui_gauge3;
@@ -31,6 +37,26 @@ lv_obj_t * ui_min2;
 lv_obj_t * ui_max2;
 lv_obj_t * ui_min3;
 lv_obj_t * ui_max4;
+lv_obj_t * ui_alertContainer;
+lv_obj_t * ui_alert;
+// CUSTOM VARIABLES
+
+
+// SCREEN: ui_view2
+void ui_view2_screen_init(void);
+lv_obj_t * ui_view2;
+lv_obj_t * ui_linear1;
+lv_obj_t * ui_pid4;
+lv_obj_t * ui_value4;
+// CUSTOM VARIABLES
+
+
+// SCREEN: ui_view3
+void ui_view3_screen_init(void);
+lv_obj_t * ui_view3;
+lv_obj_t * ui_arc1;
+lv_obj_t * ui_value5;
+lv_obj_t * ui_gauge4;
 // CUSTOM VARIABLES
 
 // EVENTS
@@ -57,7 +83,10 @@ void ui_init(void)
     lv_theme_t * theme = lv_theme_default_init(dispp, lv_palette_main(LV_PALETTE_BLUE), lv_palette_main(LV_PALETTE_RED),
                                                true, LV_FONT_DEFAULT);
     lv_disp_set_theme(dispp, theme);
-    ui_Splash_screen_init();
+    ui_splash_screen_init();
+    ui_view1_screen_init();
+    ui_view2_screen_init();
+    ui_view3_screen_init();
     ui____initial_actions0 = lv_obj_create(NULL);
-    lv_disp_load_scr(ui_Splash);
+    lv_disp_load_scr(ui_splash);
 }

@@ -17,6 +17,7 @@ extern "C" {
 
 #define MY_DISP_HOR_RES    800
 #define MY_DISP_VER_RES    200
+#define DISP_PARTIAL 0
 
 /**********************
  * GLOBAL PROTOTYPES
