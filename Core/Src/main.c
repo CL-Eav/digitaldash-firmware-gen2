@@ -91,6 +91,12 @@ static uint8_t screen_active(struct _lv_obj_t * scr)
 	else
 		return 0;
 }
+
+void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi)
+{
+	 HAL_GPIO_TogglePin(GREEN_LED_GPIO_Port, GREEN_LED_Pin);
+	 HAL_SPI_Receive_IT(&hspi1, rx_buffer, sizeof(rx_buffer));
+}
 /* USER CODE END 0 */
 
 /**
