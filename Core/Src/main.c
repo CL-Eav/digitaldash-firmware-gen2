@@ -28,6 +28,7 @@
 #include "ltdc.h"
 #include "memorymap.h"
 #include "rtc.h"
+#include "spi.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -139,6 +140,7 @@ int main(void)
   MX_USART1_UART_Init();
   MX_GPU2D_Init();
   MX_FLASH_Init();
+  MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
   lv_init();
   lv_tick_set_cb(HAL_GetTick);
@@ -404,7 +406,7 @@ void MPU_Config(void)
   MPU_InitStruct.BaseAddress = 0x20000000;
   MPU_InitStruct.LimitAddress = 0x202EFFFF;
   MPU_InitStruct.AttributesIndex = MPU_ATTRIBUTES_NUMBER1;
-  MPU_InitStruct.AccessPermission = MPU_REGION_ALL_RW;
+  MPU_InitStruct.AccessPermission = MPU_REGION_PRIV_RW;
 
   HAL_MPU_ConfigRegion(&MPU_InitStruct);
   MPU_AttributesInit.Number = MPU_REGION_NUMBER1;
