@@ -9,6 +9,10 @@ void ui_view3_screen_init(void)
 {
     ui_view3 = lv_obj_create(NULL);
     lv_obj_remove_flag(ui_view3, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_set_style_bg_color(ui_view3, lv_color_hex(0x5E1818), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_view3, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_grad_color(ui_view3, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_grad_dir(ui_view3, LV_GRAD_DIR_VER, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_arc1 = lv_arc_create(ui_view3);
     lv_obj_set_width(ui_arc1, 150);

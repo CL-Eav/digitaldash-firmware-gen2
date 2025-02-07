@@ -53,7 +53,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define FIRMWARE_VERSION "v1.0.0"
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -191,10 +191,12 @@ int main(void)
 
 	float iat = 38;
 	float boost = -10.2;
-	uint8_t oil = 65.6;
+	float oil = 65.6;
 	float slider = 50;
 	uint8_t gauge = 0;
 	uint8_t alert_active = 0;
+
+	lv_label_set_text(ui_version, FIRMWARE_VERSION);
 
 	_ui_flag_modify(ui_alertContainer, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_ADD);
 
@@ -210,20 +212,20 @@ int main(void)
 		delay = HAL_GetTick() + 4;
 		//lv_slider_set_value(ui_bar, i, LV_ANIM_OFF);
 		//i = i + 5;
-		iat = iat + 0.2;
+		iat = iat + 0.05;
 		if( iat > 150 )
 			iat = 30;
 
-		boost = boost + 0.05;
+		boost = boost + 0.01;
 		if( boost > 25 )
 			boost = -14.6;
 
-		oil = oil + 1;
+		oil = oil + 0.2;
 		if( oil > 198 )
 			oil = 32.5;
 
 
-		if( HAL_GetTick() < 3000) {
+		if( HAL_GetTick() < 2750) {
 			switch_screen(ui_splash);
 		} else if( boost > 10 ){
 			switch_screen(ui_view2);
@@ -269,7 +271,7 @@ int main(void)
 			if(screen_active(ui_view1)) {
 				//lv_arc_set_value(ui_Gauge3, oil);
 				lv_img_set_angle(ui_needle3, (oil*10)-600);
-				lv_label_set_text_fmt(ui_value3, "%d F", oil);
+				lv_label_set_text_fmt(ui_value3, "%.1f F", oil);
 			}
 			break;
 
@@ -289,7 +291,7 @@ int main(void)
 
 			case 5:
 			if(screen_active(ui_view3)) {
-				lv_obj_set_style_shadow_color(ui_gauge4, lv_color_hex((boost+15)*0x6EB3E), LV_PART_MAIN | LV_STATE_DEFAULT);
+				lv_obj_set_style_shadow_color(ui_gauge4, lv_color_hex(oil*0x6EB3E), LV_PART_MAIN | LV_STATE_DEFAULT);
 			}
 			break;
 		}
