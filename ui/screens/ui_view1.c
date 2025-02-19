@@ -230,11 +230,12 @@ void ui_view1_screen_init(void)
 
     ui_alertContainer = lv_obj_create(ui_view1);
     lv_obj_remove_style_all(ui_alertContainer);
-    lv_obj_set_width(ui_alertContainer, 400);
-    lv_obj_set_height(ui_alertContainer, 65);
+    lv_obj_set_width(ui_alertContainer, 500);
+    lv_obj_set_height(ui_alertContainer, 85);
     lv_obj_set_x(ui_alertContainer, 0);
     lv_obj_set_y(ui_alertContainer, -50);
     lv_obj_set_align(ui_alertContainer, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_alertContainer, LV_OBJ_FLAG_HIDDEN);     /// Flags
     lv_obj_remove_flag(ui_alertContainer,
                        LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_PRESS_LOCK | LV_OBJ_FLAG_CLICK_FOCUSABLE | LV_OBJ_FLAG_GESTURE_BUBBLE |
                        LV_OBJ_FLAG_SNAPPABLE | LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_SCROLL_ELASTIC | LV_OBJ_FLAG_SCROLL_MOMENTUM |
@@ -256,7 +257,28 @@ void ui_view1_screen_init(void)
     lv_obj_set_width(ui_alert, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_alert, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_align(ui_alert, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_alert, "This is an alert");
+    lv_label_set_text(ui_alert, "1 .This is an alert\n2. Another one\n3. Oh no!\n4. What happened!?");
+
+    ui_Arc1 = lv_arc_create(ui_view1);
+    lv_obj_set_width(ui_Arc1, 200);
+    lv_obj_set_height(ui_Arc1, 200);
+    lv_obj_set_x(ui_Arc1, -250);
+    lv_obj_set_y(ui_Arc1, 0);
+    lv_obj_set_align(ui_Arc1, LV_ALIGN_CENTER);
+    lv_arc_set_value(ui_Arc1, 82);
+    lv_arc_set_bg_angles(ui_Arc1, 208, 332);
+    lv_obj_set_style_arc_color(ui_Arc1, lv_color_hex(0xFF0000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_arc_opa(ui_Arc1, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_arc_width(ui_Arc1, 4, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_arc_rounded(ui_Arc1, false, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    lv_obj_set_style_arc_color(ui_Arc1, lv_color_hex(0xFFFFFF), LV_PART_INDICATOR | LV_STATE_DEFAULT);
+    lv_obj_set_style_arc_opa(ui_Arc1, 255, LV_PART_INDICATOR | LV_STATE_DEFAULT);
+    lv_obj_set_style_arc_width(ui_Arc1, 4, LV_PART_INDICATOR | LV_STATE_DEFAULT);
+    lv_obj_set_style_arc_rounded(ui_Arc1, false, LV_PART_INDICATOR | LV_STATE_DEFAULT);
+
+    lv_obj_set_style_bg_color(ui_Arc1, lv_color_hex(0xFFFFFF), LV_PART_KNOB | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_Arc1, 0, LV_PART_KNOB | LV_STATE_DEFAULT);
 
 
 }

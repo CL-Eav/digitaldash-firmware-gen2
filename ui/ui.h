@@ -48,6 +48,7 @@ extern lv_obj_t * ui_min3;
 extern lv_obj_t * ui_max4;
 extern lv_obj_t * ui_alertContainer;
 extern lv_obj_t * ui_alert;
+extern lv_obj_t * ui_Arc1;
 // CUSTOM VARIABLES
 
 // SCREEN: ui_view2
@@ -64,6 +65,11 @@ extern lv_obj_t * ui_view3;
 extern lv_obj_t * ui_arc1;
 extern lv_obj_t * ui_value5;
 extern lv_obj_t * ui_gauge4;
+extern lv_obj_t * ui_Chart1;
+extern lv_obj_t * ui_Chart1_Xaxis;
+extern lv_obj_t * ui_Chart1_Yaxis1;
+extern lv_obj_t * ui_Chart1_Yaxis2;
+extern lv_obj_t * ui_value6;
 // CUSTOM VARIABLES
 
 // EVENTS

@@ -98,6 +98,14 @@ void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi)
 	 HAL_GPIO_TogglePin(GREEN_LED_GPIO_Port, GREEN_LED_Pin);
 	 //HAL_SPI_Receive_IT(&hspi1, rx_buffer, sizeof(rx_buffer));
 }
+
+static void add_data(int32_t val)
+{
+	lv_chart_set_next_value(ui_Chart1,lv_chart_get_series_next(ui_Chart1, NULL), val);
+
+    lv_chart_refresh(ui_Chart1);
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -291,12 +299,19 @@ int main(void)
 
 			case 5:
 			if(screen_active(ui_view3)) {
+				add_data(oil);
+				lv_label_set_text_fmt(ui_value6, "%.1f F", oil);
+			}
+			break;
+
+			case 6:
+			if(screen_active(ui_view3)) {
 				lv_obj_set_style_shadow_color(ui_gauge4, lv_color_hex(oil*0x6EB3E), LV_PART_MAIN | LV_STATE_DEFAULT);
 			}
 			break;
 		}
 
-		gauge = (gauge >= 5) ? 0 : gauge + 1;
+		gauge = (gauge >= 6) ? 0 : gauge + 1;
 	}
     /* USER CODE END WHILE */
 

@@ -47,8 +47,7 @@ MEMORY
 /* Start MX regions */
   ExtFlash	(rx)	: ORIGIN = 0xa0000000, LENGTH = 131072K
   FLASH	(rx)	: ORIGIN = 0x08000000, LENGTH = 4096K
-  frameBuffer	(xrw)	: ORIGIN = 0x20270000, LENGTH = 512K
-  RAM	(xrw)	: ORIGIN = 0x20000000, LENGTH = 2496K
+  RAM	(xrw)	: ORIGIN = 0x20000000, LENGTH = 3008K
 /* End MX regions */
 }
 /* Sections */
@@ -176,13 +175,5 @@ SECTIONS
     KEEP (*(.ExtFlash_Section))
     . = ALIGN(4);
   } >ExtFlash
-
- /*  Unitialized frameBuffer section into "frameBuffer" frameBuffer type memory [MMT section] */
- .frameBuffer_Section :
-  {
-    . = ALIGN(4);
-    KEEP (*(.frameBuffer_Section))
-    . = ALIGN(4);
-  } >frameBuffer
 
 }

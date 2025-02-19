@@ -42,6 +42,7 @@ lv_obj_t * ui_min3;
 lv_obj_t * ui_max4;
 lv_obj_t * ui_alertContainer;
 lv_obj_t * ui_alert;
+lv_obj_t * ui_Arc1;
 // CUSTOM VARIABLES
 
 
@@ -60,6 +61,11 @@ lv_obj_t * ui_view3;
 lv_obj_t * ui_arc1;
 lv_obj_t * ui_value5;
 lv_obj_t * ui_gauge4;
+lv_obj_t * ui_Chart1;
+lv_obj_t * ui_Chart1_Xaxis;
+lv_obj_t * ui_Chart1_Yaxis1;
+lv_obj_t * ui_Chart1_Yaxis2;
+lv_obj_t * ui_value6;
 // CUSTOM VARIABLES
 
 // EVENTS
