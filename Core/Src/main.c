@@ -44,6 +44,7 @@
 #include "lvgl_port_display.h"
 #include <string.h>
 #include "stm32u5g9j_discovery_hspi.h"
+#include "themes.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -204,9 +205,16 @@ int main(void)
 	uint8_t gauge = 0;
 	uint8_t alert_active = 0;
 
+	lv_obj_t * needle = NULL;
+
 	lv_label_set_text(ui_version, FIRMWARE_VERSION);
 
-	_ui_flag_modify(ui_alertContainer, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_ADD);
+	//_ui_flag_modify(ui_alertContainer, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_ADD);
+
+	//lv_obj_add_event_cb(btn, event_cb, LV_EVENT_ALL, info_label);
+
+	needle = add_stock_st_gauge(-250, 0, ui_view1);
+    //lv_obj_send_event(mbox, LV_EVENT_VALUE_CHANGED, &btn_id);
 
   /* USER CODE END 2 */
 
@@ -262,8 +270,9 @@ int main(void)
 			case 0:
 			//lv_arc_set_value(ui_gauge1, iat);
 			if(screen_active(ui_view1)) {
-				lv_img_set_angle(ui_needle1, (iat*10)-600);
-				lv_label_set_text_fmt(ui_value1, "%.1f", iat);
+				//lv_img_set_angle(needle, (iat*10)-600);
+				lv_obj_send_event(needle, LV_EVENT_REFRESH, &iat);
+				//lv_label_set_text_fmt(ui_value1, "%.1f", iat);
 			}
 			break;
 

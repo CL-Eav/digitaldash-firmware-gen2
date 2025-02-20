@@ -1,0 +1,15 @@
+/*
+ * themes.h
+ *
+ *  Created on: Feb 19, 2025
+ *      Author: Matth
+ */
+
+#ifndef THEMES_H_
+#define THEMES_H_
+
+#include "lvgl.h"
+
+lv_obj_t * add_stock_st_gauge( int32_t x, int32_t y, lv_obj_t * parent);
+
+#endif /* THEMES_H_ */

@@ -11,16 +11,6 @@ void ui_view1_screen_init(void)
     lv_obj_remove_flag(ui_view1, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_obj_set_style_bg_image_src(ui_view1, &ui_img_flare_png, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_gauge1 = lv_image_create(ui_view1);
-    lv_image_set_src(ui_gauge1, &ui_img_gauge200_png);
-    lv_obj_set_width(ui_gauge1, LV_SIZE_CONTENT);   /// 125
-    lv_obj_set_height(ui_gauge1, LV_SIZE_CONTENT);    /// 125
-    lv_obj_set_x(ui_gauge1, -250);
-    lv_obj_set_y(ui_gauge1, 0);
-    lv_obj_set_align(ui_gauge1, LV_ALIGN_CENTER);
-    lv_obj_remove_flag(ui_gauge1, LV_OBJ_FLAG_PRESS_LOCK | LV_OBJ_FLAG_CLICK_FOCUSABLE | LV_OBJ_FLAG_GESTURE_BUBBLE |
-                       LV_OBJ_FLAG_SNAPPABLE | LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_SCROLL_ELASTIC | LV_OBJ_FLAG_SCROLL_MOMENTUM |
-                       LV_OBJ_FLAG_SCROLL_CHAIN);     /// Flags
 
     ui_gauge2 = lv_image_create(ui_view1);
     lv_image_set_src(ui_gauge2, &ui_img_gauge200_png);
@@ -39,17 +29,6 @@ void ui_view1_screen_init(void)
     lv_obj_set_y(ui_gauge3, 0);
     lv_obj_set_align(ui_gauge3, LV_ALIGN_CENTER);
     lv_obj_remove_flag(ui_gauge3, LV_OBJ_FLAG_PRESS_LOCK | LV_OBJ_FLAG_CLICK_FOCUSABLE | LV_OBJ_FLAG_GESTURE_BUBBLE |
-                       LV_OBJ_FLAG_SNAPPABLE | LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_SCROLL_ELASTIC | LV_OBJ_FLAG_SCROLL_MOMENTUM |
-                       LV_OBJ_FLAG_SCROLL_CHAIN);     /// Flags
-
-    ui_needle1 = lv_image_create(ui_view1);
-    lv_image_set_src(ui_needle1, &ui_img_needle200_png);
-    lv_obj_set_width(ui_needle1, LV_SIZE_CONTENT);   /// 125
-    lv_obj_set_height(ui_needle1, LV_SIZE_CONTENT);    /// 125
-    lv_obj_set_x(ui_needle1, -250);
-    lv_obj_set_y(ui_needle1, 0);
-    lv_obj_set_align(ui_needle1, LV_ALIGN_CENTER);
-    lv_obj_remove_flag(ui_needle1, LV_OBJ_FLAG_PRESS_LOCK | LV_OBJ_FLAG_CLICK_FOCUSABLE | LV_OBJ_FLAG_GESTURE_BUBBLE |
                        LV_OBJ_FLAG_SNAPPABLE | LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_SCROLL_ELASTIC | LV_OBJ_FLAG_SCROLL_MOMENTUM |
                        LV_OBJ_FLAG_SCROLL_CHAIN);     /// Flags
 
@@ -72,18 +51,6 @@ void ui_view1_screen_init(void)
     lv_obj_remove_flag(ui_needle3, LV_OBJ_FLAG_PRESS_LOCK | LV_OBJ_FLAG_CLICK_FOCUSABLE | LV_OBJ_FLAG_GESTURE_BUBBLE |
                        LV_OBJ_FLAG_SNAPPABLE | LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_SCROLL_ELASTIC | LV_OBJ_FLAG_SCROLL_MOMENTUM |
                        LV_OBJ_FLAG_SCROLL_CHAIN);     /// Flags
-
-    ui_value1 = lv_label_create(ui_view1);
-    lv_obj_set_width(ui_value1, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_height(ui_value1, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_value1, -250);
-    lv_obj_set_y(ui_value1, -55);
-    lv_obj_set_align(ui_value1, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_value1, "82.4F");
-    lv_obj_remove_flag(ui_value1, LV_OBJ_FLAG_PRESS_LOCK | LV_OBJ_FLAG_CLICK_FOCUSABLE | LV_OBJ_FLAG_GESTURE_BUBBLE |
-                       LV_OBJ_FLAG_SNAPPABLE | LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_SCROLL_ELASTIC | LV_OBJ_FLAG_SCROLL_MOMENTUM |
-                       LV_OBJ_FLAG_SCROLL_CHAIN);     /// Flags
-    lv_obj_set_style_text_font(ui_value1, &lv_font_montserrat_22, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_value2 = lv_label_create(ui_view1);
     lv_obj_set_width(ui_value2, LV_SIZE_CONTENT);   /// 1
