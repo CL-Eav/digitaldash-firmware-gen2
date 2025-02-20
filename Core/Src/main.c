@@ -194,6 +194,9 @@ int main(void)
 
   ui_init();
 
+  lv_obj_t * needle = NULL;
+  needle = add_stock_st_gauge(-250, 0, ui_view1, &iat);
+
   //HAL_Delay(1000);
 
   //_ui_screen_change(&ui_View1, LV_SCR_LOAD_ANIM_FADE_IN, 500, 0, NULL);
@@ -207,17 +210,7 @@ int main(void)
 	uint8_t gauge = 0;
 	uint8_t alert_active = 0;
 
-	lv_obj_t * needle = NULL;
-
 	lv_label_set_text(ui_version, FIRMWARE_VERSION);
-
-	//_ui_flag_modify(ui_alertContainer, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_ADD);
-
-	//lv_obj_add_event_cb(btn, event_cb, LV_EVENT_ALL, info_label);
-
-	needle = add_stock_st_gauge(-250, 0, ui_view1, &iat);
-
-    //lv_obj_send_event(mbox, LV_EVENT_VALUE_CHANGED, &btn_id);
 
   /* USER CODE END 2 */
 
