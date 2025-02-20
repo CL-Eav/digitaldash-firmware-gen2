@@ -109,6 +109,8 @@ static void add_data(int32_t val)
 }
 
 PID_DATA iat;
+PID_DATA boost;
+PID_DATA oil;
 
 /* USER CODE END 0 */
 
@@ -194,8 +196,14 @@ int main(void)
 
   ui_init();
 
-  lv_obj_t * needle = NULL;
-  needle = add_stock_st_gauge(-250, 0, ui_view1, &iat);
+  lv_obj_t * gauge1 = NULL;
+  gauge1 = add_stock_st_gauge(-250, 0, ui_view1, &iat);
+
+  lv_obj_t * gauge2 = NULL;
+  gauge2 = add_stock_st_gauge(0, 0, ui_view1, &boost);
+
+  lv_obj_t * gauge3 = NULL;
+  gauge3 = add_stock_st_gauge(250, 0, ui_view1, &oil);
 
   //HAL_Delay(1000);
 
@@ -204,8 +212,6 @@ int main(void)
   uint8_t i = 0;
   uint32_t delay = HAL_GetTick();
 
-	float boost = -10.2;
-	float oil = 65.6;
 	float slider = 50;
 	uint8_t gauge = 0;
 	uint8_t alert_active = 0;
@@ -228,27 +234,27 @@ int main(void)
 		if( iat.pid_value > 150 )
 			iat.pid_value = 30;
 
-		boost = boost + 0.01;
-		if( boost > 25 )
-			boost = -14.6;
+		boost.pid_value = boost.pid_value + 0.01;
+		if( boost.pid_value > 25 )
+			boost.pid_value = -14.6;
 
-		oil = oil + 0.2;
-		if( oil > 198 )
-			oil = 32.5;
+		oil.pid_value = oil.pid_value + 0.2;
+		if( oil.pid_value > 198 )
+			oil.pid_value = 32.5;
 
 
 		if( HAL_GetTick() < 2750) {
 			switch_screen(ui_splash);
-		} else if( boost > 10 ){
+		} else if( boost.pid_value > 10 ){
 			switch_screen(ui_view2);
-		} else if( boost > 0 ) {
+		} else if( boost.pid_value > 0 ) {
 			switch_screen(ui_view3);
 		} else {
 			switch_screen(ui_view1);
 		}
 
 
-		if( oil > 80 )
+		if( oil.pid_value > 8000 )
 		{
 			if( alert_active == 0 ) {
 				alert_active = 1;
@@ -266,52 +272,47 @@ int main(void)
 			case 0:
 			//lv_arc_set_value(ui_gauge1, iat);
 			if(screen_active(ui_view1)) {
-				//lv_img_set_angle(needle, (iat*10)-600);
-				lv_obj_send_event(needle, LV_EVENT_REFRESH, &iat);
-				//lv_label_set_text_fmt(ui_value1, "%.1f", iat);
+				lv_obj_send_event(gauge1, LV_EVENT_REFRESH, &iat);
 			}
 			break;
 
 			case 1:
 			//lv_arc_set_value(ui_Gauge2, boost);
 			if(screen_active(ui_view1)) {
-				lv_img_set_angle(ui_needle2, (boost*10)-600);
-				lv_label_set_text_fmt(ui_value2, "%.2f psi", boost);
+				lv_obj_send_event(gauge2, LV_EVENT_REFRESH, &boost);
 			}
 			break;
 
 			case 2:
 			if(screen_active(ui_view1)) {
-				//lv_arc_set_value(ui_Gauge3, oil);
-				lv_img_set_angle(ui_needle3, (oil*10)-600);
-				lv_label_set_text_fmt(ui_value3, "%.1f F", oil);
+				lv_obj_send_event(gauge3, LV_EVENT_REFRESH, &oil);
 			}
 			break;
 
 			case 3:
 			if(screen_active(ui_view2)) {
-				lv_slider_set_value(ui_linear1, boost*10, LV_ANIM_ON);
-				lv_label_set_text_fmt(ui_value4, "%.2f psi", boost);
+				lv_slider_set_value(ui_linear1, boost.pid_value*10, LV_ANIM_ON);
+				lv_label_set_text_fmt(ui_value4, "%.2f psi", boost.pid_value);
 			}
 			break;
 
 			case 4:
 			if(screen_active(ui_view3)) {
-				lv_arc_set_value(ui_arc1, (boost+15)*10);
-				lv_label_set_text_fmt(ui_value5, "%.2f psi", boost);
+				lv_arc_set_value(ui_arc1, (boost.pid_value+15)*10);
+				lv_label_set_text_fmt(ui_value5, "%.2f psi", boost.pid_value);
 			}
 			break;
 
 			case 5:
 			if(screen_active(ui_view3)) {
-				add_data(oil);
-				lv_label_set_text_fmt(ui_value6, "%.1f F", oil);
+				add_data(oil.pid_value);
+				lv_label_set_text_fmt(ui_value6, "%.1f F", oil.pid_value);
 			}
 			break;
 
 			case 6:
 			if(screen_active(ui_view3)) {
-				lv_obj_set_style_shadow_color(ui_gauge4, lv_color_hex(oil*0x6EB3E), LV_PART_MAIN | LV_STATE_DEFAULT);
+				lv_obj_set_style_shadow_color(ui_gauge4, lv_color_hex(oil.pid_value*0x6EB3E), LV_PART_MAIN | LV_STATE_DEFAULT);
 			}
 			break;
 		}

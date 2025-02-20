@@ -40,7 +40,7 @@ lv_obj_t * add_stock_st_gauge( int32_t x, int32_t y, lv_obj_t * parent, PID_DATA
                        LV_OBJ_FLAG_SNAPPABLE | LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_SCROLL_ELASTIC | LV_OBJ_FLAG_SCROLL_MOMENTUM |
                        LV_OBJ_FLAG_SCROLL_CHAIN);     /// Flags
 
-    lv_obj_t * pid_label = lv_label_create(parent);
+    lv_obj_t * pid_label = lv_label_create(gauge);
     lv_obj_set_width(pid_label, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(pid_label, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(pid_label, 0);
