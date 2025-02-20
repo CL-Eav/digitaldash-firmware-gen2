@@ -17,8 +17,9 @@ static void event_cb(lv_event_t * e)
 {
 	PID_DATA * data = lv_event_get_user_data(e);
     lv_obj_t * needle = lv_event_get_target(e);
+    lv_img_set_angle(needle, (data->pid_value*10)-600);
     lv_obj_t * value = lv_obj_get_child(needle, 0);
-    lv_label_set_text_fmt(value, "%.1f", data->pid_value);
+    lv_label_set_text_fmt(value, "%.1f°F", data->pid_value);
 }
 
 lv_obj_t * add_stock_st_gauge( int32_t x, int32_t y, lv_obj_t * parent, PID_DATA * pid)
