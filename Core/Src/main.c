@@ -242,6 +242,35 @@ int main(void)
   ui_view[2] = lv_obj_create(NULL);
   lv_obj_remove_flag(ui_view[2], LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
+  // Add background(s)
+  for( uint8_t idx = 0; idx < FordFocusSTRS.num_views; idx++) {
+
+	  uint8_t is_image = 0;
+	  const lv_image_dsc_t * img = NULL;
+	  lv_color_t color = {0};
+
+	  switch( FordFocusSTRS.view[idx].background )
+	  {
+		  case BACKGROUND_FLARE:
+			  img = &ui_img_flare_png;
+			  is_image = 1;
+			  break;
+
+		  case BACKGROUND_BLACK:
+		  default:
+			  color.red = 0;
+			  color.green = 0;
+			  color.blue = 0;
+			  is_image = 0;
+			  break;
+	  }
+
+	  if( is_image )
+		  lv_obj_set_style_bg_image_src(ui_view[idx], img, LV_PART_MAIN | LV_STATE_DEFAULT);
+	  else
+		  lv_obj_set_style_bg_color(ui_view[idx], color, LV_PART_MAIN | LV_STATE_DEFAULT);
+  }
+
   for( uint8_t idx = 0; idx < FordFocusSTRS.num_views; idx++) {
 	  int x_pos[MAX_GAUGES] = {0};
 
