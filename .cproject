@@ -158,7 +158,7 @@
 									<listOptionValue builtIn="false" value="../lvgl"/>
 									<listOptionValue builtIn="false" value="../ui"/>
 									<listOptionValue builtIn="false" value="../lvgl/libs/nema_gfx/include"/>
-									<listOptionValue builtIn="false" value="../lib/lib_pid"/>
+									<listOptionValue builtIn="false" value="../lib/lib_pid/src"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.285620768" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>

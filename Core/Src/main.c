@@ -46,6 +46,7 @@
 #include "stm32u5g9j_discovery_hspi.h"
 #include "themes.h"
 #include "lib_pid.h"
+#include "ke_digitaldash.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -112,6 +113,9 @@ PID_DATA iat;
 PID_DATA boost;
 PID_DATA oil;
 
+digitaldash FordFocusSTRS;
+lv_obj_t * ui_view[MAX_VIEWS];
+
 /* USER CODE END 0 */
 
 /**
@@ -169,6 +173,32 @@ int main(void)
   lv_tick_set_cb(HAL_GetTick);
   lvgl_display_init();
 
+  FordFocusSTRS.num_views = 1;
+
+  // View 1
+  FordFocusSTRS.view[0].enabled = 1;
+  FordFocusSTRS.view[0].view_index = 0;
+  FordFocusSTRS.view[0].num_gauges = 3;
+  FordFocusSTRS.view[0].background = BACKGROUND_FLARE;
+
+  // View 1 - Gauge 1
+  strcpy(iat.label, "IAT");
+  strcpy(iat.unit_label, PID_UNITS_FAHRENHEIT_LABEL);
+  FordFocusSTRS.view[0].gauge[0].pid = &iat;
+  FordFocusSTRS.view[0].gauge[0].theme = THEME_STOCK_ST;
+
+  // View 1 - Gauge 2
+  strcpy(boost.label, "Boost");
+  strcpy(boost.unit_label, PID_UNITS_PSI_LABEL);
+  FordFocusSTRS.view[0].gauge[1].pid = &boost;
+  FordFocusSTRS.view[0].gauge[1].theme = THEME_STOCK_ST;
+
+  // View 1 - Gauge 3
+  strcpy(oil.label, "Oil");
+  strcpy(oil.unit_label, PID_UNITS_FAHRENHEIT_LABEL);
+  FordFocusSTRS.view[0].gauge[2].pid = &oil;
+  FordFocusSTRS.view[0].gauge[1].theme = THEME_STOCK_ST;
+
 
   BSP_HSPI_NOR_Init_t hspi_init;
   hspi_init.InterfaceMode = MX66UW1G45G_OPI_MODE;
@@ -196,14 +226,42 @@ int main(void)
 
   ui_init();
 
-  lv_obj_t * gauge1 = NULL;
-  gauge1 = add_stock_st_gauge(-250, 0, ui_view1, &iat);
+  // Create the screen
+  lv_disp_t * dispp = lv_display_get_default();
+  lv_theme_t * theme = lv_theme_default_init(dispp, lv_palette_main(LV_PALETTE_BLUE), lv_palette_main(LV_PALETTE_RED), true, LV_FONT_DEFAULT);
+  lv_disp_set_theme(dispp, theme);
 
-  lv_obj_t * gauge2 = NULL;
-  gauge2 = add_stock_st_gauge(0, 0, ui_view1, &boost);
+  ui____initial_actions0 = lv_obj_create(NULL);
 
-  lv_obj_t * gauge3 = NULL;
-  gauge3 = add_stock_st_gauge(250, 0, ui_view1, &oil);
+  ui_view[0] = lv_obj_create(NULL);
+  lv_obj_remove_flag(ui_view[0], LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+
+  ui_view[1] = lv_obj_create(NULL);
+  lv_obj_remove_flag(ui_view[1], LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+
+  ui_view[2] = lv_obj_create(NULL);
+  lv_obj_remove_flag(ui_view[2], LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+
+  for( uint8_t idx = 0; idx < FordFocusSTRS.num_views; idx++) {
+	  int x_pos[MAX_GAUGES] = {0};
+
+	  if( FordFocusSTRS.view[idx].num_gauges == 1) {
+		  x_pos[0] = 0;
+	  } else if( FordFocusSTRS.view[idx].num_gauges == 2) {
+		  x_pos[0] = -200;
+		  x_pos[1] = 200;
+	  }if( FordFocusSTRS.view[idx].num_gauges == 3) {
+		  x_pos[0] = -250;
+		  x_pos[1] = 0;
+		  x_pos[2] = 250;
+	  }
+
+	  for( uint8_t i = 0; i < FordFocusSTRS.view[idx].num_gauges; i++) {
+		  FordFocusSTRS.view[idx].gauge[i].obj = add_stock_st_gauge(x_pos[i], 0, ui_view[0], FordFocusSTRS.view[0].gauge[i].pid);
+	  }
+  }
+
+  lv_disp_load_scr(ui_view[0]);
 
   //HAL_Delay(1000);
 
@@ -243,6 +301,7 @@ int main(void)
 			oil.pid_value = 32.5;
 
 
+		/*
 		if( HAL_GetTick() < 2750) {
 			switch_screen(ui_splash);
 		} else if( boost.pid_value > 10 ){
@@ -252,8 +311,10 @@ int main(void)
 		} else {
 			switch_screen(ui_view1);
 		}
+		*/
 
 
+		/*
 		if( oil.pid_value > 8000 )
 		{
 			if( alert_active == 0 ) {
@@ -266,58 +327,59 @@ int main(void)
 				_ui_flag_modify(ui_alertContainer, LV_OBJ_FLAG_HIDDEN, _UI_MODIFY_FLAG_ADD);
 			}
 		}
+		*/
 
 		switch( gauge )
 		{
 			case 0:
 			//lv_arc_set_value(ui_gauge1, iat);
-			if(screen_active(ui_view1)) {
-				lv_obj_send_event(gauge1, LV_EVENT_REFRESH, &iat);
+			if(screen_active(ui_view[0])) {
+				lv_obj_send_event(FordFocusSTRS.view[0].gauge[0].obj, LV_EVENT_REFRESH, &iat);
 			}
 			break;
 
 			case 1:
 			//lv_arc_set_value(ui_Gauge2, boost);
-			if(screen_active(ui_view1)) {
-				lv_obj_send_event(gauge2, LV_EVENT_REFRESH, &boost);
+			if(screen_active(ui_view[0])) {
+				lv_obj_send_event(FordFocusSTRS.view[0].gauge[1].obj, LV_EVENT_REFRESH, &boost);
 			}
 			break;
 
 			case 2:
-			if(screen_active(ui_view1)) {
-				lv_obj_send_event(gauge3, LV_EVENT_REFRESH, &oil);
+			if(screen_active(ui_view[0])) {
+				lv_obj_send_event(FordFocusSTRS.view[0].gauge[2].obj, LV_EVENT_REFRESH, &oil);
 			}
 			break;
 
 			case 3:
-			if(screen_active(ui_view2)) {
+			if(screen_active(ui_view[1])) {
 				lv_slider_set_value(ui_linear1, boost.pid_value*10, LV_ANIM_ON);
 				lv_label_set_text_fmt(ui_value4, "%.2f psi", boost.pid_value);
 			}
 			break;
 
 			case 4:
-			if(screen_active(ui_view3)) {
+			if(screen_active(ui_view[2])) {
 				lv_arc_set_value(ui_arc1, (boost.pid_value+15)*10);
 				lv_label_set_text_fmt(ui_value5, "%.2f psi", boost.pid_value);
 			}
 			break;
 
 			case 5:
-			if(screen_active(ui_view3)) {
+			if(screen_active(ui_view[2])) {
 				add_data(oil.pid_value);
 				lv_label_set_text_fmt(ui_value6, "%.1f F", oil.pid_value);
 			}
 			break;
 
 			case 6:
-			if(screen_active(ui_view3)) {
+			if(screen_active(ui_view[2])) {
 				lv_obj_set_style_shadow_color(ui_gauge4, lv_color_hex(oil.pid_value*0x6EB3E), LV_PART_MAIN | LV_STATE_DEFAULT);
 			}
 			break;
 		}
 
-		gauge = (gauge >= 6) ? 0 : gauge + 1;
+		gauge = (gauge >= 2) ? 0 : gauge + 1;
 	}
     /* USER CODE END WHILE */
 
