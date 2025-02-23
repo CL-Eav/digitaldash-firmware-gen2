@@ -210,18 +210,24 @@ int main(void)
   // View 1 - Gauge 1
   strcpy(iat.label, "IAT");
   strcpy(iat.unit_label, PID_UNITS_FAHRENHEIT_LABEL);
+  iat.lower_limit = 30;
+  iat.upper_limit = 150;
   FordFocusSTRS.view[0].gauge[0].pid = &iat;
   FordFocusSTRS.view[0].gauge[0].theme = THEME_STOCK_ST;
 
   // View 1 - Gauge 2
   strcpy(boost.label, "Boost");
   strcpy(boost.unit_label, PID_UNITS_PSI_LABEL);
+  boost.lower_limit = -15;
+  boost.upper_limit = 25;
   FordFocusSTRS.view[0].gauge[1].pid = &boost;
   FordFocusSTRS.view[0].gauge[1].theme = THEME_STOCK_ST;
 
   // View 1 - Gauge 3
   strcpy(oil.label, "Oil");
   strcpy(oil.unit_label, PID_UNITS_FAHRENHEIT_LABEL);
+  oil.lower_limit = 32;
+  oil.upper_limit = 150;
   FordFocusSTRS.view[0].gauge[2].pid = &oil;
   FordFocusSTRS.view[0].gauge[1].theme = THEME_STOCK_ST;
 

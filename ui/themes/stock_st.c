@@ -11,19 +11,28 @@
 LV_IMG_DECLARE(ui_img_gauge200_png);    // assets/gauge200.png
 LV_IMG_DECLARE(ui_img_needle200_png);    // assets/needle200.png
 
-static float tmpVal = 45;
+#define STOCK_ST_START_ANGLE -600
+#define STOCK_ST_END_ANGLE 600
 
 static void event_cb(lv_event_t * e)
 {
 	PID_DATA * data = lv_event_get_user_data(e);
     lv_obj_t * needle = lv_event_get_target(e);
-    lv_img_set_angle(needle, (data->pid_value*10)-600);
+
+    if( data->pid_value >= data->upper_limit )
+    	lv_img_set_angle(needle, STOCK_ST_END_ANGLE);
+    else if ( data->pid_value <= data->lower_limit )
+    	lv_img_set_angle(needle, STOCK_ST_START_ANGLE);
+    else {
+        lv_img_set_angle(needle, STOCK_ST_START_ANGLE + ((data->pid_value - data->lower_limit) / (data->upper_limit - data->lower_limit)) * (STOCK_ST_END_ANGLE - STOCK_ST_START_ANGLE));
+    }
+
     lv_obj_t * value = lv_obj_get_child(needle, 0);
     lv_obj_t * min = lv_obj_get_child(needle, 1);
     lv_obj_t * max = lv_obj_get_child(needle, 2);
     lv_label_set_text_fmt(value, "%.1f%s", data->pid_value, data->unit_label);
-    lv_label_set_text_fmt(min, "%.1f", data->pid_value-5);
-    lv_label_set_text_fmt(max, "%.1f", data->pid_value+5);
+    lv_label_set_text_fmt(min, "%.1f", data->pid_min);
+    lv_label_set_text_fmt(max, "%.1f", data->pid_max);
 }
 
 lv_obj_t * add_stock_st_gauge( int32_t x, int32_t y, lv_obj_t * parent, PID_DATA * pid)
