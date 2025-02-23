@@ -39,7 +39,6 @@
 #include "ltdc.h"
 #include "dma2d.h"
 #include "lvgl.h"
-#include "ui.h"
 #include "demos/lv_demos.h"
 #include "lvgl_port_display.h"
 #include <string.h>
@@ -57,6 +56,40 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define FIRMWARE_VERSION "v1.0.0"
+
+// IMAGES AND IMAGE SETS
+LV_IMG_DECLARE(ui_img_splash_png);    // assets/splash.png
+LV_IMG_DECLARE(ui_img_flare_png);    // assets/Flare.png
+LV_IMG_DECLARE(ui_img_gauge200_png);    // assets/gauge200.png
+LV_IMG_DECLARE(ui_img_needle200_png);    // assets/needle200.png
+LV_IMG_DECLARE(ui_img_1303014416);    // assets/ezgif-frame-038.png
+LV_IMG_DECLARE(ui_img_132361813);    // assets/ezgif-frame-039.png
+LV_IMG_DECLARE(ui_img_1604144407);    // assets/ezgif-frame-040.png
+LV_IMG_DECLARE(ui_img_1255446660);    // assets/ezgif-frame-041.png
+LV_IMG_DECLARE(ui_img_527364531);    // assets/ezgif-frame-042.png
+LV_IMG_DECLARE(ui_img_1609093710);    // assets/ezgif-frame-043.png
+LV_IMG_DECLARE(ui_img_881011581);    // assets/ezgif-frame-044.png
+LV_IMG_DECLARE(ui_img_554364648);    // assets/ezgif-frame-045.png
+LV_IMG_DECLARE(ui_img_1282446777);    // assets/ezgif-frame-046.png
+LV_IMG_DECLARE(ui_img_200717598);    // assets/ezgif-frame-047.png
+LV_IMG_DECLARE(ui_img_1303017489);    // assets/ezgif-frame-048.png
+LV_IMG_DECLARE(ui_img_132358740);    // assets/ezgif-frame-049.png
+LV_IMG_DECLARE(ui_img_1604145430);    // assets/ezgif-frame-050.png
+LV_IMG_DECLARE(ui_img_1255445637);    // assets/ezgif-frame-051.png
+LV_IMG_DECLARE(ui_img_527363508);    // assets/ezgif-frame-052.png
+LV_IMG_DECLARE(ui_img_1609092687);    // assets/ezgif-frame-053.png
+LV_IMG_DECLARE(ui_img_881010558);    // assets/ezgif-frame-054.png
+LV_IMG_DECLARE(ui_img_554365671);    // assets/ezgif-frame-055.png
+LV_IMG_DECLARE(ui_img_1282447800);    // assets/ezgif-frame-056.png
+LV_IMG_DECLARE(ui_img_200718621);    // assets/ezgif-frame-057.png
+LV_IMG_DECLARE(ui_img_1303016466);    // assets/ezgif-frame-058.png
+LV_IMG_DECLARE(ui_img_132359763);    // assets/ezgif-frame-059.png
+LV_IMG_DECLARE(ui_img_1604142357);    // assets/ezgif-frame-060.png
+LV_IMG_DECLARE(ui_img_1255448710);    // assets/ezgif-frame-061.png
+LV_IMG_DECLARE(ui_img_527366581);    // assets/ezgif-frame-062.png
+LV_IMG_DECLARE(ui_img_1609095760);    // assets/ezgif-frame-063.png
+LV_IMG_DECLARE(ui_img_881013631);    // assets/ezgif-frame-064.png
+LV_IMG_DECLARE(ui_img_554362598);    // assets/ezgif-frame-065.png
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -100,13 +133,6 @@ void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi)
 {
 	 HAL_GPIO_TogglePin(GREEN_LED_GPIO_Port, GREEN_LED_Pin);
 	 //HAL_SPI_Receive_IT(&hspi1, rx_buffer, sizeof(rx_buffer));
-}
-
-static void add_data(int32_t val)
-{
-	lv_chart_set_next_value(ui_Chart1,lv_chart_get_series_next(ui_Chart1, NULL), val);
-
-    lv_chart_refresh(ui_Chart1);
 }
 
 PID_DATA iat;
@@ -224,23 +250,18 @@ int main(void)
   /* reset display */
   HAL_GPIO_WritePin(LCD_ON_GPIO_Port, LCD_ON_Pin, GPIO_PIN_SET);
 
-  ui_init();
+  //ui_init();
 
   // Create the screen
   lv_disp_t * dispp = lv_display_get_default();
   lv_theme_t * theme = lv_theme_default_init(dispp, lv_palette_main(LV_PALETTE_BLUE), lv_palette_main(LV_PALETTE_RED), true, LV_FONT_DEFAULT);
   lv_disp_set_theme(dispp, theme);
 
-  ui____initial_actions0 = lv_obj_create(NULL);
-
-  ui_view[0] = lv_obj_create(NULL);
-  lv_obj_remove_flag(ui_view[0], LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-
-  ui_view[1] = lv_obj_create(NULL);
-  lv_obj_remove_flag(ui_view[1], LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-
-  ui_view[2] = lv_obj_create(NULL);
-  lv_obj_remove_flag(ui_view[2], LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+  // Add view(s)
+  for( uint8_t idx = 0; idx < FordFocusSTRS.num_views; idx++) {
+	  ui_view[idx] = lv_obj_create(NULL);
+	  lv_obj_remove_flag(ui_view[idx], LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+  }
 
   // Add background(s)
   for( uint8_t idx = 0; idx < FordFocusSTRS.num_views; idx++) {
@@ -290,20 +311,13 @@ int main(void)
 	  }
   }
 
-  lv_disp_load_scr(ui_view[0]);
+  lv_screen_load(ui_view[0]);
 
-  //HAL_Delay(1000);
 
-  //_ui_screen_change(&ui_View1, LV_SCR_LOAD_ANIM_FADE_IN, 500, 0, NULL);
-  //lv_screen_load(ui_View1);
-  uint8_t i = 0;
   uint32_t delay = HAL_GetTick();
 
-	float slider = 50;
-	uint8_t gauge = 0;
-	uint8_t alert_active = 0;
+  uint8_t gauge = 0;
 
-	lv_label_set_text(ui_version, FIRMWARE_VERSION);
 
   /* USER CODE END 2 */
 
@@ -377,33 +391,6 @@ int main(void)
 			case 2:
 			if(screen_active(ui_view[0])) {
 				lv_obj_send_event(FordFocusSTRS.view[0].gauge[2].obj, LV_EVENT_REFRESH, &oil);
-			}
-			break;
-
-			case 3:
-			if(screen_active(ui_view[1])) {
-				lv_slider_set_value(ui_linear1, boost.pid_value*10, LV_ANIM_ON);
-				lv_label_set_text_fmt(ui_value4, "%.2f psi", boost.pid_value);
-			}
-			break;
-
-			case 4:
-			if(screen_active(ui_view[2])) {
-				lv_arc_set_value(ui_arc1, (boost.pid_value+15)*10);
-				lv_label_set_text_fmt(ui_value5, "%.2f psi", boost.pid_value);
-			}
-			break;
-
-			case 5:
-			if(screen_active(ui_view[2])) {
-				add_data(oil.pid_value);
-				lv_label_set_text_fmt(ui_value6, "%.1f F", oil.pid_value);
-			}
-			break;
-
-			case 6:
-			if(screen_active(ui_view[2])) {
-				lv_obj_set_style_shadow_color(ui_gauge4, lv_color_hex(oil.pid_value*0x6EB3E), LV_PART_MAIN | LV_STATE_DEFAULT);
 			}
 			break;
 		}
