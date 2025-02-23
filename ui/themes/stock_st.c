@@ -16,9 +16,14 @@ LV_IMG_DECLARE(ui_img_needle200_png);    // assets/needle200.png
 
 static void event_cb(lv_event_t * e)
 {
+	// Get the PID data
 	PID_DATA * data = lv_event_get_user_data(e);
     lv_obj_t * needle = lv_event_get_target(e);
+    lv_obj_t * value = lv_obj_get_child(needle, 0);
+    lv_obj_t * min = lv_obj_get_child(needle, 1);
+    lv_obj_t * max = lv_obj_get_child(needle, 2);
 
+    // Calculate the needle angle
     if( data->pid_value >= data->upper_limit )
     	lv_img_set_angle(needle, STOCK_ST_END_ANGLE);
     else if ( data->pid_value <= data->lower_limit )
@@ -27,12 +32,28 @@ static void event_cb(lv_event_t * e)
         lv_img_set_angle(needle, STOCK_ST_START_ANGLE + ((data->pid_value - data->lower_limit) / (data->upper_limit - data->lower_limit)) * (STOCK_ST_END_ANGLE - STOCK_ST_START_ANGLE));
     }
 
-    lv_obj_t * value = lv_obj_get_child(needle, 0);
-    lv_obj_t * min = lv_obj_get_child(needle, 1);
-    lv_obj_t * max = lv_obj_get_child(needle, 2);
-    lv_label_set_text_fmt(value, "%.1f%s", data->pid_value, data->unit_label);
-    lv_label_set_text_fmt(min, "%.1f", data->pid_min);
-    lv_label_set_text_fmt(max, "%.1f", data->pid_max);
+    // Update the numbers
+    switch( data->precision )
+    {
+		case 2:
+			lv_label_set_text_fmt(value, "%.2f%s", data->pid_value, data->unit_label);
+			lv_label_set_text_fmt(min, "%.2f", data->pid_min);
+			lv_label_set_text_fmt(max, "%.2f", data->pid_max);
+			break;
+
+		case 1:
+			lv_label_set_text_fmt(value, "%.1f%s", data->pid_value, data->unit_label);
+			lv_label_set_text_fmt(min, "%.1f", data->pid_min);
+			lv_label_set_text_fmt(max, "%.1f", data->pid_max);
+			break;
+
+		case 0:
+		default:
+			lv_label_set_text_fmt(value, "%.0f%s", data->pid_value, data->unit_label);
+			lv_label_set_text_fmt(min, "%.0f", data->pid_min);
+			lv_label_set_text_fmt(max, "%.0f", data->pid_max);
+			break;
+    }
 }
 
 lv_obj_t * add_stock_st_gauge( int32_t x, int32_t y, lv_obj_t * parent, PID_DATA * pid)

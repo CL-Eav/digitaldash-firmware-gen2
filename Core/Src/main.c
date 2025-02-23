@@ -218,8 +218,9 @@ int main(void)
   // View 1 - Gauge 1
   strcpy(iat.label, "IAT");
   strcpy(iat.unit_label, PID_UNITS_FAHRENHEIT_LABEL);
-  iat.lower_limit = 30;
+  iat.lower_limit = 0;
   iat.upper_limit = 150;
+  iat.precision = 1;
   FordFocusSTRS.view[0].gauge[0].pid = &iat;
   FordFocusSTRS.view[0].gauge[0].theme = THEME_STOCK_ST;
 
@@ -228,6 +229,7 @@ int main(void)
   strcpy(boost.unit_label, PID_UNITS_PSI_LABEL);
   boost.lower_limit = -15;
   boost.upper_limit = 25;
+  boost.precision = 2;
   FordFocusSTRS.view[0].gauge[1].pid = &boost;
   FordFocusSTRS.view[0].gauge[1].theme = THEME_STOCK_ST;
 
@@ -236,6 +238,7 @@ int main(void)
   strcpy(oil.unit_label, PID_UNITS_FAHRENHEIT_LABEL);
   oil.lower_limit = 32;
   oil.upper_limit = 150;
+  oil.precision = 0;
   FordFocusSTRS.view[0].gauge[2].pid = &oil;
   FordFocusSTRS.view[0].gauge[1].theme = THEME_STOCK_ST;
 
@@ -327,11 +330,7 @@ int main(void)
 
   lv_screen_load(ui_view[0]);
 
-
-  uint32_t delay = HAL_GetTick();
-
   uint8_t gauge = 0;
-
 
   /* USER CODE END 2 */
 
@@ -340,26 +339,22 @@ int main(void)
   while (1)
   {
 	lv_timer_handler();
-	if( delay < HAL_GetTick() )
-	{
-		delay = HAL_GetTick() + 4;
-		//lv_slider_set_value(ui_bar, i, LV_ANIM_OFF);
-		//i = i + 5;
-		iat.pid_value = iat.pid_value + 0.05;
-		if( iat.pid_value > 150 )
-			iat.pid_value = 30;
 
-		boost.pid_value = boost.pid_value + 0.01;
-		if( boost.pid_value > 25 )
-			boost.pid_value = -14.6;
+	iat.pid_value = iat.pid_value + 0.05;
+	if( iat.pid_value > 150 )
+		iat.pid_value = 30;
 
-		oil.pid_value = oil.pid_value + 0.2;
-		if( oil.pid_value > 198 )
-			oil.pid_value = 32.5;
+	boost.pid_value = boost.pid_value + 0.01;
+	if( boost.pid_value > 25 )
+		boost.pid_value = -14.6;
 
-		log_minmax(&iat);
-		log_minmax(&boost);
-		log_minmax(&oil);
+	oil.pid_value = oil.pid_value + 0.2;
+	if( oil.pid_value > 198 )
+		oil.pid_value = 32.5;
+
+	log_minmax(&iat);
+	log_minmax(&boost);
+	log_minmax(&oil);
 
 
 		/*
@@ -390,31 +385,34 @@ int main(void)
 		}
 		*/
 
-		switch( gauge )
-		{
-			case 0:
-			//lv_arc_set_value(ui_gauge1, iat);
-			if(screen_active(ui_view[0])) {
-				lv_obj_send_event(FordFocusSTRS.view[0].gauge[0].obj, LV_EVENT_REFRESH, &iat);
-			}
-			break;
+		/*
+		lv_obj_send_event(FordFocusSTRS.view[0].gauge[0].obj, LV_EVENT_REFRESH, &iat);
+		lv_obj_send_event(FordFocusSTRS.view[0].gauge[1].obj, LV_EVENT_REFRESH, &boost);
+		lv_obj_send_event(FordFocusSTRS.view[0].gauge[2].obj, LV_EVENT_REFRESH, &oil);
+		 */
 
-			case 1:
-			//lv_arc_set_value(ui_Gauge2, boost);
-			if(screen_active(ui_view[0])) {
-				lv_obj_send_event(FordFocusSTRS.view[0].gauge[1].obj, LV_EVENT_REFRESH, &boost);
-			}
-			break;
-
-			case 2:
-			if(screen_active(ui_view[0])) {
-				lv_obj_send_event(FordFocusSTRS.view[0].gauge[2].obj, LV_EVENT_REFRESH, &oil);
-			}
-			break;
+	switch( gauge )
+	{
+		case 0:
+		if(!lv_obj_has_flag(FordFocusSTRS.view[0].gauge[0].obj, LV_OBJ_FLAG_HIDDEN)) {
+			lv_obj_send_event(FordFocusSTRS.view[0].gauge[0].obj, LV_EVENT_REFRESH, &iat);
 		}
+		break;
 
-		gauge = (gauge >= 2) ? 0 : gauge + 1;
+		case 1:
+		if(!lv_obj_has_flag(FordFocusSTRS.view[0].gauge[1].obj, LV_OBJ_FLAG_HIDDEN)) {
+			lv_obj_send_event(FordFocusSTRS.view[0].gauge[1].obj, LV_EVENT_REFRESH, &boost);
+		}
+		break;
+
+		case 2:
+		if(!lv_obj_has_flag(FordFocusSTRS.view[0].gauge[2].obj, LV_OBJ_FLAG_HIDDEN)) {
+			lv_obj_send_event(FordFocusSTRS.view[0].gauge[2].obj, LV_EVENT_REFRESH, &oil);
+		}
+		break;
 	}
+
+	gauge = (gauge >= 2) ? 0 : gauge + 1;
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
