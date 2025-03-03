@@ -46,6 +46,7 @@
 #include "themes.h"
 #include "lib_pid.h"
 #include "ke_digitaldash.h"
+#include "ke_config.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -232,13 +233,24 @@ int main(void)
   lv_tick_set_cb(HAL_GetTick);
   lvgl_display_init();
 
-  FordFocusSTRS.num_views = 2;
-
   // View 1
   FordFocusSTRS.view[0].enabled = 1;
-  FordFocusSTRS.view[0].view_index = 0;
   FordFocusSTRS.view[0].num_gauges = 3;
   FordFocusSTRS.view[0].background = BACKGROUND_FLARE;
+  FordFocusSTRS.num_views = 3;
+
+  set_view_enable(0, VIEW_STATE_ENABLED, true);
+  set_view_enable(1, VIEW_STATE_ENABLED, true);
+  set_view_enable(2, VIEW_STATE_ENABLED, true);
+
+  set_view_num_gauges(0, 3, true);
+  set_view_num_gauges(1, 3, true);
+  set_view_num_gauges(2, 3, true);
+
+  set_view_background(0, BACKGROUND_FLARE, true);
+  set_view_background(1, BACKGROUND_BLACK, true);
+  set_view_background(2, BACKGROUND_BLACK, true);
+
 
   // View 1 - Gauge 1
   strcpy(iat.label, "IAT");
@@ -248,6 +260,9 @@ int main(void)
   iat.precision = 1;
   FordFocusSTRS.view[0].gauge[0].pid = &iat;
   FordFocusSTRS.view[0].gauge[0].theme = THEME_STOCK_ST;
+
+  set_view_gauge_pid(0, 0, &iat);
+  set_view_gauge_theme(0, 0, THEME_STOCK_ST, true);
 
   // View 1 - Gauge 2
   strcpy(boost.label, "Boost");
@@ -269,7 +284,6 @@ int main(void)
 
   // View 2
   FordFocusSTRS.view[1].enabled = 1;
-  FordFocusSTRS.view[1].view_index = 1;
   FordFocusSTRS.view[1].num_gauges = 3;
   FordFocusSTRS.view[1].background = BACKGROUND_BLACK;
 
@@ -302,24 +316,40 @@ int main(void)
 
   // Alert 1
   strcpy(FordFocusSTRS.alert[0].msg, "Max oil pressure reached");
-  FordFocusSTRS.alert[0].trigger.pid = &oil;
-  FordFocusSTRS.alert[0].trigger.compare = DD_GREATER_THAN;
-  FordFocusSTRS.alert[0].trigger.thresh = 160;
+  FordFocusSTRS.alert[0].pid = &oil;
+  FordFocusSTRS.alert[0].compare = DD_GREATER_THAN;
+  FordFocusSTRS.alert[0].thresh = 160;
+
+  char tmp[ALERT_MESSAGE_LEN];
+  strcpy(tmp, "Max oil pressure reached");
+  set_alert_msg(0, "Max oil pressure reached");
+  set_alert_pid(0, &oil);
+  set_alert_compare(0, DD_GREATER_THAN);
+  set_alert_thresh(0, 160);
 
   // Dynamic 1
-  FordFocusSTRS.dynamic[0].enabled = 1;
+  FordFocusSTRS.dynamic[0].enabled = load_dynamic_enable(1);
   FordFocusSTRS.dynamic[0].priority = DD_MEDIUM_PRIORITY;
-  FordFocusSTRS.dynamic[0].trigger.compare = DD_GREATER_THAN;
-  FordFocusSTRS.dynamic[0].trigger.pid = &oil;
-  FordFocusSTRS.dynamic[0].trigger.thresh = 100;
+  FordFocusSTRS.dynamic[0].compare = DD_GREATER_THAN;
+  FordFocusSTRS.dynamic[0].pid = &oil;
+  FordFocusSTRS.dynamic[0].thresh = 100;
   FordFocusSTRS.dynamic[0].view_index = 0;
 
+  set_dynamic_enable(0, DYNAMIC_STATE_ENABLED, true);
+  set_dynamic_priority(0, DD_MEDIUM_PRIORITY);
+  set_dynamic_pid(0, &oil);
+  set_dynamic_compare(0, DD_GREATER_THAN);
+  set_dynamic_thresh(0, 100);
+  set_dynamic_view_index(0, 0);
+
+
+
   // Dynamic 2
-  FordFocusSTRS.dynamic[1].enabled = 1;
+  FordFocusSTRS.dynamic[1].enabled = load_dynamic_enable(1);
   FordFocusSTRS.dynamic[1].priority = DD_HIGH_PRIORITY;
-  FordFocusSTRS.dynamic[1].trigger.compare = DD_GREATER_THAN;
-  FordFocusSTRS.dynamic[1].trigger.pid = &oil;
-  FordFocusSTRS.dynamic[1].trigger.thresh = 100;
+  FordFocusSTRS.dynamic[1].compare = DD_GREATER_THAN;
+  FordFocusSTRS.dynamic[1].pid = &oil;
+  FordFocusSTRS.dynamic[1].thresh = 100;
   FordFocusSTRS.dynamic[1].view_index = 1;
 
   BSP_HSPI_NOR_Init_t hspi_init;
@@ -437,7 +467,7 @@ int main(void)
   lv_obj_set_height(ui_alert[0], LV_SIZE_CONTENT);    /// 1
   lv_obj_set_align(ui_alert[0], LV_ALIGN_CENTER);
   lv_label_set_text(ui_alert[0], FordFocusSTRS.alert[0].msg);
-  lv_obj_set_style_text_font(ui_alert[0], &lv_font_montserrat_22, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_text_font(ui_alert[0], &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
 
   lv_screen_load(ui_view[0]);
 
@@ -479,6 +509,9 @@ int main(void)
 	log_minmax(&iat);
 	log_minmax(&boost);
 	log_minmax(&oil);
+	log_minmax(&coolant);
+	log_minmax(&rpm);
+	log_minmax(&speed);
 
 		if( compare_values(FordFocusSTRS.dynamic[0].trigger.pid->pid_value, FordFocusSTRS.dynamic[0].trigger.thresh, FordFocusSTRS.alert[0].trigger.compare) ) {
 			switch_screen(ui_view[FordFocusSTRS.dynamic[0].view_index]);
