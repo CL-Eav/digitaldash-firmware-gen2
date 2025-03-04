@@ -218,6 +218,19 @@ bool verify_dynamic_priority(DYNAMIC_PRIORITY priority);
 DYNAMIC_PRIORITY get_dynamic_priority(uint8_t idx_dynamic);
 bool set_dynamic_priority(uint8_t idx_dynamic,DYNAMIC_PRIORITY priority, bool save);
 
+
+/********************************************************************************
+*                            Dynamic gauge threshold                            
+*
+* @param idx_dynamic    index of the dynamic
+* @param threshold    Comparison value of the dynamic gauge
+* @param save    Set true to save to the EEPROM, otherwise value is non-volatile
+*
+********************************************************************************/
+bool verify_dynamic_threshold(float threshold);
+float get_dynamic_threshold(uint8_t idx_dynamic);
+bool set_dynamic_threshold(uint8_t idx_dynamic,float threshold, bool save);
+
 #ifdef __cplusplus
 }
 #endif

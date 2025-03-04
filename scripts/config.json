@@ -145,6 +145,20 @@
             ],
             "limit": "Reserved",
             "EEBytes": 1
+        },
+        {
+            "index" : true,
+            "count" : "num_dynamic",
+            "cmd": "threshold",
+            "name": "Dynamic gauge threshold",
+            "desc": "Comparison value of the dynamic gauge",
+            "type": "number",
+            "dataType": "float",
+            "default": 0,
+            "min": -100000,
+            "max": 100000,
+            "limit": "Reserved",
+            "EEBytes": 4
         }
     ],
     "gauge": [
