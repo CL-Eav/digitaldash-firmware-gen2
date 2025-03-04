@@ -1,0 +1,151 @@
+{
+    "config":
+    {
+        "max_views": 3,
+        "gauges_per_view": 3,
+        "max_alerts": 5,
+        "num_dynamic": 2,
+        "alert_message_len": 64,
+        "top_level_struc": "digitaldash",
+        "top_level_name": "config",
+        "struct_list": [
+            "view",
+             [ "gauge" ],
+            "alert",
+            "dynamic"
+        ]
+    },
+    "view": [
+        {
+            "index" : true,
+            "count" : "max_views",
+            "cmd": "enable",
+            "name": "View enable",
+            "desc": "Enable or disable view by index",
+            "type": "list",
+            "dataType": "VIEW_STATE",
+            "default": "Disabled",
+            "options": [
+                "Disabled",
+                "Enabled"
+            ],
+            "limit": "Reserved",
+            "EEBytes": 1
+        },
+        {
+            "index" : true,
+            "count" : "gauges_per_view",
+            "cmd": "num_gauges",
+            "name": "Number of gauges",
+            "desc": "Define the number of gauges for view by index",
+            "type": "number",
+            "dataType": "uint8_t",
+            "default": 0,
+            "min": 0,
+            "max": "GAUGES_PER_VIEW",
+            "limit": "Reserved",
+            "EEBytes": 1
+        },
+        {
+            "index" : true,
+            "count" : "max_views",
+            "cmd": "background",
+            "name": "Background",
+            "desc": "Set the background color or image of a view by index",
+            "type": "list",
+            "dataType": "VIEW_BACKGROUND",
+            "default": "Black",
+            "options": [
+                "Black",
+                "Flare"
+            ],
+            "limit": "Reserved",
+            "EEBytes": 1
+        }
+    ],
+    "alert": [
+        {
+            "index" : true,
+            "count" : "max_alerts",
+            "cmd": "enable",
+            "name": "Alert enable",
+            "desc": "Enable or disable view by index",
+            "type": "list",
+            "dataType": "ALERT_STATE",
+            "default": "Disabled",
+            "options": [
+                "Disabled",
+                "Enabled"
+            ],
+            "limit": "Reserved",
+            "EEBytes": 1
+        },
+        {
+            "index" : true,
+            "count" : "max_alerts",
+            "cmd": "message",
+            "name": "Alert message",
+            "desc": "Set the message that appears when alert occurs",
+            "type": "string",
+            "dataType": "char",
+            "default": "\"This is an alert\"",
+            "EEBytes": "alert_message_len"
+        },
+        {
+            "index" : true,
+            "count" : "max_alerts",
+            "cmd": "compare",
+            "name": "Comparison type",
+            "desc": "Configure the comparison used for the realtime value and alert threshold",
+            "type": "list",
+            "dataType": "COMPARISON",
+            "default": "Greater Than",
+            "options": [
+                "Less Than",
+                "Less Than Or Equal To",
+                "Greater Than",
+                "Greater Than Or Equal To",
+                "Equal",
+                "Not Equal"
+            ],
+            "limit": "Reserved",
+            "EEBytes": 1
+        }
+    ],
+    "dynamic": [
+        {
+            "index" : true,
+            "count" : "num_dynamic",
+            "cmd": "enable",
+            "name": "Dynamic enable",
+            "desc": "Enable or disable view by index",
+            "type": "list",
+            "dataType": "DYNAMIC_STATE",
+            "default": "Disabled",
+            "options": [
+                "Disabled",
+                "Enabled"
+            ],
+            "limit": "Reserved",
+            "EEBytes": 1
+        }
+    ],
+    "gauge": [
+        {
+            "index" : true,
+            "count" : "gauges_per_view",
+            "cmd": "theme",
+            "name": "Theme assigned to the gauge",
+            "desc": "Set the gauge theme by view and gauge index",
+            "type": "list",
+            "dataType": "GAUGE_THEME",
+            "default": "Stock ST",
+            "options": [
+                "Stock ST",
+                "Stock RS"
+            ],
+            "limit": "Reserved",
+            "EEBytes": 1
+        }
+    ]
+}

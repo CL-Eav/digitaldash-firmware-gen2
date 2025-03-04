@@ -155,6 +155,30 @@ bool set_alert_message(uint8_t idx_alert,char message, bool save);
 
 
 /********************************************************************************
+*                                Comparison type                                
+*
+* @param idx_alert    index of the alert
+* @param compare    Configure the comparison used for the realtime value and alert threshold
+* @param save    Set true to save to the EEPROM, otherwise value is non-volatile
+*
+********************************************************************************/
+typedef enum
+{
+    COMPARISON_LESS_THAN,
+    COMPARISON_LESS_THAN_OR_EQUAL_TO,
+    COMPARISON_GREATER_THAN,
+    COMPARISON_GREATER_THAN_OR_EQUAL_TO,
+    COMPARISON_EQUAL,
+    COMPARISON_NOT_EQUAL,
+    COMPARISON_RESERVED
+} COMPARISON;
+
+bool verify_alert_compare(COMPARISON compare);
+COMPARISON get_alert_compare(uint8_t idx_alert);
+bool set_alert_compare(uint8_t idx_alert,COMPARISON compare, bool save);
+
+
+/********************************************************************************
 *                                 Dynamic enable                                
 *
 * @param idx_dynamic    index of the dynamic

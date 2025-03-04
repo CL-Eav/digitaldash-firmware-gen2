@@ -33,6 +33,7 @@
 #define DEFAULT_VIEW_GAUGE_THEME GAUGE_THEME_STOCK_ST
 #define DEFAULT_ALERT_ENABLE ALERT_STATE_DISABLED
 #define DEFAULT_ALERT_MESSAGE "This is an alert"
+#define DEFAULT_ALERT_COMPARE COMPARISON_GREATER_THAN
 #define DEFAULT_DYNAMIC_ENABLE DYNAMIC_STATE_DISABLED
 
 // EEPROM Memory Map - view enable
@@ -922,9 +923,23 @@ static const uint16_t map_alert_message_byte64[MAX_ALERTS] = {
     EEPROM_ALERT_MESSAGE5_BYTE64
     };
 
+// EEPROM Memory Map - alert compare
+#define EEPROM_ALERT_COMPARE1_BYTE1 (uint16_t)0x0A11
+#define EEPROM_ALERT_COMPARE2_BYTE1 (uint16_t)0x0A12
+#define EEPROM_ALERT_COMPARE3_BYTE1 (uint16_t)0x0A13
+#define EEPROM_ALERT_COMPARE4_BYTE1 (uint16_t)0x0A14
+#define EEPROM_ALERT_COMPARE5_BYTE1 (uint16_t)0x0A15
+static const uint16_t map_alert_compare_byte1[MAX_ALERTS] = {
+    EEPROM_ALERT_COMPARE1_BYTE1,
+    EEPROM_ALERT_COMPARE2_BYTE1,
+    EEPROM_ALERT_COMPARE3_BYTE1,
+    EEPROM_ALERT_COMPARE4_BYTE1,
+    EEPROM_ALERT_COMPARE5_BYTE1
+    };
+
 // EEPROM Memory Map - dynamic enable
-#define EEPROM_DYNAMIC_ENABLE1_BYTE1 (uint16_t)0x0A11
-#define EEPROM_DYNAMIC_ENABLE2_BYTE1 (uint16_t)0x0A12
+#define EEPROM_DYNAMIC_ENABLE1_BYTE1 (uint16_t)0x0A16
+#define EEPROM_DYNAMIC_ENABLE2_BYTE1 (uint16_t)0x0A17
 static const uint16_t map_dynamic_enable_byte1[NUM_DYNAMIC] = {
     EEPROM_DYNAMIC_ENABLE1_BYTE1,
     EEPROM_DYNAMIC_ENABLE2_BYTE1
@@ -937,6 +952,7 @@ static VIEW_BACKGROUND view_background[MAX_VIEWS] = {DEFAULT_VIEW_BACKGROUND};
 static GAUGE_THEME view_gauge_theme[GAUGES_PER_VIEW] = {DEFAULT_VIEW_GAUGE_THEME};
 static ALERT_STATE alert_enable[MAX_ALERTS] = {DEFAULT_ALERT_ENABLE};
 static char alert_message[MAX_ALERTS][ALERT_MESSAGE_LEN] = {DEFAULT_ALERT_MESSAGE};
+static COMPARISON alert_compare[MAX_ALERTS] = {DEFAULT_ALERT_COMPARE};
 static DYNAMIC_STATE dynamic_enable[NUM_DYNAMIC] = {DEFAULT_DYNAMIC_ENABLE};
 
 
@@ -1046,6 +1062,25 @@ static char load_alert_message(uint8_t idx)
 bool verify_alert_message(char message)
 {
 
+}
+
+static COMPARISON load_alert_compare(uint8_t idx)
+{
+    COMPARISON load_alert_compare_val = DEFAULT_ALERT_COMPARE;
+
+    if (get_eeprom_status() == EEPROM_STATUS_PRESENT)
+    {
+        load_alert_compare_val = (uint8_t)read(map_alert_compare_byte1[idx]);
+    }
+    return load_alert_compare_val;
+}
+
+bool verify_alert_compare(COMPARISON compare)
+{
+    if (compare >= COMPARISON_RESERVED)
+        return 0;
+    else
+        return 1;
 }
 
 static DYNAMIC_STATE load_dynamic_enable(uint8_t idx)
