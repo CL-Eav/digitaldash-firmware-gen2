@@ -164,18 +164,31 @@ bool set_alert_message(uint8_t idx_alert,char message, bool save);
 ********************************************************************************/
 typedef enum
 {
-    COMPARISON_LESS_THAN,
-    COMPARISON_LESS_THAN_OR_EQUAL_TO,
-    COMPARISON_GREATER_THAN,
-    COMPARISON_GREATER_THAN_OR_EQUAL_TO,
-    COMPARISON_EQUAL,
-    COMPARISON_NOT_EQUAL,
-    COMPARISON_RESERVED
-} COMPARISON;
+    ALERT_COMPARISON_LESS_THAN,
+    ALERT_COMPARISON_LESS_THAN_OR_EQUAL_TO,
+    ALERT_COMPARISON_GREATER_THAN,
+    ALERT_COMPARISON_GREATER_THAN_OR_EQUAL_TO,
+    ALERT_COMPARISON_EQUAL,
+    ALERT_COMPARISON_NOT_EQUAL,
+    ALERT_COMPARISON_RESERVED
+} ALERT_COMPARISON;
 
-bool verify_alert_compare(COMPARISON compare);
-COMPARISON get_alert_compare(uint8_t idx_alert);
-bool set_alert_compare(uint8_t idx_alert,COMPARISON compare, bool save);
+bool verify_alert_compare(ALERT_COMPARISON compare);
+ALERT_COMPARISON get_alert_compare(uint8_t idx_alert);
+bool set_alert_compare(uint8_t idx_alert,ALERT_COMPARISON compare, bool save);
+
+
+/********************************************************************************
+*                            Dynamic gauge threshold                            
+*
+* @param idx_alert    index of the alert
+* @param threshold    Comparison value of the dynamic gauge
+* @param save    Set true to save to the EEPROM, otherwise value is non-volatile
+*
+********************************************************************************/
+bool verify_alert_threshold(float threshold);
+float get_alert_threshold(uint8_t idx_alert);
+bool set_alert_threshold(uint8_t idx_alert,float threshold, bool save);
 
 
 /********************************************************************************
@@ -220,16 +233,53 @@ bool set_dynamic_priority(uint8_t idx_dynamic,DYNAMIC_PRIORITY priority, bool sa
 
 
 /********************************************************************************
+*                                Comparison type                                
+*
+* @param idx_dynamic    index of the dynamic
+* @param compare    Configure the comparison used for the realtime value and alert threshold
+* @param save    Set true to save to the EEPROM, otherwise value is non-volatile
+*
+********************************************************************************/
+typedef enum
+{
+    DYNAMIC_COMPARISON_LESS_THAN,
+    DYNAMIC_COMPARISON_LESS_THAN_OR_EQUAL_TO,
+    DYNAMIC_COMPARISON_GREATER_THAN,
+    DYNAMIC_COMPARISON_GREATER_THAN_OR_EQUAL_TO,
+    DYNAMIC_COMPARISON_EQUAL,
+    DYNAMIC_COMPARISON_NOT_EQUAL,
+    DYNAMIC_COMPARISON_RESERVED
+} DYNAMIC_COMPARISON;
+
+bool verify_dynamic_compare(DYNAMIC_COMPARISON compare);
+DYNAMIC_COMPARISON get_dynamic_compare(uint8_t idx_dynamic);
+bool set_dynamic_compare(uint8_t idx_dynamic,DYNAMIC_COMPARISON compare, bool save);
+
+
+/********************************************************************************
 *                            Dynamic gauge threshold                            
 *
 * @param idx_dynamic    index of the dynamic
-* @param threshold    Comparison value of the dynamic gauge
+* @param Threshold    Comparison value of the dynamic gauge
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
 bool verify_dynamic_threshold(float threshold);
 float get_dynamic_threshold(uint8_t idx_dynamic);
-bool set_dynamic_threshold(uint8_t idx_dynamic,float threshold, bool save);
+bool set_dynamic_Threshold(uint8_t idx_dynamic,float threshold, bool save);
+
+
+/********************************************************************************
+*                                   View index                                  
+*
+* @param idx_dynamic    index of the dynamic
+* @param Index    Set which view should be enabled if the dynamic event is true
+* @param save    Set true to save to the EEPROM, otherwise value is non-volatile
+*
+********************************************************************************/
+bool verify_dynamic_index(uint8_t index);
+uint8_t get_dynamic_index(uint8_t idx_dynamic);
+bool set_dynamic_Index(uint8_t idx_dynamic,uint8_t index, bool save);
 
 #ifdef __cplusplus
 }

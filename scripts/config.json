@@ -98,7 +98,7 @@
             "name": "Comparison type",
             "desc": "Configure the comparison used for the realtime value and alert threshold",
             "type": "list",
-            "dataType": "COMPARISON",
+            "dataType": "ALERT_COMPARISON",
             "default": "Greater Than",
             "options": [
                 "Less Than",
@@ -110,6 +110,20 @@
             ],
             "limit": "Reserved",
             "EEBytes": 1
+        },
+        {
+            "index" : true,
+            "count" : "num_dynamic",
+            "cmd": "threshold",
+            "name": "Dynamic gauge threshold",
+            "desc": "Comparison value of the dynamic gauge",
+            "type": "number",
+            "dataType": "float",
+            "default": 0,
+            "min": -100000,
+            "max": 100000,
+            "limit": "Reserved",
+            "EEBytes": 4
         }
     ],
     "dynamic": [
@@ -148,8 +162,28 @@
         },
         {
             "index" : true,
+            "count" : "max_alerts",
+            "cmd": "compare",
+            "name": "Comparison type",
+            "desc": "Configure the comparison used for the realtime value and alert threshold",
+            "type": "list",
+            "dataType": "DYNAMIC_COMPARISON",
+            "default": "Greater Than",
+            "options": [
+                "Less Than",
+                "Less Than Or Equal To",
+                "Greater Than",
+                "Greater Than Or Equal To",
+                "Equal",
+                "Not Equal"
+            ],
+            "limit": "Reserved",
+            "EEBytes": 1
+        },
+        {
+            "index" : true,
             "count" : "num_dynamic",
-            "cmd": "threshold",
+            "cmd": "Threshold",
             "name": "Dynamic gauge threshold",
             "desc": "Comparison value of the dynamic gauge",
             "type": "number",
@@ -159,6 +193,20 @@
             "max": 100000,
             "limit": "Reserved",
             "EEBytes": 4
+        },
+        {
+            "index" : true,
+            "count" : "num_dynamic",
+            "cmd": "Index",
+            "name": "View index",
+            "desc": "Set which view should be enabled if the dynamic event is true",
+            "type": "number",
+            "dataType": "uint8_t",
+            "default": 0,
+            "min": 0,
+            "max": "max_views",
+            "limit": "Reserved",
+            "EEBytes": 1
         }
     ],
     "gauge": [

@@ -33,10 +33,13 @@
 #define DEFAULT_VIEW_GAUGE_THEME GAUGE_THEME_STOCK_ST
 #define DEFAULT_ALERT_ENABLE ALERT_STATE_DISABLED
 #define DEFAULT_ALERT_MESSAGE "This is an alert"
-#define DEFAULT_ALERT_COMPARE COMPARISON_GREATER_THAN
+#define DEFAULT_ALERT_COMPARE ALERT_COMPARISON_GREATER_THAN
+#define DEFAULT_ALERT_THRESHOLD 0
 #define DEFAULT_DYNAMIC_ENABLE DYNAMIC_STATE_DISABLED
 #define DEFAULT_DYNAMIC_PRIORITY DYNAMIC_PRIORITY_LOW
+#define DEFAULT_DYNAMIC_COMPARE DYNAMIC_COMPARISON_GREATER_THAN
 #define DEFAULT_DYNAMIC_THRESHOLD 0
+#define DEFAULT_DYNAMIC_INDEX 0
 
 // EEPROM Memory Map - view enable
 #define EEPROM_VIEW_ENABLE1_BYTE1 (uint16_t)0x0000
@@ -939,31 +942,74 @@ static const uint16_t map_alert_compare_byte1[MAX_ALERTS] = {
     EEPROM_ALERT_COMPARE5_BYTE1
     };
 
+// EEPROM Memory Map - alert threshold
+#define EEPROM_ALERT_THRESHOLD1_BYTE1 (uint16_t)0x0A16
+#define EEPROM_ALERT_THRESHOLD1_BYTE2 (uint16_t)0x0A17
+#define EEPROM_ALERT_THRESHOLD1_BYTE3 (uint16_t)0x0A18
+#define EEPROM_ALERT_THRESHOLD1_BYTE4 (uint16_t)0x0A19
+#define EEPROM_ALERT_THRESHOLD2_BYTE1 (uint16_t)0x0A1A
+#define EEPROM_ALERT_THRESHOLD2_BYTE2 (uint16_t)0x0A1B
+#define EEPROM_ALERT_THRESHOLD2_BYTE3 (uint16_t)0x0A1C
+#define EEPROM_ALERT_THRESHOLD2_BYTE4 (uint16_t)0x0A1D
+static const uint16_t map_alert_threshold_byte1[NUM_DYNAMIC] = {
+    EEPROM_ALERT_THRESHOLD1_BYTE1,
+    EEPROM_ALERT_THRESHOLD2_BYTE1
+    };
+
+static const uint16_t map_alert_threshold_byte2[NUM_DYNAMIC] = {
+    EEPROM_ALERT_THRESHOLD1_BYTE2,
+    EEPROM_ALERT_THRESHOLD2_BYTE2
+    };
+
+static const uint16_t map_alert_threshold_byte3[NUM_DYNAMIC] = {
+    EEPROM_ALERT_THRESHOLD1_BYTE3,
+    EEPROM_ALERT_THRESHOLD2_BYTE3
+    };
+
+static const uint16_t map_alert_threshold_byte4[NUM_DYNAMIC] = {
+    EEPROM_ALERT_THRESHOLD1_BYTE4,
+    EEPROM_ALERT_THRESHOLD2_BYTE4
+    };
+
 // EEPROM Memory Map - dynamic enable
-#define EEPROM_DYNAMIC_ENABLE1_BYTE1 (uint16_t)0x0A16
-#define EEPROM_DYNAMIC_ENABLE2_BYTE1 (uint16_t)0x0A17
+#define EEPROM_DYNAMIC_ENABLE1_BYTE1 (uint16_t)0x0A1E
+#define EEPROM_DYNAMIC_ENABLE2_BYTE1 (uint16_t)0x0A1F
 static const uint16_t map_dynamic_enable_byte1[NUM_DYNAMIC] = {
     EEPROM_DYNAMIC_ENABLE1_BYTE1,
     EEPROM_DYNAMIC_ENABLE2_BYTE1
     };
 
 // EEPROM Memory Map - dynamic priority
-#define EEPROM_DYNAMIC_PRIORITY1_BYTE1 (uint16_t)0x0A18
-#define EEPROM_DYNAMIC_PRIORITY2_BYTE1 (uint16_t)0x0A19
+#define EEPROM_DYNAMIC_PRIORITY1_BYTE1 (uint16_t)0x0B00
+#define EEPROM_DYNAMIC_PRIORITY2_BYTE1 (uint16_t)0x0B01
 static const uint16_t map_dynamic_priority_byte1[NUM_DYNAMIC] = {
     EEPROM_DYNAMIC_PRIORITY1_BYTE1,
     EEPROM_DYNAMIC_PRIORITY2_BYTE1
     };
 
-// EEPROM Memory Map - dynamic threshold
-#define EEPROM_DYNAMIC_THRESHOLD1_BYTE1 (uint16_t)0x0A1A
-#define EEPROM_DYNAMIC_THRESHOLD1_BYTE2 (uint16_t)0x0A1B
-#define EEPROM_DYNAMIC_THRESHOLD1_BYTE3 (uint16_t)0x0A1C
-#define EEPROM_DYNAMIC_THRESHOLD1_BYTE4 (uint16_t)0x0A1D
-#define EEPROM_DYNAMIC_THRESHOLD2_BYTE1 (uint16_t)0x0A1E
-#define EEPROM_DYNAMIC_THRESHOLD2_BYTE2 (uint16_t)0x0A1F
-#define EEPROM_DYNAMIC_THRESHOLD2_BYTE3 (uint16_t)0x0B00
-#define EEPROM_DYNAMIC_THRESHOLD2_BYTE4 (uint16_t)0x0B01
+// EEPROM Memory Map - dynamic compare
+#define EEPROM_DYNAMIC_COMPARE1_BYTE1 (uint16_t)0x0B02
+#define EEPROM_DYNAMIC_COMPARE2_BYTE1 (uint16_t)0x0B03
+#define EEPROM_DYNAMIC_COMPARE3_BYTE1 (uint16_t)0x0B04
+#define EEPROM_DYNAMIC_COMPARE4_BYTE1 (uint16_t)0x0B05
+#define EEPROM_DYNAMIC_COMPARE5_BYTE1 (uint16_t)0x0B06
+static const uint16_t map_dynamic_compare_byte1[MAX_ALERTS] = {
+    EEPROM_DYNAMIC_COMPARE1_BYTE1,
+    EEPROM_DYNAMIC_COMPARE2_BYTE1,
+    EEPROM_DYNAMIC_COMPARE3_BYTE1,
+    EEPROM_DYNAMIC_COMPARE4_BYTE1,
+    EEPROM_DYNAMIC_COMPARE5_BYTE1
+    };
+
+// EEPROM Memory Map - dynamic Threshold
+#define EEPROM_DYNAMIC_THRESHOLD1_BYTE1 (uint16_t)0x0B07
+#define EEPROM_DYNAMIC_THRESHOLD1_BYTE2 (uint16_t)0x0B08
+#define EEPROM_DYNAMIC_THRESHOLD1_BYTE3 (uint16_t)0x0B09
+#define EEPROM_DYNAMIC_THRESHOLD1_BYTE4 (uint16_t)0x0B0A
+#define EEPROM_DYNAMIC_THRESHOLD2_BYTE1 (uint16_t)0x0B0B
+#define EEPROM_DYNAMIC_THRESHOLD2_BYTE2 (uint16_t)0x0B0C
+#define EEPROM_DYNAMIC_THRESHOLD2_BYTE3 (uint16_t)0x0B0D
+#define EEPROM_DYNAMIC_THRESHOLD2_BYTE4 (uint16_t)0x0B0E
 static const uint16_t map_dynamic_threshold_byte1[NUM_DYNAMIC] = {
     EEPROM_DYNAMIC_THRESHOLD1_BYTE1,
     EEPROM_DYNAMIC_THRESHOLD2_BYTE1
@@ -984,6 +1030,14 @@ static const uint16_t map_dynamic_threshold_byte4[NUM_DYNAMIC] = {
     EEPROM_DYNAMIC_THRESHOLD2_BYTE4
     };
 
+// EEPROM Memory Map - dynamic Index
+#define EEPROM_DYNAMIC_INDEX1_BYTE1 (uint16_t)0x0B0F
+#define EEPROM_DYNAMIC_INDEX2_BYTE1 (uint16_t)0x0B10
+static const uint16_t map_dynamic_index_byte1[NUM_DYNAMIC] = {
+    EEPROM_DYNAMIC_INDEX1_BYTE1,
+    EEPROM_DYNAMIC_INDEX2_BYTE1
+    };
+
 
 static VIEW_STATE view_enable[MAX_VIEWS] = {DEFAULT_VIEW_ENABLE};
 static uint8_t view_num_gauges[GAUGES_PER_VIEW] = {DEFAULT_VIEW_NUM_GAUGES};
@@ -991,10 +1045,13 @@ static VIEW_BACKGROUND view_background[MAX_VIEWS] = {DEFAULT_VIEW_BACKGROUND};
 static GAUGE_THEME view_gauge_theme[GAUGES_PER_VIEW] = {DEFAULT_VIEW_GAUGE_THEME};
 static ALERT_STATE alert_enable[MAX_ALERTS] = {DEFAULT_ALERT_ENABLE};
 static char alert_message[MAX_ALERTS][ALERT_MESSAGE_LEN] = {DEFAULT_ALERT_MESSAGE};
-static COMPARISON alert_compare[MAX_ALERTS] = {DEFAULT_ALERT_COMPARE};
+static ALERT_COMPARISON alert_compare[MAX_ALERTS] = {DEFAULT_ALERT_COMPARE};
+static float alert_threshold[NUM_DYNAMIC] = {DEFAULT_ALERT_THRESHOLD};
 static DYNAMIC_STATE dynamic_enable[NUM_DYNAMIC] = {DEFAULT_DYNAMIC_ENABLE};
 static DYNAMIC_PRIORITY dynamic_priority[NUM_DYNAMIC] = {DEFAULT_DYNAMIC_PRIORITY};
-static float dynamic_threshold[NUM_DYNAMIC] = {DEFAULT_DYNAMIC_THRESHOLD};
+static DYNAMIC_COMPARISON dynamic_compare[MAX_ALERTS] = {DEFAULT_DYNAMIC_COMPARE};
+static float dynamic_Threshold[NUM_DYNAMIC] = {DEFAULT_DYNAMIC_THRESHOLD};
+static uint8_t dynamic_Index[NUM_DYNAMIC] = {DEFAULT_DYNAMIC_INDEX};
 
 
 static VIEW_STATE load_view_enable(uint8_t idx)
@@ -1105,9 +1162,9 @@ bool verify_alert_message(char message)
 
 }
 
-static COMPARISON load_alert_compare(uint8_t idx)
+static ALERT_COMPARISON load_alert_compare(uint8_t idx)
 {
-    COMPARISON load_alert_compare_val = DEFAULT_ALERT_COMPARE;
+    ALERT_COMPARISON load_alert_compare_val = DEFAULT_ALERT_COMPARE;
 
     if (get_eeprom_status() == EEPROM_STATUS_PRESENT)
     {
@@ -1116,10 +1173,36 @@ static COMPARISON load_alert_compare(uint8_t idx)
     return load_alert_compare_val;
 }
 
-bool verify_alert_compare(COMPARISON compare)
+bool verify_alert_compare(ALERT_COMPARISON compare)
 {
-    if (compare >= COMPARISON_RESERVED)
+    if (compare >= ALERT_COMPARISON_RESERVED)
         return 0;
+    else
+        return 1;
+}
+
+static float load_alert_threshold(uint8_t idx)
+{
+    float load_alert_threshold_val = DEFAULT_ALERT_THRESHOLD;
+
+    if (get_eeprom_status() == EEPROM_STATUS_PRESENT)
+    {
+        load_alert_threshold_val = (uint32_t)read(EEPROM_threshold1);
+        load_alert_threshold_val = ((uint32_t)load_alert_threshold_val << 8) | (uint32_t)read(EEPROM_ALERT_THRESHOLD2);
+        load_alert_threshold_val = ((uint32_t)load_alert_threshold_val << 16) | (uint32_t)read(EEPROM_ALERT_THRESHOLD3);
+        load_alert_threshold_val = ((uint32_t)load_alert_threshold_val << 24) | (uint32_t)read(EEPROM_ALERT_THRESHOLD4);
+    }
+    return load_alert_threshold_val;
+}
+
+bool verify_alert_threshold(float threshold)
+{
+    if (threshold < -100000)
+        return 0;
+
+    if (threshold > 100000)
+        return 0;
+
     else
         return 1;
 }
@@ -1162,13 +1245,32 @@ bool verify_dynamic_priority(DYNAMIC_PRIORITY priority)
         return 1;
 }
 
+static DYNAMIC_COMPARISON load_dynamic_compare(uint8_t idx)
+{
+    DYNAMIC_COMPARISON load_dynamic_compare_val = DEFAULT_DYNAMIC_COMPARE;
+
+    if (get_eeprom_status() == EEPROM_STATUS_PRESENT)
+    {
+        load_dynamic_compare_val = (uint8_t)read(map_dynamic_compare_byte1[idx]);
+    }
+    return load_dynamic_compare_val;
+}
+
+bool verify_dynamic_compare(DYNAMIC_COMPARISON compare)
+{
+    if (compare >= DYNAMIC_COMPARISON_RESERVED)
+        return 0;
+    else
+        return 1;
+}
+
 static float load_dynamic_threshold(uint8_t idx)
 {
     float load_dynamic_threshold_val = DEFAULT_DYNAMIC_THRESHOLD;
 
     if (get_eeprom_status() == EEPROM_STATUS_PRESENT)
     {
-        load_dynamic_threshold_val = (uint32_t)read(EEPROM_threshold1);
+        load_dynamic_threshold_val = (uint32_t)read(EEPROM_Threshold1);
         load_dynamic_threshold_val = ((uint32_t)load_dynamic_threshold_val << 8) | (uint32_t)read(EEPROM_DYNAMIC_THRESHOLD2);
         load_dynamic_threshold_val = ((uint32_t)load_dynamic_threshold_val << 16) | (uint32_t)read(EEPROM_DYNAMIC_THRESHOLD3);
         load_dynamic_threshold_val = ((uint32_t)load_dynamic_threshold_val << 24) | (uint32_t)read(EEPROM_DYNAMIC_THRESHOLD4);
@@ -1182,6 +1284,26 @@ bool verify_dynamic_threshold(float threshold)
         return 0;
 
     if (threshold > 100000)
+        return 0;
+
+    else
+        return 1;
+}
+
+static uint8_t load_dynamic_index(uint8_t idx)
+{
+    uint8_t load_dynamic_index_val = DEFAULT_DYNAMIC_INDEX;
+
+    if (get_eeprom_status() == EEPROM_STATUS_PRESENT)
+    {
+        load_dynamic_index_val = (uint8_t)read(map_dynamic_index_byte1[idx]);
+    }
+    return load_dynamic_index_val;
+}
+
+bool verify_dynamic_index(uint8_t index)
+{
+    if (index > max_views)
         return 0;
 
     else
