@@ -212,7 +212,7 @@
     "gauge": [
         {
             "index" : true,
-            "count" : "gauges_per_view",
+            "count" : ["max_views", "gauges_per_view"],
             "cmd": "theme",
             "name": "Theme assigned to the gauge",
             "desc": "Set the gauge theme by view and gauge index",

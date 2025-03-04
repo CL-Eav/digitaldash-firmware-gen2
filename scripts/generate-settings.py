@@ -179,24 +179,62 @@ def sub_write_memory_organization( file, prefix, cmd, idx ):
         EEPROM_Count = 0
     byte_count = byte_count + 1
 
-def sub_write_memory_map( file, prefix, cmd, byte ):
-   file.write("static const uint16_t map_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_byte" + str(byte) + "[" + cmd["count"].upper() + "] = {" + "\n")
-   for i in range(config["config"][cmd["count"]]):
-      file.write("    EEPROM_" + prefix.upper() + "_" + cmd["cmd"].upper() + str(i+1) + "_BYTE" + str(byte) )
-      if i < (config["config"][cmd["count"]]-1):
-         file.write(",\n")
-      else:
-         file.write("\n")
-   file.write("    };\n\n")
+def sub_write_memory_organization_2d( file, prefix, cmd, idx1, idx2 ):
+  global PageCount, EEPROM_Count, TotalByteCount
+  byte_count = 1
+  #define EEPROM byte offset
+  while byte_count <= get_eeprom_size(cmd):
+    file.write("#define EEPROM_" + prefix.upper().split('_')[0].upper() + str(idx1) + "_" + prefix.upper().split('_')[1].upper() + "_" + cmd["cmd"].upper() + str(idx2) + "_BYTE" +  str(byte_count) + " (uint16_t)" + '0x{:02X}'.format(PageCount) + '{:02X}'.format(EEPROM_Count) + "\n")
+    EEPROM_Count = EEPROM_Count + 1
+    TotalByteCount = TotalByteCount + 1
+    if( EEPROM_Count >= 32 ):
+        PageCount = PageCount + 1
+        EEPROM_Count = 0
+    byte_count = byte_count + 1
+
+def sub_write_memory_map( file, prefix, cmd, byte, depth ):
+   if( depth == 2 ):
+      for i in range(config["config"][cmd["count"][0]]):
+         array = "{ "
+         for j in range(config["config"][cmd["count"][1]]):
+            array = array + "EEPROM_" + prefix.upper().split('_')[0].upper() + str(i+1) + "_" + prefix.upper().split('_')[1].upper() + "_" + cmd["cmd"].upper() + str(j+1) + "_BYTE" +  str(byte)
+            if( j < config["config"][cmd["count"][1]]):
+               array = array +  ", "
+         array = array + " }"
+         file.write("#define EEPROM_" + prefix.upper().split('_')[0].upper() + str(i+1) + "_" + prefix.upper().split('_')[1].upper() + "_" + cmd["cmd"].upper() + "_BYTE" + str(byte) + array + "\n")
+      file.write("static const uint16_t map_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_byte" + str(byte) + "[" + cmd["count"][0].upper() + "]" + "[" + cmd["count"][1].upper() + "] = {" + "\n")
+      for i in range(config["config"][cmd["count"][0]]):
+        file.write("    EEPROM_" + prefix.upper() + "_" + cmd["cmd"].upper() + str(i+1) + "_BYTE" + str(byte) )
+        if i < (config["config"][cmd["count"][0]]-1):
+          file.write(",\n")
+        else:
+          file.write("\n")
+      file.write("    };\n\n")
+   else:
+    file.write("static const uint16_t map_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_byte" + str(byte) + "[" + cmd["count"].upper() + "] = {" + "\n")
+    for i in range(config["config"][cmd["count"]]):
+        file.write("    EEPROM_" + prefix.upper() + "_" + cmd["cmd"].upper() + str(i+1) + "_BYTE" + str(byte) )
+        if i < (config["config"][cmd["count"]]-1):
+          file.write(",\n")
+        else:
+          file.write("\n")
+    file.write("    };\n\n")
 
 def write_memory_organization( file, prefix, cmd, depth ):
    if( get_eeprom_size(cmd) > 0 ):
         file.write("// EEPROM Memory Map - " + prefix + " " + cmd["cmd"] + "\n")
         if( cmd["index"] ):
-           for i in range(config["config"][cmd["count"]]):
-              sub_write_memory_organization( file, prefix, cmd, i+1 )
-           for byte in range(get_eeprom_size(cmd)):
-              sub_write_memory_map( file, prefix, cmd, byte+1 )
+           if( depth == 2 ):
+              for i in range(config["config"][cmd["count"][0]]):
+                for j in range(config["config"][cmd["count"][1]]):
+                  sub_write_memory_organization_2d( file, prefix, cmd, i+1, j+1 )
+              for byte in range(get_eeprom_size(cmd)):
+                sub_write_memory_map( file, prefix, cmd, byte+1, depth )
+           else:
+              for i in range(config["config"][cmd["count"]]):
+                sub_write_memory_organization( file, prefix, cmd, i+1 )
+              for byte in range(get_eeprom_size(cmd)):
+                sub_write_memory_map( file, prefix, cmd, byte+1, depth )
         else:
            sub_write_memory_organization( file, prefix, cmd, 0 )
 
@@ -205,7 +243,10 @@ def write_variables( file, prefix, cmd, depth ):
       if( cmd["type"] == "string"):
           append = "[" + cmd["EEBytes"].upper() + "]"
       if( cmd["index"] ):
-        file.write( "static " + cmd["dataType"] + " " +  prefix + "_" + cmd["cmd"] +  "[" + cmd["count"].upper() + "]" + append + " = {DEFAULT_" + prefix.upper() + "_" + cmd["cmd"].upper() + "};\n" )
+        if( depth == 2 ):
+          file.write( "static " + cmd["dataType"] + " " +  prefix + "_" + cmd["cmd"] +  "[" + cmd["count"][0].upper() + "]" + append + " = {DEFAULT_" + prefix.upper() + "_" + cmd["cmd"].upper() + "};\n" )
+        else:
+           file.write( "static " + cmd["dataType"] + " " +  prefix + "_" + cmd["cmd"] +  "[" + cmd["count"].upper() + "]" + append + " = {DEFAULT_" + prefix.upper() + "_" + cmd["cmd"].upper() + "};\n" )
       else:
         file.write( "static " + cmd["dataType"] + " " + prefix + "_" + cmd["cmd"] +  " = DEFAULT_" + prefix.upper() + "_" + cmd["cmd"].upper() + ";\n" )
 
