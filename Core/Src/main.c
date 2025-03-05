@@ -238,7 +238,7 @@ int main(void)
   FordFocusSTRS.view[0].enabled = 1;
   FordFocusSTRS.view[0].view_index = 0;
   FordFocusSTRS.view[0].num_gauges = 3;
-  FordFocusSTRS.view[0].background = BACKGROUND_FLARE;
+  FordFocusSTRS.view[0].background = BACKGROUND_BLACK;
 
   // View 1 - Gauge 1
   strcpy(iat.label, "IAT");
@@ -271,7 +271,7 @@ int main(void)
   FordFocusSTRS.view[1].enabled = 1;
   FordFocusSTRS.view[1].view_index = 1;
   FordFocusSTRS.view[1].num_gauges = 3;
-  FordFocusSTRS.view[1].background = BACKGROUND_BLACK;
+  FordFocusSTRS.view[1].background = BACKGROUND_GREEN;
 
   // View 2 - Gauge 1
   strcpy(coolant.label, "Coolant");
@@ -319,13 +319,14 @@ int main(void)
   FordFocusSTRS.dynamic[1].priority = DD_HIGH_PRIORITY;
   FordFocusSTRS.dynamic[1].trigger.compare = DD_GREATER_THAN;
   FordFocusSTRS.dynamic[1].trigger.pid = &oil;
-  FordFocusSTRS.dynamic[1].trigger.thresh = 100;
+  FordFocusSTRS.dynamic[1].trigger.thresh = 260;
   FordFocusSTRS.dynamic[1].view_index = 1;
 
   BSP_HSPI_NOR_Init_t hspi_init;
   hspi_init.InterfaceMode = MX66UW1G45G_OPI_MODE;
   hspi_init.TransferRate = MX66UW1G45G_DTR_TRANSFER;
 
+  /*
   if( BSP_HSPI_NOR_Init(0, &hspi_init) != BSP_ERROR_NONE )
   {
 	  while(1){}
@@ -335,6 +336,7 @@ int main(void)
   {
 	while(1){}
   }
+  */
 
   __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 2U * 50);
   if (HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4) != HAL_OK)
@@ -342,9 +344,6 @@ int main(void)
 	  /* PWM Generation Error */
 	  Error_Handler();
   }
-
-  /* reset display */
-  HAL_GPIO_WritePin(LCD_ON_GPIO_Port, LCD_ON_Pin, GPIO_PIN_SET);
 
   //ui_init();
 
@@ -371,6 +370,27 @@ int main(void)
 		  case BACKGROUND_FLARE:
 			  img = &ui_img_flare_png;
 			  is_image = 1;
+			  break;
+
+		  case BACKGROUND_RED:
+			  color.red = 255;
+			  color.green = 0;
+			  color.blue = 0;
+			  is_image = 0;
+			  break;
+
+		  case BACKGROUND_GREEN:
+			  color.red = 0;
+			  color.green = 255;
+			  color.blue = 0;
+			  is_image = 0;
+			  break;
+
+		  case BACKGROUND_BLUE:
+			  color.red = 0;
+			  color.green = 0;
+			  color.blue = 255;
+			  is_image = 0;
 			  break;
 
 		  case BACKGROUND_BLACK:
@@ -461,8 +481,15 @@ int main(void)
 		boost.pid_value = -14.6;
 
 	oil.pid_value = oil.pid_value + 0.2;
-	if( oil.pid_value > 198 )
-		oil.pid_value = 32.5;
+	if( oil.pid_value > 255 )
+		oil.pid_value = 0;
+
+	lv_color_t color = {0};
+    color.red = 0;
+    color.green = (uint8_t)(oil.pid_value);
+  	color.blue = 0;
+	lv_obj_set_style_bg_color(ui_view[0], color, LV_PART_MAIN | LV_STATE_DEFAULT);
+	lv_obj_set_style_bg_color(ui_view[1], color, LV_PART_MAIN | LV_STATE_DEFAULT);
 
 	coolant.pid_value = coolant.pid_value + 0.15;
 	if( coolant.pid_value > 198 )
@@ -569,16 +596,12 @@ void SystemClock_Config(void)
     Error_Handler();
   }
 
-  /** Configure LSE Drive Capability
-  */
-  HAL_PWR_EnableBkUpAccess();
-  __HAL_RCC_LSEDRIVE_CONFIG(RCC_LSEDRIVE_LOW);
-
   /** Initializes the CPU, AHB and APB buses clocks
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE|RCC_OSCILLATORTYPE_LSE;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI|RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-  RCC_OscInitStruct.LSEState = RCC_LSE_ON;
+  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
+  RCC_OscInitStruct.LSIDiv = RCC_LSI_DIV1;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLMBOOST = RCC_PLLMBOOST_DIV1;

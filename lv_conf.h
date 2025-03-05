@@ -512,7 +512,7 @@
 
 /** Will be added where memory needs to be aligned (with -Os data might not be aligned to boundary by default).
  *  E.g. __attribute__((aligned(4)))*/
-#define LV_ATTRIBUTE_MEM_ALIGN __attribute__((section(".ExtFlash_Section")))
+#define LV_ATTRIBUTE_MEM_ALIGN __attribute__((aligned(4)))
 
 /** Attribute to mark large constant arrays, for example for font bitmaps */
 #define LV_ATTRIBUTE_LARGE_CONST

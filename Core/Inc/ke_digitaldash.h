@@ -39,6 +39,9 @@ typedef enum {
 
 typedef enum {
     BACKGROUND_FLARE,
+	BACKGROUND_RED,
+	BACKGROUND_GREEN,
+	BACKGROUND_BLUE,
     BACKGROUND_BLACK
 }digitaldash_background;
 
