@@ -16,7 +16,7 @@ extern "C" {
  *********************/
 
 #define UI_HOR_RES    800
-#define UI_VER_RES    200
+#define UI_VER_RES    165
 #define ACT_HOR_RES    800
 #define ACT_VER_RES    480
 #define DISP_PARTIAL 0

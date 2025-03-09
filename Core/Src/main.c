@@ -385,8 +385,8 @@ int main(void)
 	  lv_image_dsc_t ext_background = {
 	    .header.cf = LV_COLOR_FORMAT_RGB888,
 	    .header.magic = LV_IMAGE_HEADER_MAGIC,
-	    .header.w = 800,
-	    .header.h = 200,
+	    .header.w = UI_HOR_RES,
+	    .header.h = UI_VER_RES,
 	    .data_size = sizeof(backgrounds_external[0]),
 	    .data = backgrounds_external[0],
 	  };
@@ -460,11 +460,11 @@ int main(void)
 
   ui_alert_container[0] = lv_obj_create(ui_view[0]);
   lv_obj_remove_style_all(ui_alert_container[0]);
-  lv_obj_set_width(ui_alert_container[0], 500);
-  lv_obj_set_height(ui_alert_container[0], 85);
+  lv_obj_set_width(ui_alert_container[0], 450);
+  lv_obj_set_height(ui_alert_container[0], 75);
   lv_obj_set_x(ui_alert_container[0], 0);
-  lv_obj_set_y(ui_alert_container[0], -50);
-  lv_obj_set_align(ui_alert_container[0], LV_ALIGN_CENTER);
+  lv_obj_set_y(ui_alert_container[0], 5);
+  lv_obj_set_align(ui_alert_container[0], LV_ALIGN_TOP_MID);
   //lv_obj_add_flag(ui_alert_container[0], LV_OBJ_FLAG_HIDDEN);     /// Flags
   lv_obj_remove_flag(ui_alert_container[0],
                      LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_PRESS_LOCK | LV_OBJ_FLAG_CLICK_FOCUSABLE | LV_OBJ_FLAG_GESTURE_BUBBLE |

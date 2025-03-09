@@ -60,17 +60,17 @@ void MX_LTDC_Init(void)
     Error_Handler();
   }
   pLayerCfg.WindowX0 = 0;
-  pLayerCfg.WindowX1 = 800;
+  pLayerCfg.WindowX1 = UI_HOR_RES;
   pLayerCfg.WindowY0 = 0;
-  pLayerCfg.WindowY1 = 200;
+  pLayerCfg.WindowY1 = UI_VER_RES;
   pLayerCfg.PixelFormat = LTDC_PIXEL_FORMAT_RGB888;
   pLayerCfg.Alpha = 255;
   pLayerCfg.Alpha0 = 0;
   pLayerCfg.BlendingFactor1 = LTDC_BLENDING_FACTOR1_PAxCA;
   pLayerCfg.BlendingFactor2 = LTDC_BLENDING_FACTOR2_PAxCA;
   pLayerCfg.FBStartAdress = 0;
-  pLayerCfg.ImageWidth = 800;
-  pLayerCfg.ImageHeight = 200;
+  pLayerCfg.ImageWidth = UI_HOR_RES;
+  pLayerCfg.ImageHeight = UI_VER_RES;
   pLayerCfg.Backcolor.Blue = 0;
   pLayerCfg.Backcolor.Green = 0;
   pLayerCfg.Backcolor.Red = 0;
@@ -106,7 +106,7 @@ void HAL_LTDC_MspInit(LTDC_HandleTypeDef* ltdcHandle)
     PeriphClkInit.PLL3.PLL3Q = 2;
     PeriphClkInit.PLL3.PLL3R = 4;
     PeriphClkInit.PLL3.PLL3RGE = RCC_PLLVCIRANGE_1;
-    PeriphClkInit.PLL3.PLL3FRACN = 0.0;
+    PeriphClkInit.PLL3.PLL3FRACN = 2048;
     PeriphClkInit.PLL3.PLL3ClockOut = RCC_PLL3_DIVR;
     if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
     {

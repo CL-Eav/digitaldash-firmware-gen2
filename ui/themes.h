@@ -10,6 +10,7 @@
 
 #include "lvgl.h"
 #include "lib_pid.h"
+#include "lvgl_port_display.h"
 
 lv_obj_t * add_stock_st_gauge( int32_t x, int32_t y, lv_obj_t * parent, PID_DATA * pid);
 
