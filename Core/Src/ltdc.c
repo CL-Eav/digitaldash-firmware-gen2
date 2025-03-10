@@ -106,7 +106,7 @@ void HAL_LTDC_MspInit(LTDC_HandleTypeDef* ltdcHandle)
     PeriphClkInit.PLL3.PLL3Q = 2;
     PeriphClkInit.PLL3.PLL3R = 4;
     PeriphClkInit.PLL3.PLL3RGE = RCC_PLLVCIRANGE_1;
-    PeriphClkInit.PLL3.PLL3FRACN = 2048;
+    PeriphClkInit.PLL3.PLL3FRACN = 0.0;
     PeriphClkInit.PLL3.PLL3ClockOut = RCC_PLL3_DIVR;
     if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
     {
@@ -155,14 +155,14 @@ void HAL_LTDC_MspInit(LTDC_HandleTypeDef* ltdcHandle)
                           |GPIO_PIN_14|GPIO_PIN_15|GPIO_PIN_0;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF8_LTDC;
     HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
     GPIO_InitStruct.Pin = GPIO_PIN_2;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF8_LTDC;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
@@ -171,21 +171,21 @@ void HAL_LTDC_MspInit(LTDC_HandleTypeDef* ltdcHandle)
                           |GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_3|GPIO_PIN_6;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF8_LTDC;
     HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
     GPIO_InitStruct.Pin = GPIO_PIN_6|GPIO_PIN_7;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF7_LTDC;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
     GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_9;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF8_LTDC;
     HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
