@@ -259,9 +259,9 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
     process_can_packet( hfdcan, RxFifo0ITs );
 }
 
-void HAL_FDCAN_RxFifo1MsgPendingCallback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
+void HAL_FDCAN_RxFifo1MsgPendingCallback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo1ITs)
 {
-    process_can_packet( hfdcan, RxFifo0ITs );
+    process_can_packet( hfdcan, RxFifo1ITs );
 }
 
 static uint8_t ECU_CAN_Tx( uint8_t data[], uint8_t len )
