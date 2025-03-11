@@ -122,6 +122,34 @@ lv_obj_t * ui_alert_container[MAX_ALERTS];
 
 volatile uint32_t can_tx_mailbox_status = 0;
 volatile uint32_t can_rx_mailbox_status = 0;
+
+#ifdef LIB_OBDII_H_
+/* Declare an OBDII packet manager */
+static OBDII_PACKET_MANAGER obdii;
+#endif
+
+#ifdef LIB_CAN_BUS_SNIFFER_H_
+/* Declare a CAN Bus sniffer packet manager */
+static CAN_SNIFFER_PACKET_MANAGER sniffer;
+#endif
+
+#ifdef LIB_VEHICLE_DATA_H
+/* Declare a Vehicle Data packet manager */
+static VEHICLE_DATA_MANAGER vehicle;
+#endif
+
+/* Configure the Digital Dash to sync the backlight with the vehicle's lighting */
+#if defined(SNIFF_GAUGE_BRIGHTNESS_SUPPORTED) || !defined(LIMIT_PIDS)
+static PID_DATA gauge_brightness_req = { .pid = SNIFF_GAUGE_BRIGHTNESS, .mode = SNIFF, .pid_unit = PID_UNITS_PERCENT, .pid_value = 100 };
+static PTR_PID_DATA gauge_brightness;
+#endif
+
+#if defined(MODE1_ENGINE_SPEED_SUPPORTED) || !defined(LIMIT_PIDS)
+static PID_DATA engine_speed_req = { .pid = MODE1_ENGINE_SPEED, .mode = MODE1, .pid_unit = PID_UNITS_RPM, .pid_value = 0 };
+static PTR_PID_DATA engine_speed;
+#endif
+
+CAN_Filter_Count = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -184,113 +212,89 @@ uint8_t compare_values(float a, float b, digitaldash_compare comparison)
 	}
 }
 
-void HAL_CAN_TxMailbox0CompleteCallback( CAN_HandleTypeDef *hcan )
-{
-    can_tx_mailbox_status &= ~CAN_TX_MAILBOX0;
-}
-
-void HAL_CAN_TxMailbox1CompleteCallback( CAN_HandleTypeDef *hcan )
-{
-    can_tx_mailbox_status &= ~CAN_TX_MAILBOX1;
-}
-
-void HAL_CAN_TxMailbox2CompleteCallback( CAN_HandleTypeDef *hcan )
-{
-    can_tx_mailbox_status &= ~CAN_TX_MAILBOX2;
-}
-
-HAL_StatusTypeDef can_filter( CAN_HandleTypeDef *pcan, uint32_t id, uint32_t mask, uint32_t format, uint32_t filterBank, uint32_t FIFO  )
+HAL_StatusTypeDef can_filter( FDCAN_HandleTypeDef *pfdcan, uint32_t id, uint32_t mask, uint32_t format, uint32_t filterIndex, uint32_t FIFO  )
 {
 	/* Verify correct format */
-    if ( (format == CAN_ID_STD) || (format == CAN_ID_EXT) )
+    if ( (format == FDCAN_STANDARD_ID) || (format == FDCAN_EXTENDED_ID) )
     {
         /* Declare a CAN filter configuration */
-        CAN_FilterTypeDef  sFilterConfig;
+        FDCAN_FilterTypeDef  sFilterConfig;
 
         /* Verify the filter bank is possible */
-        if ( ( filterBank >= 0 ) && ( filterBank <= 13 ) )
-            sFilterConfig.FilterBank = filterBank;
+        if ( ( filterIndex >= 0 ) && ( filterIndex < 28 ) )
+            sFilterConfig.FilterIndex = filterIndex;
         else
             return -1;
 
-        sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
-        sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
+        sFilterConfig.FilterType = FDCAN_FILTER_MASK;
+        sFilterConfig.IdType = format;
+        sFilterConfig.FilterID1 = id;
+        sFilterConfig.FilterID2 = mask;
+        sFilterConfig.FilterConfig  = FIFO;
+        sFilterConfig.FilterIndex = filterIndex;
 
-        if (format == CAN_ID_STD) {
-            sFilterConfig.FilterIdHigh = ((id << 5) | (id >> (32 - 5))) & 0xFFFF;
-            sFilterConfig.FilterIdLow =  (id >> (11-3)) & 0xFFF8;
-            sFilterConfig.FilterMaskIdHigh = ((mask << 5) | (mask >> (32-5))) & 0xFFFF;
-            sFilterConfig.FilterMaskIdLow = (mask >> (11-3)) & 0xFFF8;
-        } else { // format == CANExtended
-            sFilterConfig.FilterIdHigh = id >> 13; // EXTID[28:13]
-            sFilterConfig.FilterIdLow = (0xFFFF & (id << 3)) | (1 << 2); // EXTID[12:0] + IDE
-            sFilterConfig.FilterMaskIdHigh = mask >> 13;
-            sFilterConfig.FilterMaskIdLow = (0xFFFF & (mask << 3)) | (1 << 2);
-        }
-
-        sFilterConfig.FilterFIFOAssignment = FIFO;
-        sFilterConfig.FilterActivation = ENABLE;
-        sFilterConfig.FilterBank = filterBank;
-        sFilterConfig.SlaveStartFilterBank = 0x12;
-
-        return HAL_CAN_ConfigFilter(pcan, &sFilterConfig);
+        return HAL_FDCAN_ConfigFilter(pfdcan, &sFilterConfig);
     }
     return HAL_ERROR;
 }
 
-void process_can_packet( CAN_HandleTypeDef *hcan, uint32_t fifo )
+void add_can_filter( uint16_t id )
 {
-    HAL_ResumeTick();
-    flash_led( DEBUG_LED_1 );
-    CAN_RxHeaderTypeDef rx_header;
+	can_filter( &hfdcan1, id, 0x7FF, FDCAN_STANDARD_ID, CAN_Filter_Count++, FDCAN_FILTER_TO_RXFIFO0 );
+}
+
+void process_can_packet( FDCAN_HandleTypeDef *hfdcan, uint32_t fifo )
+{
+    FDCAN_RxHeaderTypeDef rx_header;
     uint8_t rx_buf[8];
-    HAL_CAN_GetRxMessage( hcan, fifo, &rx_header, rx_buf );
+    HAL_FDCAN_GetRxMessage( hfdcan, fifo, &rx_header, rx_buf );
 
-    if( rx_header.IDE == CAN_ID_STD )
-        DigitalDash_Add_CAN_Packet( rx_header.StdId ,rx_buf);
-
-    can_rx_mailbox_status |= fifo;
+    if( rx_header.IdType == FDCAN_STANDARD_ID ) {
+    	CAN_Sniffer_Add_Packet(&sniffer, rx_header.Identifier, rx_buf);
+    }
 }
 
-void HAL_CAN_RxFifo0MsgPendingCallback( CAN_HandleTypeDef *hcan )
+void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
 {
-    process_can_packet( hcan, CAN_RX_FIFO0 );
+    process_can_packet( hfdcan, RxFifo0ITs );
 }
 
-void HAL_CAN_RxFifo1MsgPendingCallback( CAN_HandleTypeDef *hcan )
+void HAL_FDCAN_RxFifo1MsgPendingCallback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
 {
-    process_can_packet( hcan, CAN_RX_FIFO1 );
+    process_can_packet( hfdcan, RxFifo0ITs );
 }
 
 static uint8_t ECU_CAN_Tx( uint8_t data[], uint8_t len )
 {
 
-	CAN_TxHeaderTypeDef Header = {
-	           .DLC                = len,
-	           .ExtId              = 0x7E0,
-	           .StdId              = 0x7E0,
-	           .IDE                = CAN_ID_STD,
-	           .RTR                = CAN_RTR_DATA,
-	           .TransmitGlobalTime = DISABLE
-	};
+	if( !IS_FDCAN_DLC(len) ) {
+		Error_Handler();
+	}
 
-    uint32_t pTxMailbox = 0;
+	FDCAN_TxHeaderTypeDef Header = {
+	           .Identifier          = 0x7E0,
+	           .IdType              = FDCAN_STANDARD_ID,
+	           .TxFrameType         = FDCAN_DATA_FRAME,
+	           .DataLength          = len,
+			   .ErrorStateIndicator = FDCAN_ESI_PASSIVE,
+			   .BitRateSwitch       = FDCAN_BRS_OFF,
+			   .FDFormat            = FDCAN_CLASSIC_CAN,
+			   .TxEventFifoControl  = FDCAN_STORE_TX_EVENTS,
+			   .MessageMarker       = 0
+	};
 
     /* Copy the buffer */
     uint8_t tx_buf[8];
-    memcpy(tx_buf, data, 8);
+    memcpy(tx_buf, data, len);
 
-    /* TODO check for free mailbox */
-    if( HAL_CAN_AddTxMessage( ECU_CAN, &Header, tx_buf, &pTxMailbox ) == HAL_OK )
-    {
-    	/* Log which mailbox sent the packet */
-    	can_tx_mailbox_status |= pTxMailbox;
-        return 1;
-    }
-    else
-    {
-        return 0;
-    }
+	/* Start the Transmission process */
+	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &Header, tx_buf) != HAL_OK)
+	{
+		/* Transmission request Error */
+		Error_Handler();
+	}
+
+	return 1;
 }
 
 /* USER CODE END 0 */
@@ -352,6 +356,10 @@ int main(void)
   lvgl_display_init();
 
   HAL_GPIO_WritePin(BLKT_EN_GPIO_Port, BLKT_EN_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(CAN_STBY_GPIO_Port, CAN_STBY_Pin, GPIO_PIN_SET);
+
+  sniffer.filter = &add_can_filter;
+  CAN_Sniffer_Initialize(&sniffer);
 
   FordFocusSTRS.num_views = 2;
 
@@ -408,9 +416,14 @@ int main(void)
   strcpy(rpm.unit_label, PID_UNITS_RPM_LABEL);
   rpm.lower_limit = 0;
   rpm.upper_limit = 8000;
+  rpm.pid = MODE1_ENGINE_SPEED;
+  rpm.mode = MODE1;
+  rpm.pid_unit = PID_UNITS_RPM;
   rpm.precision = 0;
   FordFocusSTRS.view[1].gauge[1].pid = &rpm;
   FordFocusSTRS.view[1].gauge[1].theme = THEME_STOCK_ST;
+
+  CAN_Sniffer_Add_PID(&sniffer, &rpm);
 
   // View 2 - Gauge 3
   strcpy(speed.label, "Speed");
@@ -605,6 +618,17 @@ int main(void)
   uint8_t gauge = 0;
   uint8_t alert_active = 1;
 
+  /* Start the FDCAN module */
+  if (HAL_FDCAN_Start(&hfdcan1) != HAL_OK) {
+    Error_Handler();
+  }
+
+  /* Activate Interrupts */
+  if( HAL_FDCAN_ActivateNotification(&hfdcan1, FDCAN_IT_RX_FIFO0_NEW_MESSAGE \
+		  | FDCAN_IT_RX_FIFO1_NEW_MESSAGE, 0) ) {
+	  Error_Handler();
+  }
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -621,17 +645,20 @@ int main(void)
 	if( boost.pid_value > 25 )
 		boost.pid_value = -14.6;
 
+	/*
 	oil.pid_value = oil.pid_value + 0.2;
 	if( oil.pid_value > 255 )
 		oil.pid_value = 0;
+	*/
 
 	coolant.pid_value = coolant.pid_value + 0.15;
 	if( coolant.pid_value > 198 )
 		coolant.pid_value = 12;
-
+    /*
 	rpm.pid_value = rpm.pid_value + 10;
 	if( rpm.pid_value > 8000 )
 		rpm.pid_value = 0;
+		*/
 
 	speed.pid_value = speed.pid_value + 1;
 	if( speed.pid_value > 120 )
@@ -640,6 +667,7 @@ int main(void)
 	log_minmax(&iat);
 	log_minmax(&boost);
 	log_minmax(&oil);
+	log_minmax(&rpm);
 
 		if( compare_values(FordFocusSTRS.dynamic[0].trigger.pid->pid_value, FordFocusSTRS.dynamic[0].trigger.thresh, FordFocusSTRS.alert[0].trigger.compare) ) {
 			switch_screen(ui_view[FordFocusSTRS.dynamic[0].view_index]);
