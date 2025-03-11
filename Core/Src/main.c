@@ -217,6 +217,8 @@ HAL_StatusTypeDef can_filter( FDCAN_HandleTypeDef *pfdcan, uint32_t id, uint32_t
 	/* Verify correct format */
     if ( (format == FDCAN_STANDARD_ID) || (format == FDCAN_EXTENDED_ID) )
     {
+    	//TODO check if CAN is enabled
+
         /* Declare a CAN filter configuration */
         FDCAN_FilterTypeDef  sFilterConfig;
 
@@ -279,7 +281,7 @@ static uint8_t ECU_CAN_Tx( uint8_t data[], uint8_t len )
 			   .ErrorStateIndicator = FDCAN_ESI_PASSIVE,
 			   .BitRateSwitch       = FDCAN_BRS_OFF,
 			   .FDFormat            = FDCAN_CLASSIC_CAN,
-			   .TxEventFifoControl  = FDCAN_STORE_TX_EVENTS,
+			   .TxEventFifoControl  = FDCAN_NO_TX_EVENTS,
 			   .MessageMarker       = 0
 	};
 
@@ -288,10 +290,8 @@ static uint8_t ECU_CAN_Tx( uint8_t data[], uint8_t len )
     memcpy(tx_buf, data, len);
 
 	/* Start the Transmission process */
-	if (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &Header, tx_buf) != HAL_OK)
+	while (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &Header, tx_buf) != HAL_OK)
 	{
-		/* Transmission request Error */
-		Error_Handler();
 	}
 
 	return 1;
@@ -355,7 +355,7 @@ int main(void)
   lv_tick_set_cb(HAL_GetTick);
   lvgl_display_init();
 
-  HAL_GPIO_WritePin(CAN_STBY_GPIO_Port, CAN_STBY_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(CAN_STBY_GPIO_Port, CAN_STBY_Pin, GPIO_PIN_RESET);
 
   sniffer.filter = &add_can_filter;
   CAN_Sniffer_Initialize(&sniffer);
@@ -625,15 +625,21 @@ int main(void)
     Error_Handler();
   }
 
+  if( HAL_FDCAN_ConfigInterruptLines(&hfdcan1,FDCAN_ILS_RXFIFO0, FDCAN_INTERRUPT_LINE0) ) {
+	  Error_Handler();
+  }
+
   /* Activate Interrupts */
-  if( HAL_FDCAN_ActivateNotification(&hfdcan1, FDCAN_IT_RX_FIFO0_NEW_MESSAGE \
-		  | FDCAN_IT_RX_FIFO1_NEW_MESSAGE, 0) ) {
+  if( HAL_FDCAN_ActivateNotification(&hfdcan1, FDCAN_IT_RX_FIFO0_NEW_MESSAGE, FDCAN_RX_FIFO0) ) {
 	  Error_Handler();
   }
 
   lv_timer_handler();
   HAL_Delay(1);
   HAL_GPIO_WritePin(BLKT_EN_GPIO_Port, BLKT_EN_Pin, GPIO_PIN_SET);
+
+  uint8_t RxData[8];
+  FDCAN_RxHeaderTypeDef RxHeader;
 
   /* USER CODE END 2 */
 
@@ -642,6 +648,13 @@ int main(void)
   while (1)
   {
 	lv_timer_handler();
+
+	if (HAL_FDCAN_GetRxMessage(&hfdcan1, FDCAN_RX_FIFO0, &RxHeader, RxData) == HAL_OK)
+	{
+	    if( RxHeader.IdType == FDCAN_STANDARD_ID ) {
+	    	CAN_Sniffer_Add_Packet(&sniffer, RxHeader.Identifier, RxData);
+	    }
+	}
 
 	iat.pid_value = iat.pid_value + 0.05;
 	if( iat.pid_value > 150 )
