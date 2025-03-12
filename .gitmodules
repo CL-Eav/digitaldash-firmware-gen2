@@ -16,3 +16,6 @@
 [submodule "lib/lib_vehicle_data"]
 	path = lib/lib_vehicle_data
 	url = https://github.com/KaiserEngineering/lib_vehicle_data.git
+[submodule "lib/lib_digital_dash"]
+	path = lib/lib_digital_dash
+	url = https://github.com/KaiserEngineering/lib_digital_dash.git
