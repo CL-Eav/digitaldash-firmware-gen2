@@ -647,9 +647,9 @@ int main(void)
 		  x_pos[0] = -200;
 		  x_pos[1] = 200;
 	  }if( FordFocusSTRS.view[idx].num_gauges == 3) {
-		  x_pos[0] = -250;
+		  x_pos[0] = -225;
 		  x_pos[1] = 0;
-		  x_pos[2] = 250;
+		  x_pos[2] = 225;
 	  }
 
 	  for( uint8_t i = 0; i < FordFocusSTRS.view[idx].num_gauges; i++) {
