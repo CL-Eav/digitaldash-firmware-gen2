@@ -210,7 +210,7 @@ HAL_StatusTypeDef can_filter( uint32_t id, uint32_t mask, uint32_t filterIndex, 
 
 void Add_CAN_Filter( uint16_t id )
 {
-	can_filter( id, 0x7FF, 0, FDCAN_FILTER_TO_RXFIFO0 );
+	can_filter( id, 0x7FF, CAN_Filter_Count++, FDCAN_FILTER_TO_RXFIFO0 );
 }
 
 void process_can_packet( FDCAN_HandleTypeDef *hfdcan, uint32_t fifo )
