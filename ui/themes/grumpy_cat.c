@@ -69,7 +69,7 @@ lv_obj_t * add_grumpy_cat_gauge( int32_t x, int32_t y, lv_obj_t * parent, PID_DA
     lv_obj_set_x(value, 0);
     lv_obj_set_y(value, -55);
     lv_obj_set_align(value, LV_ALIGN_CENTER);
-    lv_label_set_text(value, "value");
+    lv_label_set_text(value, "");
     lv_obj_remove_flag(value, LV_OBJ_FLAG_PRESS_LOCK | LV_OBJ_FLAG_CLICK_FOCUSABLE | LV_OBJ_FLAG_GESTURE_BUBBLE |
                        LV_OBJ_FLAG_SNAPPABLE | LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_SCROLL_ELASTIC | LV_OBJ_FLAG_SCROLL_MOMENTUM |
                        LV_OBJ_FLAG_SCROLL_CHAIN);     /// Flags
