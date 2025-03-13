@@ -258,9 +258,8 @@ static uint8_t ECU_CAN_Tx( uint8_t data[], uint8_t len )
     memcpy(tx_buf, data, len);
 
 	/* Start the Transmission process */
-	while (HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &Header, tx_buf) != HAL_OK)
-	{
-	}
+	HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &Header, tx_buf);
+	//TODO What happens if tx fails?
 
 	return 1;
 }
