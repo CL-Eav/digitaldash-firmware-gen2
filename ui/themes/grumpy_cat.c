@@ -10,7 +10,7 @@
 
 LV_IMG_DECLARE(ui_img_grumpy_png);
 
-#define GRUMPY_START_POS 85
+#define GRUMPY_START_POS 50
 #define GRUMPY_END_POS 0
 
 static void event_cb(lv_event_t * e)

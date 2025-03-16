@@ -309,9 +309,6 @@ int main(void)
 
   /* MCU Configuration--------------------------------------------------------*/
 
-  /* MPU Configuration--------------------------------------------------------*/
-  //MPU_Config();
-
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
 
@@ -610,14 +607,14 @@ int main(void)
 
   PID_DATA pid_req;
 
-  pid_req.pid = MODE22_CHARGE_AIR_TEMPERATURE;
-  pid_req.mode = MODE22;
-  pid_req.pid_unit = PID_UNITS_FAHRENHEIT;
-  strcpy(pid_req.label, "CAT");
-  strcpy(pid_req.unit_label, PID_UNITS_FAHRENHEIT_LABEL);
+  pid_req.pid = MODE1_RELATIVE_ACCELERATOR_PEDAL_POSITION;
+  pid_req.mode = MODE1;
+  pid_req.pid_unit = PID_UNITS_PERCENT;
+  strcpy(pid_req.label, "APP");
+  strcpy(pid_req.unit_label, PID_UNITS_PERCENT_LABEL);
   pid_req.lower_limit = 0;
-  pid_req.upper_limit = 200;
-  pid_req.precision = 1;
+  pid_req.upper_limit = 100;
+  pid_req.precision = 0;
   FordFocusSTRS.view[1].gauge[0].pid = DigitalDash_Add_PID_To_Stream( &pid_req );
 
   pid_req.pid = MODE1_ENGINE_SPEED;
@@ -626,7 +623,7 @@ int main(void)
   strcpy(pid_req.label, "RPM");
   strcpy(pid_req.unit_label, PID_UNITS_RPM_LABEL);
   pid_req.lower_limit = 0;
-  pid_req.upper_limit = 8000;
+  pid_req.upper_limit = 6000;
   pid_req.precision = 0;
   FordFocusSTRS.view[1].gauge[1].pid = DigitalDash_Add_PID_To_Stream( &pid_req );
 
@@ -635,8 +632,8 @@ int main(void)
   pid_req.pid_unit = PID_UNITS_PSI;
   strcpy(pid_req.label, "Boost");
   strcpy(pid_req.unit_label, PID_UNITS_PSI_LABEL);
-  pid_req.lower_limit = 0;
-  pid_req.upper_limit = 25;
+  pid_req.lower_limit = -15;
+  pid_req.upper_limit = 20;
   pid_req.precision = 2;
   FordFocusSTRS.view[1].gauge[2].pid = DigitalDash_Add_PID_To_Stream( &pid_req );
 
@@ -655,7 +652,7 @@ int main(void)
 	  }
 
 	  for( uint8_t i = 0; i < FordFocusSTRS.view[idx].num_gauges; i++) {
-		  FordFocusSTRS.view[idx].gauge[i].obj = add_stock_st_gauge(x_pos[i], 0, ui_view[idx], FordFocusSTRS.view[idx].gauge[i].pid);
+		  FordFocusSTRS.view[idx].gauge[i].obj = add_gauge(GRUMPY_CAT, x_pos[i], 0, ui_view[idx], FordFocusSTRS.view[idx].gauge[i].pid);
 	  }
   }
 
