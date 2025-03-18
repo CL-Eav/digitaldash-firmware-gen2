@@ -273,7 +273,7 @@ def sub_write_memory_map( file, prefix, cmd, byte, depth ):
          file.write("#define EEPROM_" + prefix.upper().split('_')[0].upper() + str(i+1) + "_" + prefix.upper().split('_')[1].upper() + "_" + cmd["cmd"].upper() + "_BYTE" + str(byte) + array + "\n")
       file.write("static const uint16_t map_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_byte" + str(byte) + "[" + cmd["count"][0].upper() + "]" + "[" + cmd["count"][1].upper() + "] = {" + "\n")
       for i in range(config["config"][cmd["count"][0]]):
-        file.write("    EEPROM_" + prefix.upper() + "_" + cmd["cmd"].upper() + str(i+1) + "_BYTE" + str(byte) )
+        file.write("    EEPROM_" + prefix.upper().split('_')[0].upper() + str(i+1) + "_" + prefix.upper().split('_')[1].upper() + "_" + cmd["cmd"].upper() + "_BYTE" + str(byte) )
         if i < (config["config"][cmd["count"][0]]-1):
           file.write(",\n")
         else:
