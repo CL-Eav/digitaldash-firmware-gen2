@@ -52,7 +52,8 @@ config_h.write("extern \"C\"\n{\n")
 config_h.write("#endif\n\n")
 
 config_h.write("#include \"lvgl.h\"\n")
-config_h.write("#include \"stdbool.h\"\n\n")
+config_h.write("#include \"stdbool.h\"\n")
+config_h.write("#include \"string.h\"\n\n")
 
 config_h.write("typedef void(settings_write)(uint16_t bAdd, uint8_t bData);\n")
 config_h.write("typedef uint8_t(settings_read)(uint16_t bAdd);\n\n")
@@ -110,11 +111,20 @@ def write_custom_struct( file, prefix, cmd, depth ):
     file.write("} " + cmd["dataType"] + ";\n\n")
 
 def write_verify_declare( file, prefix, cmd, depth ):
-    file.write( "bool verify_" + prefix + "_" + cmd["cmd"].lower() + "(" + cmd["dataType"] + " " + cmd["cmd"].lower() + ");\n" )
+    if( cmd["type"] == "string" ):
+       pointer = "*"
+    else:
+       pointer = ""
+    file.write( "bool verify_" + prefix + "_" + cmd["cmd"].lower() + "(" + cmd["dataType"] + pointer + " " + cmd["cmd"].lower() + ");\n" )
 
 def write_verify_source( file, prefix, cmd, depth ):
+    if( cmd["type"] == "string" ):
+       pointer = "*"
+    else:
+       pointer = ""
+
     input = prefix.lower() + "_" + cmd["cmd"].lower()
-    file.write( "bool verify_" + prefix + "_" + cmd["cmd"].lower() + "(" + cmd["dataType"] + " " + input + ")\n" )
+    file.write( "bool verify_" + prefix + "_" + cmd["cmd"].lower() + "(" + cmd["dataType"] + pointer + " " + input + ")\n" )
     file.write( "{\n" )
     if cmd["type"] == "number" or cmd["type"] == "slider":
       # Only check for less than 0 if the datatype is an integer
@@ -148,36 +158,62 @@ def write_verify_source( file, prefix, cmd, depth ):
     file.write("\n}\n\n")
 
 def write_get_source(file, prefix, cmd, depth):
-    if( cmd["index"] ):
-      if( depth == 2 ):
-          input = "uint8_t idx_" + prefix.lower().split('_')[0] + ", uint8_t idx_" + prefix.lower().split('_')[1]
-          index = "[idx_" + prefix.lower().split('_')[0] + "][idx_" + prefix.lower().split('_')[1] + "]"
+    if( cmd["type"] == "string" ):
+      if( cmd["index"] ):
+        if( depth == 2 ):
+            input = "uint8_t idx_" + prefix.lower().split('_')[0] + ", uint8_t idx_" + prefix.lower().split('_')[1]
+            index = "[idx_" + prefix.lower().split('_')[0] + "][idx_" + prefix.lower().split('_')[1] + "]"
+        else:
+            input = "uint8_t idx, " + cmd["dataType"] + "* " + prefix + "_" + cmd["cmd"].lower()
+            index = "[idx][0]"
       else:
-          input = "uint8_t idx"
-          index = "[idx]"
+        input = "void"
+        index = ""
+
+      output = "settings_" + prefix + "_" + cmd["cmd"].lower() + index
+
+      file.write("void get_" + prefix + "_" + cmd["cmd"].lower() + "(" + input + ")\n{\n")
+      file.write("    memcpy(" + prefix + "_" + cmd["cmd"].lower() + ", " + output + ", " + cmd["EEBytes"].upper() + ");\n")
+
+      file.write("}\n\n")
     else:
-       input = "void"
-       index = ""
+      if( cmd["index"] ):
+        if( depth == 2 ):
+            input = "uint8_t idx_" + prefix.lower().split('_')[0] + ", uint8_t idx_" + prefix.lower().split('_')[1]
+            index = "[idx_" + prefix.lower().split('_')[0] + "][idx_" + prefix.lower().split('_')[1] + "]"
+        else:
+            input = "uint8_t idx"
+            index = "[idx]"
+      else:
+        input = "void"
+        index = ""
 
-    file.write(cmd["dataType"] + " get_" + prefix + "_" + cmd["cmd"].lower() + "(" + input + ")\n{\n")
+      file.write(cmd["dataType"] + " get_" + prefix + "_" + cmd["cmd"].lower() + "(" + input + ")\n{\n")
 
-    output = "settings_" + prefix + "_" + cmd["cmd"].lower() + index
+      output = "settings_" + prefix + "_" + cmd["cmd"].lower() + index
 
-    file.write("    // Verify the " + cmd["name"] + " value is valid\n")
-    file.write("    if (!verify_" + prefix + "_" + cmd["cmd"].lower() + "(" + output + "))\n")
-    file.write("        return DEFAULT_" + prefix.upper() + "_" + cmd["cmd"].upper() + ";\n\n" )
+      file.write("    // Verify the " + cmd["name"] + " value is valid\n")
+      file.write("    if (!verify_" + prefix + "_" + cmd["cmd"].lower() + "(" + output + "))\n")
+      file.write("        return DEFAULT_" + prefix.upper() + "_" + cmd["cmd"].upper() + ";\n\n" )
 
-    file.write("    return " + output + ";\n")
-    file.write("}\n\n")
+      file.write("    return " + output + ";\n")
+      file.write("}\n\n")
+
+
 
 def write_set_source(file, prefix, cmd, depth):
+    if( cmd["type"] == "string" ):
+       pointer = "*"
+    else:
+       pointer = ""
+
     if( cmd["index"] ):
       if( depth == 2 ):
-          input = "uint8_t idx_" + prefix.lower().split('_')[0] + ", uint8_t idx_" + prefix.lower().split('_')[1] + ", " + cmd["dataType"].upper() + " " + prefix.lower() + "_" + cmd["cmd"].lower()
+          input = "uint8_t idx_" + prefix.lower().split('_')[0] + ", uint8_t idx_" + prefix.lower().split('_')[1] + ", " + cmd["dataType"] + pointer + " " + prefix.lower() + "_" + cmd["cmd"].lower()
           index = "idx_" + prefix.lower().split('_')[0] + ", idx_" + prefix.lower().split('_')[1]
           output = "settings_" + prefix + "_" + cmd["cmd"].lower() + "[idx_" + prefix.lower().split('_')[0] + "][idx_" + prefix.lower().split('_')[1] + "]"
       else:
-          input = "uint8_t idx, " + cmd["dataType"] + " " + prefix.lower() + "_" + cmd["cmd"].lower()
+          input = "uint8_t idx, " + cmd["dataType"] + pointer + " " + prefix.lower() + "_" + cmd["cmd"].lower()
           index = "idx"
           output = "settings_" + prefix + "_" + cmd["cmd"].lower() + "[idx]"
     else:
@@ -207,6 +243,10 @@ def write_set_source(file, prefix, cmd, depth):
     file.write("}\n")
 
 def write_get_declare( file, prefix, cmd, depth ):
+    if( cmd["type"] == "string" ):
+       pointer = "*"
+    else:
+       pointer = ""
     # Get function definition
     if cmd["index"]:
       if( depth == 2):
@@ -216,9 +256,13 @@ def write_get_declare( file, prefix, cmd, depth ):
     else:
       func = "void"
     
-    file.write( cmd["dataType"] + " get_" + prefix + "_" + cmd["cmd"].lower() + "(" + func + ");\n" )
+    file.write( cmd["dataType"] + pointer + " get_" + prefix + "_" + cmd["cmd"].lower() + "(" + func + ");\n" )
 
 def write_set_declare( file, prefix, cmd, depth ):
+    if( cmd["type"] == "string" ):
+       pointer = "*"
+    else:
+       pointer = ""
     # Set function definition
     if cmd["index"]:
       if( depth == 2):
@@ -228,9 +272,9 @@ def write_set_declare( file, prefix, cmd, depth ):
     else:
       func = ""
 
-    func = func + cmd["dataType"] + " " + cmd["cmd"].lower();
+    func = func + " " + cmd["dataType"] + pointer + " " + cmd["cmd"].lower();
 
-    file.write( "bool set_" + prefix + "_" + cmd["cmd"] + "(" + func + ", bool save);\n" )
+    file.write( "bool set_" + prefix + "_" + cmd["cmd"].lower() + "(" + func + ", bool save);\n" )
 
 def sub_write_memory_organization( file, prefix, cmd, idx ):
   global PageCount, EEPROM_Count, TotalByteCount
@@ -375,39 +419,50 @@ def write_load_source( file, prefix, cmd, depth ):
    file.write( "}\n\n" )
 
 def write_save_source( file, prefix, cmd, depth ):
-    input = "(uint32_t)" + cmd["cmd"].lower()
+    input = "(uint32_t)" + prefix + "_" + cmd["cmd"].lower()
     if( depth == 2 ):
       index = "idx_" + prefix.lower().split('_')[0] + "][idx_" + prefix.lower().split('_')[1]
     else:
       index = "idx"
 
+    if( cmd["type"] == "string" ):
+       pointer = "*"
+    else:
+       pointer = ""
+
     if cmd["index"]:
         if( depth == 2 ):
-          file.write( "static void save_" + prefix + "_" + cmd["cmd"].lower() + "(uint8_t idx_" + prefix.lower().split('_')[0] + ", uint8_t idx_" + prefix.lower().split('_')[1] + ", " + cmd["dataType"] + " " + cmd["cmd"].lower() + ")\n")
+          file.write( "static void save_" + prefix + "_" + cmd["cmd"].lower() + "(uint8_t idx_" + prefix.lower().split('_')[0] + ", uint8_t idx_" + prefix.lower().split('_')[1] + ", " + cmd["dataType"] + " " + prefix + "_" + cmd["cmd"].lower() + ")\n")
         else:
-          file.write( "static void save_" + prefix + "_" + cmd["cmd"].lower() + "(uint8_t idx, " + cmd["dataType"] + " " + cmd["cmd"].lower() + ")\n")
+          file.write( "static void save_" + prefix + "_" + cmd["cmd"].lower() + "(uint8_t idx, " + cmd["dataType"] + pointer + " " + prefix + "_" + cmd["cmd"].lower() + ")\n")
     else:
-        file.write( "static void save_" + prefix + "_" + cmd["cmd"].lower() + "(" + cmd["dataType"] + " " + cmd["cmd"].lower()  + ")\n")
+        file.write( "static void save_" + prefix + "_" + cmd["cmd"].lower() + "(" + cmd["dataType"] + pointer + " " + prefix + "_" + cmd["cmd"].lower()  + ")\n")
 
     file.write( "{\n")
     
     # Only values that are saved in EEPROM need to be added
     if( get_eeprom_size(cmd) > 0 ):
         file.write("    if (" + eeprom_status_check + ")\n    {\n");
-        byte_count = 1
-        while byte_count <= get_eeprom_size(cmd):
-            offset = (get_eeprom_size(cmd)-byte_count)*8
-            if offset > 0:
-                if( cmd["index"] ):
-                  file.write("        write(map_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_byte" + str(byte_count) + "[" + index + "], (" + input + " >> " + str(offset) + ") & 0xFF);\n")
-                else:
-                  file.write("        write(EEPROM_" + cmd["cmd"].upper() + str(byte_count) + ", (" + input + " >> " + str(offset) + ") & 0xFF);\n")
-            else:
-                if( cmd["index"] ):
-                  file.write("        write(map_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_byte1[" + index + "], " + input + " & 0xFF);\n")
-                else:
-                  file.write("        write(EEPROM_" + cmd["cmd"].upper() + str(byte_count) + ", " + input + " & 0xFF);\n")
+        if( cmd["type"] == "string" ):
+           byte_count = 1
+           while byte_count <= get_eeprom_size(cmd):
+            file.write("        write(map_"  + prefix + "_" + cmd["cmd"].lower() + "_byte" + str(byte_count) + "[" + index + "], " + prefix + "_" + cmd["cmd"].lower() + "[" + index + "]);\n")
             byte_count = byte_count + 1
+        else:
+          byte_count = 1
+          while byte_count <= get_eeprom_size(cmd):
+              offset = (get_eeprom_size(cmd)-byte_count)*8
+              if offset > 0:
+                  if( cmd["index"] ):
+                    file.write("        write(map_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_byte" + str(byte_count) + "[" + index + "], (" + input + " >> " + str(offset) + ") & 0xFF);\n")
+                  else:
+                    file.write("        write(EEPROM_" + cmd["cmd"].upper() + str(byte_count) + ", (" + input + " >> " + str(offset) + ") & 0xFF);\n")
+              else:
+                  if( cmd["index"] ):
+                    file.write("        write(map_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_byte1[" + index + "], " + input + " & 0xFF);\n")
+                  else:
+                    file.write("        write(EEPROM_" + cmd["cmd"].upper() + str(byte_count) + ", " + input + " & 0xFF);\n")
+              byte_count = byte_count + 1
 
         file.write("    }\n");
 

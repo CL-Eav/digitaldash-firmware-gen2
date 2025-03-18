@@ -35,6 +35,7 @@ extern "C"
 
 #include "lvgl.h"
 #include "stdbool.h"
+#include "string.h"
 
 typedef void(settings_write)(uint16_t bAdd, uint8_t bData);
 typedef uint8_t(settings_read)(uint16_t bAdd);
@@ -65,7 +66,7 @@ typedef enum
 
 bool verify_view_enable(VIEW_STATE enable);
 VIEW_STATE get_view_enable(uint8_t idx_view);
-bool set_view_enable(uint8_t idx_view,VIEW_STATE enable, bool save);
+bool set_view_enable(uint8_t idx_view, VIEW_STATE enable, bool save);
 
 
 /********************************************************************************
@@ -78,7 +79,7 @@ bool set_view_enable(uint8_t idx_view,VIEW_STATE enable, bool save);
 ********************************************************************************/
 bool verify_view_num_gauges(uint8_t num_gauges);
 uint8_t get_view_num_gauges(uint8_t idx_view);
-bool set_view_num_gauges(uint8_t idx_view,uint8_t num_gauges, bool save);
+bool set_view_num_gauges(uint8_t idx_view, uint8_t num_gauges, bool save);
 
 
 /********************************************************************************
@@ -98,7 +99,7 @@ typedef enum
 
 bool verify_view_background(VIEW_BACKGROUND background);
 VIEW_BACKGROUND get_view_background(uint8_t idx_view);
-bool set_view_background(uint8_t idx_view,VIEW_BACKGROUND background, bool save);
+bool set_view_background(uint8_t idx_view, VIEW_BACKGROUND background, bool save);
 
 
 /********************************************************************************
@@ -119,7 +120,7 @@ typedef enum
 
 bool verify_view_gauge_theme(GAUGE_THEME theme);
 GAUGE_THEME get_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge);
-bool set_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge, GAUGE_THEME theme, bool save);
+bool set_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge,  GAUGE_THEME theme, bool save);
 
 
 /********************************************************************************
@@ -139,7 +140,7 @@ typedef enum
 
 bool verify_alert_enable(ALERT_STATE enable);
 ALERT_STATE get_alert_enable(uint8_t idx_alert);
-bool set_alert_enable(uint8_t idx_alert,ALERT_STATE enable, bool save);
+bool set_alert_enable(uint8_t idx_alert, ALERT_STATE enable, bool save);
 
 
 /********************************************************************************
@@ -150,9 +151,9 @@ bool set_alert_enable(uint8_t idx_alert,ALERT_STATE enable, bool save);
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
-bool verify_alert_message(char message);
-char get_alert_message(uint8_t idx_alert);
-bool set_alert_message(uint8_t idx_alert,char message, bool save);
+bool verify_alert_message(char* message);
+void get_alert_message(uint8_t idx, char* alert_message);
+bool set_alert_message(uint8_t idx_alert, char* message, bool save);
 
 
 /********************************************************************************
@@ -176,7 +177,7 @@ typedef enum
 
 bool verify_alert_compare(ALERT_COMPARISON compare);
 ALERT_COMPARISON get_alert_compare(uint8_t idx_alert);
-bool set_alert_compare(uint8_t idx_alert,ALERT_COMPARISON compare, bool save);
+bool set_alert_compare(uint8_t idx_alert, ALERT_COMPARISON compare, bool save);
 
 
 /********************************************************************************
@@ -189,7 +190,7 @@ bool set_alert_compare(uint8_t idx_alert,ALERT_COMPARISON compare, bool save);
 ********************************************************************************/
 bool verify_alert_threshold(float threshold);
 float get_alert_threshold(uint8_t idx_alert);
-bool set_alert_threshold(uint8_t idx_alert,float threshold, bool save);
+bool set_alert_threshold(uint8_t idx_alert, float threshold, bool save);
 
 
 /********************************************************************************
@@ -209,7 +210,7 @@ typedef enum
 
 bool verify_dynamic_enable(DYNAMIC_STATE enable);
 DYNAMIC_STATE get_dynamic_enable(uint8_t idx_dynamic);
-bool set_dynamic_enable(uint8_t idx_dynamic,DYNAMIC_STATE enable, bool save);
+bool set_dynamic_enable(uint8_t idx_dynamic, DYNAMIC_STATE enable, bool save);
 
 
 /********************************************************************************
@@ -230,7 +231,7 @@ typedef enum
 
 bool verify_dynamic_priority(DYNAMIC_PRIORITY priority);
 DYNAMIC_PRIORITY get_dynamic_priority(uint8_t idx_dynamic);
-bool set_dynamic_priority(uint8_t idx_dynamic,DYNAMIC_PRIORITY priority, bool save);
+bool set_dynamic_priority(uint8_t idx_dynamic, DYNAMIC_PRIORITY priority, bool save);
 
 
 /********************************************************************************
@@ -254,7 +255,7 @@ typedef enum
 
 bool verify_dynamic_compare(DYNAMIC_COMPARISON compare);
 DYNAMIC_COMPARISON get_dynamic_compare(uint8_t idx_dynamic);
-bool set_dynamic_compare(uint8_t idx_dynamic,DYNAMIC_COMPARISON compare, bool save);
+bool set_dynamic_compare(uint8_t idx_dynamic, DYNAMIC_COMPARISON compare, bool save);
 
 
 /********************************************************************************
@@ -267,7 +268,7 @@ bool set_dynamic_compare(uint8_t idx_dynamic,DYNAMIC_COMPARISON compare, bool sa
 ********************************************************************************/
 bool verify_dynamic_threshold(float threshold);
 float get_dynamic_threshold(uint8_t idx_dynamic);
-bool set_dynamic_Threshold(uint8_t idx_dynamic,float threshold, bool save);
+bool set_dynamic_threshold(uint8_t idx_dynamic, float threshold, bool save);
 
 
 /********************************************************************************
@@ -280,7 +281,7 @@ bool set_dynamic_Threshold(uint8_t idx_dynamic,float threshold, bool save);
 ********************************************************************************/
 bool verify_dynamic_index(uint8_t index);
 uint8_t get_dynamic_index(uint8_t idx_dynamic);
-bool set_dynamic_Index(uint8_t idx_dynamic,uint8_t index, bool save);
+bool set_dynamic_Index(uint8_t idx_dynamic, uint8_t index, bool save);
 
 #ifdef __cplusplus
 }

@@ -6,8 +6,3 @@
  */
 
 #include "ke_digitaldash.h"
-
-bool dash_set_num_views( )
-{
-
-}

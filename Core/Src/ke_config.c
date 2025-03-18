@@ -32,7 +32,7 @@
 #define DEFAULT_VIEW_BACKGROUND VIEW_BACKGROUND_BLACK
 #define DEFAULT_VIEW_GAUGE_THEME GAUGE_THEME_STOCK_ST
 #define DEFAULT_ALERT_ENABLE ALERT_STATE_DISABLED
-#define DEFAULT_ALERT_MESSAGE "This is an alert"
+#define DEFAULT_ALERT_MESSAGE 0
 #define DEFAULT_ALERT_COMPARE ALERT_COMPARISON_GREATER_THAN
 #define DEFAULT_ALERT_THRESHOLD 0
 #define DEFAULT_DYNAMIC_ENABLE DYNAMIC_STATE_DISABLED
@@ -1053,7 +1053,7 @@ static uint8_t settings_view_num_gauges[GAUGES_PER_VIEW] = {DEFAULT_VIEW_NUM_GAU
 static VIEW_BACKGROUND settings_view_background[MAX_VIEWS] = {DEFAULT_VIEW_BACKGROUND};
 static GAUGE_THEME settings_view_gauge_theme[MAX_VIEWS][GAUGES_PER_VIEW] = {DEFAULT_VIEW_GAUGE_THEME};
 static ALERT_STATE settings_alert_enable[MAX_ALERTS] = {DEFAULT_ALERT_ENABLE};
-static char settings_alert_message[MAX_ALERTS][ALERT_MESSAGE_LEN] = {DEFAULT_ALERT_MESSAGE};
+static char settings_alert_message[MAX_ALERTS][ALERT_MESSAGE_LEN] = {0};
 static ALERT_COMPARISON settings_alert_compare[MAX_ALERTS] = {DEFAULT_ALERT_COMPARE};
 static float settings_alert_threshold[NUM_DYNAMIC] = {DEFAULT_ALERT_THRESHOLD};
 static DYNAMIC_STATE settings_dynamic_enable[NUM_DYNAMIC] = {DEFAULT_DYNAMIC_ENABLE};
@@ -1084,11 +1084,11 @@ static VIEW_STATE load_view_enable(uint8_t idx)
     return load_view_enable_val;
 }
 
-static void save_view_enable(uint8_t idx, VIEW_STATE enable)
+static void save_view_enable(uint8_t idx, VIEW_STATE view_enable)
 {
     if (true)
     {
-        write(map_view_enable_byte1[idx], (uint32_t)enable & 0xFF);
+        write(map_view_enable_byte1[idx], (uint32_t)view_enable & 0xFF);
     }
 }
 
@@ -1151,11 +1151,11 @@ static uint8_t load_view_num_gauges(uint8_t idx)
     return load_view_num_gauges_val;
 }
 
-static void save_view_num_gauges(uint8_t idx, uint8_t num_gauges)
+static void save_view_num_gauges(uint8_t idx, uint8_t view_num_gauges)
 {
     if (true)
     {
-        write(map_view_num_gauges_byte1[idx], (uint32_t)num_gauges & 0xFF);
+        write(map_view_num_gauges_byte1[idx], (uint32_t)view_num_gauges & 0xFF);
     }
 }
 
@@ -1219,11 +1219,11 @@ static VIEW_BACKGROUND load_view_background(uint8_t idx)
     return load_view_background_val;
 }
 
-static void save_view_background(uint8_t idx, VIEW_BACKGROUND background)
+static void save_view_background(uint8_t idx, VIEW_BACKGROUND view_background)
 {
     if (true)
     {
-        write(map_view_background_byte1[idx], (uint32_t)background & 0xFF);
+        write(map_view_background_byte1[idx], (uint32_t)view_background & 0xFF);
     }
 }
 
@@ -1287,11 +1287,11 @@ static GAUGE_THEME load_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge)
     return load_view_gauge_theme_val;
 }
 
-static void save_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge, GAUGE_THEME theme)
+static void save_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge, GAUGE_THEME view_gauge_theme)
 {
     if (true)
     {
-        write(map_view_gauge_theme_byte1[idx_view][idx_gauge], (uint32_t)theme & 0xFF);
+        write(map_view_gauge_theme_byte1[idx_view][idx_gauge], (uint32_t)view_gauge_theme & 0xFF);
     }
 }
 
@@ -1354,11 +1354,11 @@ static ALERT_STATE load_alert_enable(uint8_t idx)
     return load_alert_enable_val;
 }
 
-static void save_alert_enable(uint8_t idx, ALERT_STATE enable)
+static void save_alert_enable(uint8_t idx, ALERT_STATE alert_enable)
 {
     if (true)
     {
-        write(map_alert_enable_byte1[idx], (uint32_t)enable & 0xFF);
+        write(map_alert_enable_byte1[idx], (uint32_t)alert_enable & 0xFF);
     }
 }
 
@@ -1417,30 +1417,89 @@ static char load_alert_message(uint8_t idx)
     return load_alert_message_val;
 }
 
-static void save_alert_message(uint8_t idx, char message)
+static void save_alert_message(uint8_t idx, char* alert_message)
 {
     if (true)
     {
-
+        write(map_alert_message_byte1[idx], alert_message[idx]);
+        write(map_alert_message_byte2[idx], alert_message[idx]);
+        write(map_alert_message_byte3[idx], alert_message[idx]);
+        write(map_alert_message_byte4[idx], alert_message[idx]);
+        write(map_alert_message_byte5[idx], alert_message[idx]);
+        write(map_alert_message_byte6[idx], alert_message[idx]);
+        write(map_alert_message_byte7[idx], alert_message[idx]);
+        write(map_alert_message_byte8[idx], alert_message[idx]);
+        write(map_alert_message_byte9[idx], alert_message[idx]);
+        write(map_alert_message_byte10[idx], alert_message[idx]);
+        write(map_alert_message_byte11[idx], alert_message[idx]);
+        write(map_alert_message_byte12[idx], alert_message[idx]);
+        write(map_alert_message_byte13[idx], alert_message[idx]);
+        write(map_alert_message_byte14[idx], alert_message[idx]);
+        write(map_alert_message_byte15[idx], alert_message[idx]);
+        write(map_alert_message_byte16[idx], alert_message[idx]);
+        write(map_alert_message_byte17[idx], alert_message[idx]);
+        write(map_alert_message_byte18[idx], alert_message[idx]);
+        write(map_alert_message_byte19[idx], alert_message[idx]);
+        write(map_alert_message_byte20[idx], alert_message[idx]);
+        write(map_alert_message_byte21[idx], alert_message[idx]);
+        write(map_alert_message_byte22[idx], alert_message[idx]);
+        write(map_alert_message_byte23[idx], alert_message[idx]);
+        write(map_alert_message_byte24[idx], alert_message[idx]);
+        write(map_alert_message_byte25[idx], alert_message[idx]);
+        write(map_alert_message_byte26[idx], alert_message[idx]);
+        write(map_alert_message_byte27[idx], alert_message[idx]);
+        write(map_alert_message_byte28[idx], alert_message[idx]);
+        write(map_alert_message_byte29[idx], alert_message[idx]);
+        write(map_alert_message_byte30[idx], alert_message[idx]);
+        write(map_alert_message_byte31[idx], alert_message[idx]);
+        write(map_alert_message_byte32[idx], alert_message[idx]);
+        write(map_alert_message_byte33[idx], alert_message[idx]);
+        write(map_alert_message_byte34[idx], alert_message[idx]);
+        write(map_alert_message_byte35[idx], alert_message[idx]);
+        write(map_alert_message_byte36[idx], alert_message[idx]);
+        write(map_alert_message_byte37[idx], alert_message[idx]);
+        write(map_alert_message_byte38[idx], alert_message[idx]);
+        write(map_alert_message_byte39[idx], alert_message[idx]);
+        write(map_alert_message_byte40[idx], alert_message[idx]);
+        write(map_alert_message_byte41[idx], alert_message[idx]);
+        write(map_alert_message_byte42[idx], alert_message[idx]);
+        write(map_alert_message_byte43[idx], alert_message[idx]);
+        write(map_alert_message_byte44[idx], alert_message[idx]);
+        write(map_alert_message_byte45[idx], alert_message[idx]);
+        write(map_alert_message_byte46[idx], alert_message[idx]);
+        write(map_alert_message_byte47[idx], alert_message[idx]);
+        write(map_alert_message_byte48[idx], alert_message[idx]);
+        write(map_alert_message_byte49[idx], alert_message[idx]);
+        write(map_alert_message_byte50[idx], alert_message[idx]);
+        write(map_alert_message_byte51[idx], alert_message[idx]);
+        write(map_alert_message_byte52[idx], alert_message[idx]);
+        write(map_alert_message_byte53[idx], alert_message[idx]);
+        write(map_alert_message_byte54[idx], alert_message[idx]);
+        write(map_alert_message_byte55[idx], alert_message[idx]);
+        write(map_alert_message_byte56[idx], alert_message[idx]);
+        write(map_alert_message_byte57[idx], alert_message[idx]);
+        write(map_alert_message_byte58[idx], alert_message[idx]);
+        write(map_alert_message_byte59[idx], alert_message[idx]);
+        write(map_alert_message_byte60[idx], alert_message[idx]);
+        write(map_alert_message_byte61[idx], alert_message[idx]);
+        write(map_alert_message_byte62[idx], alert_message[idx]);
+        write(map_alert_message_byte63[idx], alert_message[idx]);
+        write(map_alert_message_byte64[idx], alert_message[idx]);
     }
 }
 
-bool verify_alert_message(char alert_message)
+bool verify_alert_message(char* alert_message)
 {
     return 1; // TODO - String checking
 }
 
-char get_alert_message(uint8_t idx)
+void get_alert_message(uint8_t idx, char* alert_message)
 {
-    // Verify the Alert message value is valid
-    //if (!verify_alert_message(settings_alert_message[idx]))
-    //    return DEFAULT_ALERT_MESSAGE;
-
-    //return settings_alert_message[idx];
+    memcpy(alert_message, (char)settings_alert_message[idx][0], ALERT_MESSAGE_LEN);
 }
 
 // Set the Alert message
-bool set_alert_message(uint8_t idx, char alert_message, bool save)
+bool set_alert_message(uint8_t idx, char* alert_message, bool save)
 {
     // Verify the Alert message value is valid
     if (!verify_alert_message(alert_message))
@@ -1456,7 +1515,7 @@ bool set_alert_message(uint8_t idx, char alert_message, bool save)
         }
     }
 
-    //settings_alert_message[idx] = alert_message;
+    memcpy(settings_alert_message[idx][0], alert_message, ALERT_MESSAGE_LEN);
 
     return 1;
 }
@@ -1481,11 +1540,11 @@ static ALERT_COMPARISON load_alert_compare(uint8_t idx)
     return load_alert_compare_val;
 }
 
-static void save_alert_compare(uint8_t idx, ALERT_COMPARISON compare)
+static void save_alert_compare(uint8_t idx, ALERT_COMPARISON alert_compare)
 {
     if (true)
     {
-        write(map_alert_compare_byte1[idx], (uint32_t)compare & 0xFF);
+        write(map_alert_compare_byte1[idx], (uint32_t)alert_compare & 0xFF);
     }
 }
 
@@ -1551,14 +1610,14 @@ static float load_alert_threshold(uint8_t idx)
     return load_alert_threshold_val;
 }
 
-static void save_alert_threshold(uint8_t idx, float threshold)
+static void save_alert_threshold(uint8_t idx, float alert_threshold)
 {
     if (true)
     {
-        write(map_alert_threshold_byte1[idx], ((uint32_t)threshold >> 24) & 0xFF);
-        write(map_alert_threshold_byte2[idx], ((uint32_t)threshold >> 16) & 0xFF);
-        write(map_alert_threshold_byte3[idx], ((uint32_t)threshold >> 8) & 0xFF);
-        write(map_alert_threshold_byte1[idx], (uint32_t)threshold & 0xFF);
+        write(map_alert_threshold_byte1[idx], ((uint32_t)alert_threshold >> 24) & 0xFF);
+        write(map_alert_threshold_byte2[idx], ((uint32_t)alert_threshold >> 16) & 0xFF);
+        write(map_alert_threshold_byte3[idx], ((uint32_t)alert_threshold >> 8) & 0xFF);
+        write(map_alert_threshold_byte1[idx], (uint32_t)alert_threshold & 0xFF);
     }
 }
 
@@ -1625,11 +1684,11 @@ static DYNAMIC_STATE load_dynamic_enable(uint8_t idx)
     return load_dynamic_enable_val;
 }
 
-static void save_dynamic_enable(uint8_t idx, DYNAMIC_STATE enable)
+static void save_dynamic_enable(uint8_t idx, DYNAMIC_STATE dynamic_enable)
 {
     if (true)
     {
-        write(map_dynamic_enable_byte1[idx], (uint32_t)enable & 0xFF);
+        write(map_dynamic_enable_byte1[idx], (uint32_t)dynamic_enable & 0xFF);
     }
 }
 
@@ -1692,11 +1751,11 @@ static DYNAMIC_PRIORITY load_dynamic_priority(uint8_t idx)
     return load_dynamic_priority_val;
 }
 
-static void save_dynamic_priority(uint8_t idx, DYNAMIC_PRIORITY priority)
+static void save_dynamic_priority(uint8_t idx, DYNAMIC_PRIORITY dynamic_priority)
 {
     if (true)
     {
-        write(map_dynamic_priority_byte1[idx], (uint32_t)priority & 0xFF);
+        write(map_dynamic_priority_byte1[idx], (uint32_t)dynamic_priority & 0xFF);
     }
 }
 
@@ -1759,11 +1818,11 @@ static DYNAMIC_COMPARISON load_dynamic_compare(uint8_t idx)
     return load_dynamic_compare_val;
 }
 
-static void save_dynamic_compare(uint8_t idx, DYNAMIC_COMPARISON compare)
+static void save_dynamic_compare(uint8_t idx, DYNAMIC_COMPARISON dynamic_compare)
 {
     if (true)
     {
-        write(map_dynamic_compare_byte1[idx], (uint32_t)compare & 0xFF);
+        write(map_dynamic_compare_byte1[idx], (uint32_t)dynamic_compare & 0xFF);
     }
 }
 
@@ -1829,14 +1888,14 @@ static float load_dynamic_threshold(uint8_t idx)
     return load_dynamic_threshold_val;
 }
 
-static void save_dynamic_threshold(uint8_t idx, float threshold)
+static void save_dynamic_threshold(uint8_t idx, float dynamic_threshold)
 {
     if (true)
     {
-        write(map_dynamic_threshold_byte1[idx], ((uint32_t)threshold >> 24) & 0xFF);
-        write(map_dynamic_threshold_byte2[idx], ((uint32_t)threshold >> 16) & 0xFF);
-        write(map_dynamic_threshold_byte3[idx], ((uint32_t)threshold >> 8) & 0xFF);
-        write(map_dynamic_threshold_byte1[idx], (uint32_t)threshold & 0xFF);
+        write(map_dynamic_threshold_byte1[idx], ((uint32_t)dynamic_threshold >> 24) & 0xFF);
+        write(map_dynamic_threshold_byte2[idx], ((uint32_t)dynamic_threshold >> 16) & 0xFF);
+        write(map_dynamic_threshold_byte3[idx], ((uint32_t)dynamic_threshold >> 8) & 0xFF);
+        write(map_dynamic_threshold_byte1[idx], (uint32_t)dynamic_threshold & 0xFF);
     }
 }
 
@@ -1903,11 +1962,11 @@ static uint8_t load_dynamic_index(uint8_t idx)
     return load_dynamic_index_val;
 }
 
-static void save_dynamic_index(uint8_t idx, uint8_t index)
+static void save_dynamic_index(uint8_t idx, uint8_t dynamic_index)
 {
     if (true)
     {
-        write(map_dynamic_index_byte1[idx], (uint32_t)index & 0xFF);
+        write(map_dynamic_index_byte1[idx], (uint32_t)dynamic_index & 0xFF);
     }
 }
 
