@@ -107,14 +107,6 @@ static void switch_screen(struct _lv_obj_t * scr)
 	}
 }
 
-static uint8_t screen_active(struct _lv_obj_t * scr)
-{
-	if( lv_display_get_screen_active(NULL) == scr)
-		return 1;
-	else
-		return 0;
-}
-
 void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi)
 {
 	 HAL_GPIO_TogglePin(GREEN_LED_GPIO_Port, GREEN_LED_Pin);
@@ -151,9 +143,16 @@ uint8_t compare_values(float a, float b, digitaldash_compare comparison)
 
 HAL_StatusTypeDef can_filter( uint32_t id, uint32_t mask, uint32_t filterIndex, uint32_t FIFO  )
 {
+	HAL_StatusTypeDef status = HAL_OK;
+
 	//TODO check if CAN is enabled
-	if( HAL_FDCAN_GetState(&hfdcan1) != HAL_FDCAN_STATE_RESET )
-		HAL_FDCAN_Stop(&hfdcan1);
+	if( HAL_FDCAN_GetState(&hfdcan1) != HAL_FDCAN_STATE_RESET ) {
+		status = HAL_FDCAN_Stop(&hfdcan1);
+
+		// Abort is CAN couldn't be stopped
+		if( status != HAL_OK )
+			return status;
+	}
 
 	/* Declare a CAN filter configuration */
 	FDCAN_FilterTypeDef  sFilterConfig;
@@ -171,9 +170,13 @@ HAL_StatusTypeDef can_filter( uint32_t id, uint32_t mask, uint32_t filterIndex, 
 	sFilterConfig.FilterConfig  = FIFO;
 	sFilterConfig.FilterIndex = filterIndex;
 
-	HAL_FDCAN_ConfigFilter(&hfdcan1, &sFilterConfig);
+	status = HAL_FDCAN_ConfigFilter(&hfdcan1, &sFilterConfig);
 
-	HAL_FDCAN_Start(&hfdcan1);
+	// Abort is CAN filter did not work
+	if( status != HAL_OK )
+		return status;
+
+	return HAL_FDCAN_Start(&hfdcan1);
 }
 
 void Add_CAN_Filter( uint16_t id )
