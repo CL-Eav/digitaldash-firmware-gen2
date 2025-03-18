@@ -281,7 +281,7 @@ bool set_dynamic_threshold(uint8_t idx_dynamic, float threshold, bool save);
 ********************************************************************************/
 bool verify_dynamic_index(uint8_t index);
 uint8_t get_dynamic_index(uint8_t idx_dynamic);
-bool set_dynamic_Index(uint8_t idx_dynamic, uint8_t index, bool save);
+bool set_dynamic_index(uint8_t idx_dynamic, uint8_t index, bool save);
 
 #ifdef __cplusplus
 }

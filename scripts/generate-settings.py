@@ -82,7 +82,7 @@ def write_default_define(file, prefix, cmd, depth):
      file.write("#define DEFAULT_" + prefix.upper() + "_" + cmd["cmd"].upper() + " " + str(cmd["default"]) + "\n")
    else:
      if( cmd["type"] == "string" ):
-        file.write("#define DEFAULT_" + prefix.upper() + "_" + cmd["cmd"].upper() + " " + cmd["default"] + "\n")
+        file.write("#define DEFAULT_" + prefix.upper() + "_" + cmd["cmd"].upper() + " 0\n")
      else:
         file.write("#define DEFAULT_" + prefix.upper() + "_" + cmd["cmd"].upper() + " " + cmd["dataType"].replace(" ", "_").upper() + "_" + cmd["default"].replace(" ", "_").upper() + "\n")
 
@@ -244,19 +244,27 @@ def write_set_source(file, prefix, cmd, depth):
 
 def write_get_declare( file, prefix, cmd, depth ):
     if( cmd["type"] == "string" ):
-       pointer = "*"
-    else:
-       pointer = ""
-    # Get function definition
-    if cmd["index"]:
-      if( depth == 2):
-        func = "uint8_t idx_" + prefix.split('_')[0].lower() + ", uint8_t idx_" + prefix.split('_')[1].lower()
+      if( cmd["index"] ):
+        if( depth == 2 ):
+            input = "uint8_t idx_" + prefix.lower().split('_')[0] + ", uint8_t idx_" + prefix.lower().split('_')[1]
+        else:
+            input = "uint8_t idx, " + cmd["dataType"] + "* " + prefix + "_" + cmd["cmd"].lower()
       else:
-         func = "uint8_t idx_" + prefix.lower()
+        input = "void"
+
+      file.write("void get_" + prefix + "_" + cmd["cmd"].lower() + "(" + input + ");\n")
+
     else:
-      func = "void"
-    
-    file.write( cmd["dataType"] + pointer + " get_" + prefix + "_" + cmd["cmd"].lower() + "(" + func + ");\n" )
+      # Get function definition
+      if cmd["index"]:
+        if( depth == 2):
+          func = "uint8_t idx_" + prefix.split('_')[0].lower() + ", uint8_t idx_" + prefix.split('_')[1].lower()
+        else:
+          func = "uint8_t idx_" + prefix.lower()
+      else:
+        func = "void"
+      
+      file.write( cmd["dataType"] + " get_" + prefix + "_" + cmd["cmd"].lower() + "(" + func + ");\n" )
 
 def write_set_declare( file, prefix, cmd, depth ):
     if( cmd["type"] == "string" ):
