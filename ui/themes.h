@@ -11,11 +11,7 @@
 #include "lvgl.h"
 #include "lib_pid.h"
 #include "lvgl_port_display.h"
-
-typedef enum {
-	STOCK_ST,
-	GRUMPY_CAT
-}GAUGE_THEME;
+#include "ke_config.h"
 
 lv_obj_t * add_gauge( GAUGE_THEME theme, int32_t x, int32_t y, lv_obj_t * parent, PID_DATA * pid);
 

@@ -11,11 +11,7 @@
 #include "lib_pid.h"
 #include "lvgl.h"
 #include "stdio.h"
-
-#define MAX_ALERT_LENGTH 64
-#define MAX_GAUGES 3
-#define MAX_ALERTS 5
-#define MAX_VIEWS 3
+#include "ke_config.h"
 
 typedef enum {
     DD_LESS_THAN,
@@ -31,11 +27,6 @@ typedef enum {
     DD_MEDIUM_PRIORITY,
     DD_HIGH_PRIORITY
 }digitaldash_priority;
-
-typedef enum {
-    THEME_STOCK_ST,
-    THEME_STOCK_RS
-}digitaldash_theme;
 
 typedef enum {
     BACKGROUND_FLARE,
@@ -54,11 +45,11 @@ typedef struct {
 
 typedef struct {
     digitaldash_trigger trigger; // Trigger for when an alert should appear
-    char msg[MAX_ALERT_LENGTH];  // Alert message
+    char msg[ALERT_MESSAGE_LEN];  // Alert message
 }digitaldash_alert;
 
 typedef struct {
-    digitaldash_theme theme;   // Style of the gauge
+	GAUGE_THEME theme;   // Style of the gauge
     PID_DATA * pid; // Parameter that is being streamed
     lv_obj_t * obj;
 }digitaldash_gauge;
@@ -68,7 +59,7 @@ typedef struct {
     uint8_t view_index; // Screen number 0 - MAX_VIEWS
     uint8_t num_gauges;
     digitaldash_background background; // background of the specific view
-    digitaldash_gauge gauge[MAX_GAUGES]; // Gauge objects
+    digitaldash_gauge gauge[GAUGES_PER_VIEW]; // Gauge objects
 }digitaldash_view;
 
 typedef struct {

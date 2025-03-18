@@ -48,6 +48,7 @@
 #include "lib_pid.h"
 #include "ke_digitaldash.h"
 #include "lib_digital_dash.h"
+#include "ke_config.h"
 
 /* USER CODE END Includes */
 
@@ -337,7 +338,7 @@ int main(void)
   iat.upper_limit = 150;
   iat.precision = 1;
   FordFocusSTRS.view[0].gauge[0].pid = &iat;
-  FordFocusSTRS.view[0].gauge[0].theme = THEME_STOCK_ST;
+  FordFocusSTRS.view[0].gauge[0].theme = GAUGE_THEME_STOCK_ST;
 
   // View 1 - Gauge 2
   strcpy(boost.label, "Boost");
@@ -346,7 +347,7 @@ int main(void)
   boost.upper_limit = 25;
   boost.precision = 2;
   FordFocusSTRS.view[0].gauge[1].pid = &boost;
-  FordFocusSTRS.view[0].gauge[1].theme = THEME_STOCK_ST;
+  FordFocusSTRS.view[0].gauge[1].theme = GAUGE_THEME_STOCK_ST;
 
   // View 1 - Gauge 3
   strcpy(oil.label, "Oil");
@@ -355,7 +356,7 @@ int main(void)
   oil.upper_limit = 150;
   oil.precision = 0;
   FordFocusSTRS.view[0].gauge[2].pid = &oil;
-  FordFocusSTRS.view[0].gauge[1].theme = THEME_STOCK_ST;
+  FordFocusSTRS.view[0].gauge[1].theme = GAUGE_THEME_STOCK_ST;
 
   // View 2
   FordFocusSTRS.view[1].enabled = 1;
@@ -370,13 +371,13 @@ int main(void)
   coolant.upper_limit = 150;
   coolant.precision = 1;
   FordFocusSTRS.view[1].gauge[0].pid = &coolant;
-  FordFocusSTRS.view[1].gauge[0].theme = THEME_STOCK_ST;
+  FordFocusSTRS.view[1].gauge[0].theme = GAUGE_THEME_STOCK_ST;
 
   // View 2 - Gauge 2
-  FordFocusSTRS.view[1].gauge[1].theme = THEME_STOCK_ST;
+  FordFocusSTRS.view[1].gauge[1].theme = GAUGE_THEME_STOCK_ST;
 
   // View 2 - Gauge 3
-  FordFocusSTRS.view[1].gauge[1].theme = THEME_STOCK_ST;
+  FordFocusSTRS.view[1].gauge[1].theme = GAUGE_THEME_STOCK_ST;
 
   // Alert 1
   strcpy(FordFocusSTRS.alert[0].msg, "Max oil pressure reached");
@@ -606,7 +607,7 @@ int main(void)
   FordFocusSTRS.view[1].gauge[2].pid = DigitalDash_Add_PID_To_Stream( &pid_req );
 
   for( uint8_t idx = 0; idx < FordFocusSTRS.num_views; idx++) {
-	  int x_pos[MAX_GAUGES] = {0};
+	  int x_pos[GAUGES_PER_VIEW] = {0};
 
 	  if( FordFocusSTRS.view[idx].num_gauges == 1) {
 		  x_pos[0] = 0;
@@ -620,11 +621,11 @@ int main(void)
 	  }
 
 	  for( uint8_t i = 0; i < FordFocusSTRS.view[idx].num_gauges; i++) {
-		  FordFocusSTRS.view[idx].gauge[i].obj = add_gauge(GRUMPY_CAT, x_pos[i], 0, ui_view[idx], FordFocusSTRS.view[idx].gauge[i].pid);
+		  FordFocusSTRS.view[idx].gauge[i].obj = add_gauge(GAUGE_THEME_GRUMPY_CAT, x_pos[i], 0, ui_view[idx], FordFocusSTRS.view[idx].gauge[i].pid);
 	  }
   }
 
-  uint32_t timestamp[MAX_VIEWS][MAX_GAUGES] = {0};
+  uint32_t timestamp[MAX_VIEWS][GAUGES_PER_VIEW] = {0};
   /* USER CODE END 2 */
 
   /* Infinite loop */

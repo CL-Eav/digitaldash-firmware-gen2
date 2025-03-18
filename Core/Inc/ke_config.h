@@ -114,7 +114,7 @@ bool set_view_background(uint8_t idx_view, VIEW_BACKGROUND background, bool save
 typedef enum
 {
     GAUGE_THEME_STOCK_ST,
-    GAUGE_THEME_STOCK_RS,
+    GAUGE_THEME_GRUMPY_CAT,
     GAUGE_THEME_RESERVED
 } GAUGE_THEME;
 

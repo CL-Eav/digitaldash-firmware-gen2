@@ -221,7 +221,7 @@
             "default": "Stock ST",
             "options": [
                 "Stock ST",
-                "Stock RS"
+                "Grumpy Cat"
             ],
             "limit": "Reserved",
             "EEBytes": 1
