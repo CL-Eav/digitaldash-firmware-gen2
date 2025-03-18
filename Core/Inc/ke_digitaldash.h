@@ -56,7 +56,6 @@ typedef struct {
 
 typedef struct {
     uint8_t enabled; // Is the view enabled or not
-    uint8_t view_index; // Screen number 0 - MAX_VIEWS
     uint8_t num_gauges;
     digitaldash_background background; // background of the specific view
     digitaldash_gauge gauge[GAUGES_PER_VIEW]; // Gauge objects

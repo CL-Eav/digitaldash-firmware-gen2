@@ -264,6 +264,17 @@ void Digitaldash_Init( void )
         Error_Handler();
 }
 
+void spoof_config(void)
+{
+	// View 0
+	set_view_enable(0, VIEW_STATE_ENABLED, false);
+	set_view_num_gauges(0, 3, false);
+	set_view_background(0, VIEW_BACKGROUND_FLARE, false);
+	set_view_gauge_theme(0, 0, GAUGE_THEME_STOCK_ST, false);
+	set_view_gauge_theme(0, 1, GAUGE_THEME_GRUMPY_CAT, false);
+	set_view_gauge_theme(0, 2, GAUGE_THEME_STOCK_ST, false);
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -323,13 +334,20 @@ int main(void)
   if (HAL_TIM_Base_Start_IT(&htim17) != HAL_OK)
       Error_Handler();
 
-  FordFocusSTRS.num_views = 2;
+  // Iterate through each view
+  for(uint8_t view = 0; view < MAX_VIEWS; view++)
+  {
+	  FordFocusSTRS.view[view].enabled = get_view_enable(view);
+	  FordFocusSTRS.view[view].num_gauges = get_view_num_gauges(view);
+	  FordFocusSTRS.view[view].background = get_view_background(view);
 
-  // View 1
-  FordFocusSTRS.view[0].enabled = 1;
-  FordFocusSTRS.view[0].view_index = 0;
-  FordFocusSTRS.view[0].num_gauges = 3;
-  FordFocusSTRS.view[0].background = BACKGROUND_USER1;
+	  // Iterate through each gauge in the view
+	  for(uint8_t gauge = 0; gauge < FordFocusSTRS.view[view].num_gauges; gauge++)
+	  {
+		  FordFocusSTRS.view[view].gauge[gauge].theme = get_view_gauge_theme(view, gauge);
+	  }
+  }
+
 
   // View 1 - Gauge 1
   strcpy(iat.label, "IAT");
