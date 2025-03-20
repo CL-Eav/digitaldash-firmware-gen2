@@ -356,7 +356,7 @@ int main(void)
 
 
   // View 1 - Gauge 1
-  get_pid_label(MODE1, MODE1_INTAKE_AIR_TEMPERATURE, iat.label);
+  get_pid_label(MODE1, MODE1_INTAKE_AIR_TEMPERATURE_PID, iat.label);
   iat.pid_unit = PID_UNITS_FAHRENHEIT;
   get_unit_label(iat.pid_unit, iat.unit_label);
 
@@ -581,7 +581,7 @@ int main(void)
 
   PID_DATA pid_req;
 
-  pid_req.pid = MODE1_RELATIVE_ACCELERATOR_PEDAL_POSITION;
+  pid_req.pid = MODE1_RELATIVE_ACCELERATOR_PEDAL_POSITION_PID;
   pid_req.mode = MODE1;
   pid_req.pid_unit = PID_UNITS_PERCENT;
   strcpy(pid_req.label, "APP");
@@ -591,7 +591,7 @@ int main(void)
   pid_req.precision = 0;
   FordFocusSTRS.view[1].gauge[0].pid = DigitalDash_Add_PID_To_Stream( &pid_req );
 
-  pid_req.pid = MODE1_ENGINE_SPEED;
+  pid_req.pid = MODE1_ENGINE_SPEED_PID;
   pid_req.mode = MODE1;
   pid_req.pid_unit = PID_UNITS_RPM;
   strcpy(pid_req.label, "RPM");
@@ -601,7 +601,7 @@ int main(void)
   pid_req.precision = 0;
   FordFocusSTRS.view[1].gauge[1].pid = DigitalDash_Add_PID_To_Stream( &pid_req );
 
-  pid_req.pid = CALC1_TURBOCHARGER_COMPRESSOR_INLET_PRESSURE;
+  pid_req.pid = CALC1_TURBOCHARGER_COMPRESSOR_INLET_PRESSURE_PID;
   pid_req.mode = CALC1;
   pid_req.pid_unit = PID_UNITS_PSI;
   strcpy(pid_req.label, "Boost");
