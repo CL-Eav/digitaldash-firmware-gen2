@@ -360,8 +360,8 @@ int main(void)
   iat.pid_unit = PID_UNITS_FAHRENHEIT;
   get_unit_label(iat.pid_unit, iat.unit_label);
 
-  iat.lower_limit = MODE1_INTAKE_AIR_TEMPERATURE_LOWER;
-  iat.upper_limit = MODE1_INTAKE_AIR_TEMPERATURE_UPPER;
+  iat.lower_limit = MODE1_INTAKE_AIR_TEMPERATURE_FAHRENHEIT_LOWER;
+  iat.upper_limit = MODE1_INTAKE_AIR_TEMPERATURE_FAHRENHEIT_UPPER;
   iat.precision = 1;
   FordFocusSTRS.view[0].gauge[0].pid = &iat;
   FordFocusSTRS.view[0].gauge[0].theme = GAUGE_THEME_STOCK_ST;
