@@ -225,6 +225,22 @@
             ],
             "limit": "Reserved",
             "EEBytes": 1
+        },
+        {
+            "index" : true,
+            "count" : ["max_views", "gauges_per_view"],
+            "cmd": "pid",
+            "name": "PID assigned to the gauge",
+            "desc": "Set the gauge PID by view and gauge index",
+            "type": "list",
+            "dataType": "GAUGE_PID",
+            "default": "UNASSIGNED",
+            "options": [
+                "Stock ST",
+                "Grumpy Cat"
+            ],
+            "limit": "Reserved",
+            "EEBytes": 2
         }
     ]
 }
