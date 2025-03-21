@@ -356,7 +356,7 @@ int main(void)
 
 
   // View 1 - Gauge 1
-  get_pid_label(MODE1, MODE1_INTAKE_AIR_TEMPERATURE_PID, iat.label);
+  get_pid_label(MODE1_INTAKE_AIR_TEMPERATURE_UUID, iat.label);
   iat.pid_unit = PID_UNITS_FAHRENHEIT;
   get_unit_label(iat.pid_unit, iat.unit_label);
 
