@@ -467,7 +467,7 @@ def write_save_source( file, prefix, cmd, depth ):
                     file.write("        write(EEPROM_" + cmd["cmd"].upper() + str(byte_count) + ", (" + input + " >> " + str(offset) + ") & 0xFF);\n")
               else:
                   if( cmd["index"] ):
-                    file.write("        write(map_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_byte1[" + index + "], " + input + " & 0xFF);\n")
+                    file.write("        write(map_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_byte" + str(byte_count) + "[" + index + "], " + input + " & 0xFF);\n")
                   else:
                     file.write("        write(EEPROM_" + cmd["cmd"].upper() + str(byte_count) + ", " + input + " & 0xFF);\n")
               byte_count = byte_count + 1
