@@ -1090,7 +1090,7 @@ static VIEW_STATE settings_view_enable[MAX_VIEWS] = {DEFAULT_VIEW_ENABLE};
 static uint8_t settings_view_num_gauges[GAUGES_PER_VIEW] = {DEFAULT_VIEW_NUM_GAUGES};
 static VIEW_BACKGROUND settings_view_background[MAX_VIEWS] = {DEFAULT_VIEW_BACKGROUND};
 static GAUGE_THEME settings_view_gauge_theme[MAX_VIEWS][GAUGES_PER_VIEW] = {DEFAULT_VIEW_GAUGE_THEME};
-static GAUGE_PID settings_view_gauge_pid[MAX_VIEWS][GAUGES_PER_VIEW] = {DEFAULT_VIEW_GAUGE_PID};
+static uint32_t settings_view_gauge_pid[MAX_VIEWS][GAUGES_PER_VIEW] = {DEFAULT_VIEW_GAUGE_PID};
 static ALERT_STATE settings_alert_enable[MAX_ALERTS] = {DEFAULT_ALERT_ENABLE};
 static char settings_alert_message[MAX_ALERTS][ALERT_MESSAGE_LEN] = {DEFAULT_ALERT_MESSAGE};
 static ALERT_COMPARISON settings_alert_compare[MAX_ALERTS] = {DEFAULT_ALERT_COMPARE};
@@ -1383,9 +1383,9 @@ bool set_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge, GAUGE_THEME view_
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
-static GAUGE_PID load_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge)
+static uint32_t load_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge)
 {
-    GAUGE_PID load_view_gauge_pid_val = DEFAULT_VIEW_GAUGE_PID;
+    uint32_t load_view_gauge_pid_val = DEFAULT_VIEW_GAUGE_PID;
 
     if (true)
     {
@@ -1395,7 +1395,7 @@ static GAUGE_PID load_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge)
     return load_view_gauge_pid_val;
 }
 
-static void save_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge, GAUGE_PID view_gauge_pid)
+static void save_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge, uint32_t view_gauge_pid)
 {
     if (true)
     {
@@ -1404,15 +1404,19 @@ static void save_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge, GAUGE_PID v
     }
 }
 
-bool verify_view_gauge_pid(GAUGE_PID view_gauge_pid)
+bool verify_view_gauge_pid(uint32_t view_gauge_pid)
 {
-    if (view_gauge_pid >= GAUGE_PID_RESERVED)
+    if (view_gauge_pid < 1)
         return 0;
+
+    if (view_gauge_pid > 16777215)
+        return 0;
+
     else
         return 1;
 }
 
-GAUGE_PID get_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge)
+uint32_t get_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge)
 {
     // Verify the PID assigned to the gauge value is valid
     if (!verify_view_gauge_pid(settings_view_gauge_pid[idx_view][idx_gauge]))
@@ -1422,7 +1426,7 @@ GAUGE_PID get_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge)
 }
 
 // Set the PID assigned to the gauge
-bool set_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge, GAUGE_PID view_gauge_pid, bool save)
+bool set_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge, uint32_t view_gauge_pid, bool save)
 {
     // Verify the PID assigned to the gauge value is valid
     if (!verify_view_gauge_pid(view_gauge_pid))

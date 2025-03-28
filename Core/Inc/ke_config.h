@@ -132,16 +132,9 @@ bool set_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge,  GAUGE_THEME them
 * @param save    Set true to save to the EEPROM, otherwise value is non-volatile
 *
 ********************************************************************************/
-typedef enum
-{
-    GAUGE_PID_STOCK_ST,
-    GAUGE_PID_GRUMPY_CAT,
-    GAUGE_PID_RESERVED
-} GAUGE_PID;
-
-bool verify_view_gauge_pid(GAUGE_PID pid);
-GAUGE_PID get_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge);
-bool set_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge,  GAUGE_PID pid, bool save);
+bool verify_view_gauge_pid(uint32_t pid);
+uint32_t get_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge);
+bool set_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge,  uint32_t pid, bool save);
 
 
 /********************************************************************************

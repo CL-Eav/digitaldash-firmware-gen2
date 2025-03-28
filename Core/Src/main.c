@@ -273,6 +273,9 @@ void spoof_config(void)
 	set_view_gauge_theme(0, 0, GAUGE_THEME_STOCK_ST, false);
 	set_view_gauge_theme(0, 1, GAUGE_THEME_GRUMPY_CAT, false);
 	set_view_gauge_theme(0, 2, GAUGE_THEME_STOCK_ST, false);
+	set_view_gauge_pid(0, 0, MODE1_ENGINE_SPEED_UUID, 0);
+	set_view_gauge_pid(0, 1, MODE1_TURBOCHARGER_COMPRESSOR_INLET_PRESSURE_UUID, 0);
+	set_view_gauge_pid(0, 2, MODE1_ENGINE_COOLANT_TEMPERATURE_UUID, 0);
 }
 
 /* USER CODE END 0 */
@@ -338,51 +341,7 @@ int main(void)
   // Spoof a config if EEPROM isn't present
   spoof_config();
 
-  // Iterate through each view
-  for(uint8_t view = 0; view < MAX_VIEWS; view++)
-  {
-	  FordFocusSTRS.view[view].enabled = get_view_enable(view);
-	  if( FordFocusSTRS.view[view].enabled )
-		  FordFocusSTRS.num_views++;
-	  FordFocusSTRS.view[view].num_gauges = get_view_num_gauges(view);
-	  FordFocusSTRS.view[view].background = get_view_background(view);
 
-	  // Iterate through each gauge in the view
-	  for(uint8_t gauge = 0; gauge < FordFocusSTRS.view[view].num_gauges; gauge++)
-	  {
-		  FordFocusSTRS.view[view].gauge[gauge].theme = get_view_gauge_theme(view, gauge);
-	  }
-  }
-
-
-  // View 1 - Gauge 1
-  get_pid_label(MODE1_INTAKE_AIR_TEMPERATURE_UUID, iat.label);
-  iat.pid_unit = PID_UNITS_FAHRENHEIT;
-  get_unit_label(iat.pid_unit, iat.unit_label);
-
-  iat.lower_limit = MODE1_INTAKE_AIR_TEMPERATURE_FAHRENHEIT_LOWER;
-  iat.upper_limit = MODE1_INTAKE_AIR_TEMPERATURE_FAHRENHEIT_UPPER;
-  iat.precision = 1;
-  FordFocusSTRS.view[0].gauge[0].pid = &iat;
-  FordFocusSTRS.view[0].gauge[0].theme = GAUGE_THEME_STOCK_ST;
-
-  // View 1 - Gauge 2
-  strcpy(boost.label, MODE1_TURBOCHARGER_COMPRESSOR_INLET_PRESSURE_LABEL);
-  strcpy(boost.unit_label, PID_UNITS_PSI_LABEL);
-  boost.lower_limit = -15;
-  boost.upper_limit = 25;
-  boost.precision = 2;
-  FordFocusSTRS.view[0].gauge[1].pid = &boost;
-  FordFocusSTRS.view[0].gauge[1].theme = GAUGE_THEME_STOCK_ST;
-
-  // View 1 - Gauge 3
-  strcpy(oil.label, "Oil");
-  strcpy(oil.unit_label, PID_UNITS_FAHRENHEIT_LABEL);
-  oil.lower_limit = 32;
-  oil.upper_limit = 150;
-  oil.precision = 0;
-  FordFocusSTRS.view[0].gauge[2].pid = &oil;
-  FordFocusSTRS.view[0].gauge[1].theme = GAUGE_THEME_STOCK_ST;
 
   // Alert 1
   strcpy(FordFocusSTRS.alert[0].msg, "Max oil pressure reached");
@@ -441,12 +400,6 @@ int main(void)
   lv_disp_t * dispp = lv_display_get_default();
   lv_theme_t * theme = lv_theme_default_init(dispp, lv_palette_main(LV_PALETTE_BLUE), lv_palette_main(LV_PALETTE_RED), true, LV_FONT_DEFAULT);
   lv_disp_set_theme(dispp, theme);
-
-  // Add view(s)
-  for( uint8_t idx = 0; idx < FordFocusSTRS.num_views; idx++) {
-	  ui_view[idx] = lv_obj_create(NULL);
-	  lv_obj_remove_flag(ui_view[idx], LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-  }
 
   // Add background(s)
   for( uint8_t idx = 0; idx < FordFocusSTRS.num_views; idx++) {
@@ -547,8 +500,6 @@ int main(void)
   // Hide the alert by default
   lv_obj_add_flag(ui_alert_container[0], LV_OBJ_FLAG_HIDDEN);
 
-  lv_screen_load(ui_view[0]);
-
   uint8_t alert_active = 1;
 
   /* Configure global filter to reject all non-matching frames */
@@ -579,56 +530,63 @@ int main(void)
 
   Digitaldash_Init();
 
-  PID_DATA pid_req;
+  // Iterate through each view
+  for(uint8_t view = 0; view < MAX_VIEWS; view++)
+  {
+	  FordFocusSTRS.view[view].enabled = get_view_enable(view);
 
-  pid_req.pid = MODE1_RELATIVE_ACCELERATOR_PEDAL_POSITION_PID;
-  pid_req.mode = MODE1;
-  pid_req.pid_unit = PID_UNITS_PERCENT;
-  strcpy(pid_req.label, "APP");
-  strcpy(pid_req.unit_label, PID_UNITS_PERCENT_LABEL);
-  pid_req.lower_limit = 0;
-  pid_req.upper_limit = 100;
-  pid_req.precision = 0;
-  FordFocusSTRS.view[1].gauge[0].pid = DigitalDash_Add_PID_To_Stream( &pid_req );
+	  if( FordFocusSTRS.view[view].enabled ) {
+		  // Create the view
+		  ui_view[view] = lv_obj_create(NULL);
+		  lv_obj_remove_flag(ui_view[view], LV_OBJ_FLAG_SCROLLABLE);
+		  FordFocusSTRS.num_views++;
 
-  pid_req.pid = MODE1_ENGINE_SPEED_PID;
-  pid_req.mode = MODE1;
-  pid_req.pid_unit = PID_UNITS_RPM;
-  strcpy(pid_req.label, "RPM");
-  strcpy(pid_req.unit_label, PID_UNITS_RPM_LABEL);
-  pid_req.lower_limit = 0;
-  pid_req.upper_limit = 6000;
-  pid_req.precision = 0;
-  FordFocusSTRS.view[1].gauge[1].pid = DigitalDash_Add_PID_To_Stream( &pid_req );
+		  FordFocusSTRS.view[view].num_gauges = get_view_num_gauges(view);
+		  FordFocusSTRS.view[view].background = get_view_background(view);
 
-  pid_req.pid = CALC1_TURBOCHARGER_COMPRESSOR_INLET_PRESSURE_PID;
-  pid_req.mode = CALC1;
-  pid_req.pid_unit = PID_UNITS_PSI;
-  strcpy(pid_req.label, "Boost");
-  strcpy(pid_req.unit_label, PID_UNITS_PSI_LABEL);
-  pid_req.lower_limit = -15;
-  pid_req.upper_limit = 20;
-  pid_req.precision = 2;
-  FordFocusSTRS.view[1].gauge[2].pid = DigitalDash_Add_PID_To_Stream( &pid_req );
+		  int x_pos[GAUGES_PER_VIEW] = {0};
 
-  for( uint8_t idx = 0; idx < FordFocusSTRS.num_views; idx++) {
-	  int x_pos[GAUGES_PER_VIEW] = {0};
+		  if( FordFocusSTRS.view[view].num_gauges == 1) {
+			  x_pos[0] = 0;
+		  } else if( FordFocusSTRS.view[view].num_gauges == 2) {
+			  x_pos[0] = -200;
+			  x_pos[1] = 200;
+		  }if( FordFocusSTRS.view[view].num_gauges == 3) {
+			  x_pos[0] = -225;
+			  x_pos[1] = 0;
+			  x_pos[2] = 225;
+		  }
 
-	  if( FordFocusSTRS.view[idx].num_gauges == 1) {
-		  x_pos[0] = 0;
-	  } else if( FordFocusSTRS.view[idx].num_gauges == 2) {
-		  x_pos[0] = -200;
-		  x_pos[1] = 200;
-	  }if( FordFocusSTRS.view[idx].num_gauges == 3) {
-		  x_pos[0] = -225;
-		  x_pos[1] = 0;
-		  x_pos[2] = 225;
-	  }
+		  // Iterate through each gauge in the view
+		  for(uint8_t gauge = 0; gauge < FordFocusSTRS.view[view].num_gauges; gauge++)
+		  {
+			  PID_DATA pid_req;
 
-	  for( uint8_t i = 0; i < FordFocusSTRS.view[idx].num_gauges; i++) {
-		  FordFocusSTRS.view[idx].gauge[i].obj = add_gauge(GAUGE_THEME_STOCK_ST, x_pos[i], 0, ui_view[idx], FordFocusSTRS.view[idx].gauge[i].pid);
+			  pid_req.pid_uuid = get_view_gauge_pid(view, gauge);
+			  pid_req.pid = get_pid_by_uuid(pid_req.pid_uuid);
+			  pid_req.mode = get_mode_by_uuid(pid_req.pid_uuid);
+			  pid_req.pid_unit = PID_UNITS_PERCENT;
+			  get_pid_label(pid_req.pid_uuid, pid_req.label);
+			  get_unit_label(get_pid_base_unit(pid_req.pid_uuid), pid_req.unit_label);
+			  pid_req.lower_limit = 0;
+			  pid_req.upper_limit = 100;
+			  pid_req.precision = 0;
+
+			  // Start the PID stream and save the pointer
+			  FordFocusSTRS.view[view].gauge[gauge].pid = DigitalDash_Add_PID_To_Stream( &pid_req );
+
+			  // Load the gauge theme
+			  FordFocusSTRS.view[view].gauge[gauge].theme = get_view_gauge_theme(view, gauge);
+
+			  // Finally, add the gauge to the view
+			  FordFocusSTRS.view[view].gauge[gauge].obj = add_gauge(GAUGE_THEME_STOCK_ST, x_pos[gauge], 0, ui_view[view], FordFocusSTRS.view[view].gauge[gauge].pid);
+
+			  //get_unit_label(PID_UNITS_MPH, FordFocusSTRS.view[view].gauge[gauge].pid->unit_label);
+		  }
 	  }
   }
+
+  lv_screen_load(ui_view[0]);
 
   uint32_t timestamp[MAX_VIEWS][GAUGES_PER_VIEW] = {0};
   /* USER CODE END 2 */
@@ -651,7 +609,7 @@ int main(void)
 	if( compare_values(FordFocusSTRS.dynamic[0].trigger.pid->pid_value, FordFocusSTRS.dynamic[0].trigger.thresh, FordFocusSTRS.alert[0].trigger.compare) ) {
 		active_view_idx = FordFocusSTRS.dynamic[0].view_index;
 	} else {
-		active_view_idx = 1;
+		active_view_idx = 0;
 	}
 
 	if( FordFocusSTRS.view[active_view_idx].enabled )

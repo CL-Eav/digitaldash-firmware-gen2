@@ -232,13 +232,11 @@
             "cmd": "pid",
             "name": "PID assigned to the gauge",
             "desc": "Set the gauge PID by view and gauge index",
-            "type": "list",
-            "dataType": "GAUGE_PID",
-            "default": "UNASSIGNED",
-            "options": [
-                "Stock ST",
-                "Grumpy Cat"
-            ],
+            "type": "number",
+            "dataType": "uint32_t",
+            "default": 0,
+            "min": 1,
+            "max": 16777215,
             "limit": "Reserved",
             "EEBytes": 2
         }
