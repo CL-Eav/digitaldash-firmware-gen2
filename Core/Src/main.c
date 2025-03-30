@@ -44,7 +44,7 @@
 #include "lvgl_port_display.h"
 #include <string.h>
 #include "stm32u5g9j_discovery_hspi.h"
-#include "themes.h"
+#include "ui.h"
 #include "lib_pid.h"
 #include "ke_digitaldash.h"
 #include "lib_digital_dash.h"
@@ -61,7 +61,6 @@
 /* USER CODE BEGIN PD */
 #define FIRMWARE_VERSION "v1.0.0"
 
-static const __attribute__((section(".ExtFlash_Section"))) __attribute__((used)) uint8_t backgrounds_external[1][UI_HOR_RES*UI_VER_RES*3];
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -269,17 +268,26 @@ void spoof_config(void)
 	// View 0
 	set_view_enable(0, VIEW_STATE_ENABLED, false);
 	set_view_num_gauges(0, 3, false);
-	set_view_background(0, VIEW_BACKGROUND_FLARE, false);
+	set_view_background(0, VIEW_BACKGROUND_USER1, false);
 	set_view_gauge_theme(0, 0, GAUGE_THEME_STOCK_ST, false);
 	set_view_gauge_theme(0, 1, GAUGE_THEME_GRUMPY_CAT, false);
 	set_view_gauge_theme(0, 2, GAUGE_THEME_STOCK_ST, false);
-	set_view_gauge_pid(0, 0, MODE1_ENGINE_SPEED_UUID, 0);
-	set_view_gauge_units(0, 0, PID_UNITS_RPM, 0);
+	set_view_gauge_pid(0, 0, SNIFF_LATERAL_ACCELERATION_UUID, 0);
+	set_view_gauge_units(0, 0, PID_UNITS_G_FORCE, 0);
 	set_view_gauge_pid(0, 1, MODE1_TURBOCHARGER_COMPRESSOR_INLET_PRESSURE_UUID, 0);
 	set_view_gauge_units(0, 1, PID_UNITS_PSI, 0);
 	set_view_gauge_pid(0, 2, MODE1_ENGINE_COOLANT_TEMPERATURE_UUID, 0);
 	set_view_gauge_units(0, 2, PID_UNITS_FAHRENHEIT, 0);
+
+	// View 1
+	set_view_enable(1, VIEW_STATE_ENABLED, false);
+	set_view_num_gauges(1, 1, false);
+	set_view_background(1, VIEW_BACKGROUND_USER1, false);
+	set_view_gauge_theme(1, 0, GAUGE_THEME_STOCK_ST, false);
+	set_view_gauge_pid(1, 0, MODE1_ENGINE_SPEED_UUID, 0);
+	set_view_gauge_units(1, 0, PID_UNITS_RPM, 0);
 }
+
 
 /* USER CODE END 0 */
 
@@ -344,8 +352,6 @@ int main(void)
   // Spoof a config if EEPROM isn't present
   spoof_config();
 
-
-
   // Alert 1
   strcpy(FordFocusSTRS.alert[0].msg, "Max oil pressure reached");
   FordFocusSTRS.alert[0].trigger.pid = &oil;
@@ -389,7 +395,6 @@ int main(void)
 	while(1){}
   }
 
-
   __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 2U * 50);
   if (HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4) != HAL_OK)
   {
@@ -397,113 +402,10 @@ int main(void)
 	  Error_Handler();
   }
 
-  //ui_init();
-
   // Create the screen
   lv_disp_t * dispp = lv_display_get_default();
   lv_theme_t * theme = lv_theme_default_init(dispp, lv_palette_main(LV_PALETTE_BLUE), lv_palette_main(LV_PALETTE_RED), true, LV_FONT_DEFAULT);
   lv_disp_set_theme(dispp, theme);
-
-  // Add background(s)
-  for( uint8_t idx = 0; idx < FordFocusSTRS.num_views; idx++) {
-
-	  uint8_t is_image = 0;
-	  const lv_image_dsc_t * img = NULL;
-	  lv_color_t color = {0};
-
-	  lv_image_dsc_t ext_background = {
-	    .header.cf = LV_COLOR_FORMAT_RGB888,
-	    .header.magic = LV_IMAGE_HEADER_MAGIC,
-	    .header.w = UI_HOR_RES,
-	    .header.h = UI_VER_RES,
-	    .data_size = sizeof(backgrounds_external[0]),
-	    .data = backgrounds_external[0],
-	  };
-
-	  switch( FordFocusSTRS.view[idx].background )
-	  {
-		  case BACKGROUND_FLARE:
-			  //img = &ui_img_flare_png;
-			  is_image = 1;
-			  break;
-
-		  case BACKGROUND_USER1:
-			  img = &ext_background;
-			  is_image = 1;
-			  break;
-
-		  case BACKGROUND_RED:
-			  color.red = 255;
-			  color.green = 0;
-			  color.blue = 0;
-			  is_image = 0;
-			  break;
-
-		  case BACKGROUND_GREEN:
-			  color.red = 0;
-			  color.green = 255;
-			  color.blue = 0;
-			  is_image = 0;
-			  break;
-
-		  case BACKGROUND_BLUE:
-			  color.red = 0;
-			  color.green = 0;
-			  color.blue = 255;
-			  is_image = 0;
-			  break;
-
-		  case BACKGROUND_BLACK:
-		  default:
-			  color.red = 0;
-			  color.green = 0;
-			  color.blue = 0;
-			  is_image = 0;
-			  break;
-	  }
-
-	  if( is_image )
-		  lv_obj_set_style_bg_image_src(ui_view[idx], img, LV_PART_MAIN | LV_STATE_DEFAULT);
-	  else
-		  lv_obj_set_style_bg_color(ui_view[idx], color, LV_PART_MAIN | LV_STATE_DEFAULT);
-  }
-
-  ui_alert_container[0] = lv_obj_create(ui_view[0]);
-  lv_obj_remove_style_all(ui_alert_container[0]);
-  lv_obj_set_width(ui_alert_container[0], 450);
-  lv_obj_set_height(ui_alert_container[0], 75);
-  lv_obj_set_x(ui_alert_container[0], 0);
-  lv_obj_set_y(ui_alert_container[0], 5);
-  lv_obj_set_align(ui_alert_container[0], LV_ALIGN_TOP_MID);
-  //lv_obj_add_flag(ui_alert_container[0], LV_OBJ_FLAG_HIDDEN);     /// Flags
-  lv_obj_remove_flag(ui_alert_container[0],
-                     LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_PRESS_LOCK | LV_OBJ_FLAG_CLICK_FOCUSABLE | LV_OBJ_FLAG_GESTURE_BUBBLE |
-                     LV_OBJ_FLAG_SNAPPABLE | LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_SCROLL_ELASTIC | LV_OBJ_FLAG_SCROLL_MOMENTUM |
-                     LV_OBJ_FLAG_SCROLL_CHAIN);     /// Flags
-  lv_obj_set_style_radius(ui_alert_container[0], 10, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_bg_color(ui_alert_container[0], lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_bg_opa(ui_alert_container[0], 225, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_border_color(ui_alert_container[0], lv_color_hex(0xFF0000), LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_border_opa(ui_alert_container[0], 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_border_width(ui_alert_container[0], 3, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_shadow_color(ui_alert_container[0], lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_shadow_opa(ui_alert_container[0], 225, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_shadow_width(ui_alert_container[0], 20, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_shadow_spread(ui_alert_container[0], 5, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_shadow_offset_x(ui_alert_container[0], 12, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_shadow_offset_y(ui_alert_container[0], 12, LV_PART_MAIN | LV_STATE_DEFAULT);
-
-  ui_alert[0] = lv_label_create(ui_alert_container[0]);
-  lv_obj_set_width(ui_alert[0], LV_SIZE_CONTENT);   /// 1
-  lv_obj_set_height(ui_alert[0], LV_SIZE_CONTENT);    /// 1
-  lv_obj_set_align(ui_alert[0], LV_ALIGN_CENTER);
-  lv_label_set_text(ui_alert[0], FordFocusSTRS.alert[0].msg);
-  lv_obj_set_style_text_font(ui_alert[0], &lv_font_montserrat_22, LV_PART_MAIN | LV_STATE_DEFAULT);
-
-  // Hide the alert by default
-  lv_obj_add_flag(ui_alert_container[0], LV_OBJ_FLAG_HIDDEN);
-
-  uint8_t alert_active = 1;
 
   /* Configure global filter to reject all non-matching frames */
   HAL_FDCAN_ConfigGlobalFilter(&hfdcan1, FDCAN_REJECT, FDCAN_REJECT, FDCAN_REJECT_REMOTE, FDCAN_REJECT_REMOTE);
@@ -546,6 +448,8 @@ int main(void)
 
 		  FordFocusSTRS.view[view].num_gauges = get_view_num_gauges(view);
 		  FordFocusSTRS.view[view].background = get_view_background(view);
+
+		  load_background( ui_view[view], FordFocusSTRS.view[view].background );
 
 		  int x_pos[GAUGES_PER_VIEW] = {0};
 
@@ -591,11 +495,46 @@ int main(void)
 
 			  // Finally, add the gauge to the view
 			  FordFocusSTRS.view[view].gauge[gauge].obj = add_gauge(FordFocusSTRS.view[view].gauge[gauge].theme, x_pos[gauge], 0, ui_view[view], FordFocusSTRS.view[view].gauge[gauge].pid);
-
-			  //get_unit_label(PID_UNITS_MPH, FordFocusSTRS.view[view].gauge[gauge].pid->unit_label);
 		  }
 	  }
   }
+
+  ui_alert_container[0] = lv_obj_create(ui_view[0]);
+  lv_obj_remove_style_all(ui_alert_container[0]);
+  lv_obj_set_width(ui_alert_container[0], 450);
+  lv_obj_set_height(ui_alert_container[0], 75);
+  lv_obj_set_x(ui_alert_container[0], 0);
+  lv_obj_set_y(ui_alert_container[0], 5);
+  lv_obj_set_align(ui_alert_container[0], LV_ALIGN_TOP_MID);
+  //lv_obj_add_flag(ui_alert_container[0], LV_OBJ_FLAG_HIDDEN);     /// Flags
+  lv_obj_remove_flag(ui_alert_container[0],
+                     LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_PRESS_LOCK | LV_OBJ_FLAG_CLICK_FOCUSABLE | LV_OBJ_FLAG_GESTURE_BUBBLE |
+                     LV_OBJ_FLAG_SNAPPABLE | LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_SCROLL_ELASTIC | LV_OBJ_FLAG_SCROLL_MOMENTUM |
+                     LV_OBJ_FLAG_SCROLL_CHAIN);     /// Flags
+  lv_obj_set_style_radius(ui_alert_container[0], 10, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_bg_color(ui_alert_container[0], lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_bg_opa(ui_alert_container[0], 225, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_border_color(ui_alert_container[0], lv_color_hex(0xFF0000), LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_border_opa(ui_alert_container[0], 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_border_width(ui_alert_container[0], 3, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_shadow_color(ui_alert_container[0], lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_shadow_opa(ui_alert_container[0], 225, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_shadow_width(ui_alert_container[0], 20, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_shadow_spread(ui_alert_container[0], 5, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_shadow_offset_x(ui_alert_container[0], 12, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_shadow_offset_y(ui_alert_container[0], 12, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+  ui_alert[0] = lv_label_create(ui_alert_container[0]);
+  lv_obj_set_width(ui_alert[0], LV_SIZE_CONTENT);   /// 1
+  lv_obj_set_height(ui_alert[0], LV_SIZE_CONTENT);    /// 1
+  lv_obj_set_align(ui_alert[0], LV_ALIGN_CENTER);
+  lv_label_set_text(ui_alert[0], FordFocusSTRS.alert[0].msg);
+  lv_obj_set_style_text_font(ui_alert[0], &lv_font_montserrat_22, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+  // Hide the alert by default
+  lv_obj_add_flag(ui_alert_container[0], LV_OBJ_FLAG_HIDDEN);
+
+  uint8_t alert_active = 1;
 
   lv_screen_load(ui_view[0]);
 

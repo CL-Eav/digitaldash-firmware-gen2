@@ -57,7 +57,8 @@
             "default": "Black",
             "options": [
                 "Black",
-                "Flare"
+                "Flare",
+                "User1"
             ],
             "limit": "Reserved",
             "EEBytes": 1
