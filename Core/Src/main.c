@@ -579,7 +579,7 @@ int main(void)
 			  get_pid_label(pid_req.pid_uuid, pid_req.label);
 			  get_unit_label(pid_req.pid_unit, pid_req.unit_label);
 
-			  pid_req.lower_limit = 0;
+			  pid_req.lower_limit = get_pid_lower_limit(pid_req.pid_uuid ,pid_req.pid_unit);
 			  pid_req.upper_limit = 100;
 			  pid_req.precision = 0;
 
