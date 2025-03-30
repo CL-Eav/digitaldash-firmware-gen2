@@ -36,6 +36,7 @@ extern "C"
 #include "lvgl.h"
 #include "stdbool.h"
 #include "string.h"
+#include "lib_pid.h"
 
 typedef void(settings_write)(uint16_t bAdd, uint8_t bData);
 typedef uint8_t(settings_read)(uint16_t bAdd);
@@ -135,6 +136,20 @@ bool set_view_gauge_theme(uint8_t idx_view, uint8_t idx_gauge,  GAUGE_THEME them
 bool verify_view_gauge_pid(uint32_t pid);
 uint32_t get_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge);
 bool set_view_gauge_pid(uint8_t idx_view, uint8_t idx_gauge,  uint32_t pid, bool save);
+
+
+/********************************************************************************
+*                        PID units assigned to the gauge                        
+*
+* @param idx_view    index of the view
+* @param idx_gauge    index of the gauge
+* @param units    Set the PID units by view and gauge index
+* @param save    Set true to save to the EEPROM, otherwise value is non-volatile
+*
+********************************************************************************/
+bool verify_view_gauge_units(PID_UNITS units);
+PID_UNITS get_view_gauge_units(uint8_t idx_view, uint8_t idx_gauge);
+bool set_view_gauge_units(uint8_t idx_view, uint8_t idx_gauge,  PID_UNITS units, bool save);
 
 
 /********************************************************************************
