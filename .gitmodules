@@ -19,3 +19,6 @@
 [submodule "lib/lib_digital_dash"]
 	path = lib/lib_digital_dash
 	url = https://github.com/KaiserEngineering/lib_digital_dash.git
+[submodule "lib/lib_digitaldash_config"]
+	path = lib/lib_digitaldash_config
+	url = https://github.com/KaiserEngineering/lib_digitaldash_config.git
