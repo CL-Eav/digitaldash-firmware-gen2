@@ -60,7 +60,6 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define FIRMWARE_VERSION "v1.0.0"
-#define USE_KE_CONF
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -71,12 +70,6 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-PID_DATA iat;
-PID_DATA boost;
-PID_DATA oil;
-PID_DATA coolant;
-PID_DATA speed;
-
 digitaldash FordFocusSTRS;
 lv_obj_t * ui_view[MAX_VIEWS];
 lv_obj_t * ui_alert[MAX_ALERTS];
