@@ -14,6 +14,5 @@
 #include "ke_config.h"
 
 lv_obj_t * add_gauge( GAUGE_THEME theme, int32_t x, int32_t y, lv_obj_t * parent, PID_DATA * pid );
-void load_background( lv_obj_t * view, VIEW_BACKGROUND background );
 
 #endif /* UI_H_ */

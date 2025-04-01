@@ -60,6 +60,8 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define FIRMWARE_VERSION "v1.0.0"
+
+static const __attribute__((section(".ExtFlash_Section"))) __attribute__((used)) uint8_t backgrounds_external[1][UI_HOR_RES*UI_VER_RES*3];
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -370,7 +372,7 @@ void spoof_config(void)
 	set_view_gauge_theme(0, 0, GAUGE_THEME_STOCK_ST, false);
 	set_view_gauge_theme(0, 1, GAUGE_THEME_GRUMPY_CAT, false);
 	set_view_gauge_theme(0, 2, GAUGE_THEME_STOCK_ST, false);
-	set_view_gauge_pid(0, 0, SNIFF_LATERAL_ACCELERATION_UUID, 0);
+	set_view_gauge_pid(0, 0, MODE1_ENGINE_SPEED_UUID, 0);
 	set_view_gauge_units(0, 0, PID_UNITS_G_FORCE, 0);
 	set_view_gauge_pid(0, 1, MODE1_TURBOCHARGER_COMPRESSOR_INLET_PRESSURE_UUID, 0);
 	set_view_gauge_units(0, 1, PID_UNITS_PSI, 0);
@@ -542,7 +544,44 @@ int main(void)
 		  FordFocusSTRS.view[view].num_gauges = get_view_num_gauges(view);
 		  FordFocusSTRS.view[view].background = get_view_background(view);
 
-		  load_background( ui_view[view], FordFocusSTRS.view[view].background );
+		  uint8_t is_image = 0;
+		  lv_image_dsc_t * img = NULL;
+		  lv_color_t color = {0};
+
+		  lv_image_dsc_t ext_background = {
+		    .header.cf = LV_COLOR_FORMAT_RGB888,
+		    .header.magic = LV_IMAGE_HEADER_MAGIC,
+		    .header.w = UI_HOR_RES,
+		    .header.h = UI_VER_RES,
+		    .data_size = sizeof(backgrounds_external[0]),
+		    .data = backgrounds_external[0],
+		  };
+
+		  switch( FordFocusSTRS.view[view].background )
+		  {
+			  case VIEW_BACKGROUND_FLARE:
+				  //img = &ui_img_flare_png;
+				  is_image = 1;
+				  break;
+
+			  case VIEW_BACKGROUND_USER1:
+				  img = &ext_background;
+				  is_image = 1;
+				  break;
+
+			  case VIEW_BACKGROUND_BLACK:
+			  default:
+				  color.red = 255;
+				  color.green = 255;
+				  color.blue = 0;
+				  is_image = 0;
+				  break;
+		  }
+
+		  if( is_image )
+			  lv_obj_set_style_bg_image_src(ui_view[view], img, LV_PART_MAIN | LV_STATE_DEFAULT);
+		  else
+			  lv_obj_set_style_bg_color(ui_view[view], color, LV_PART_MAIN | LV_STATE_DEFAULT);
 
 		  int x_pos[GAUGES_PER_VIEW] = {0};
 
