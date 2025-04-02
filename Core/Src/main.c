@@ -351,6 +351,15 @@ static void esp32_reset( HOST_PWR_STATE state )
 		HAL_GPIO_WritePin(ESP32_RESET_N_GPIO_Port, ESP32_RESET_N_Pin, GPIO_PIN_RESET);
 }
 
+uint8_t dynamic_gauge_check( digitaldash *dash, uint8_t idx )
+{
+	if( compare_values(dash->dynamic[idx].pid->pid_value, dash->dynamic[idx].thresh, dash->dynamic[idx].compare) ) {
+		return dash->dynamic[idx].view_index;
+	} else {
+		return 0;
+	}
+}
+
 void Digitaldash_Init( void )
 {
     DIGITALDASH_CONFIG config;
@@ -383,7 +392,7 @@ void spoof_config(void)
 	set_view_enable(1, VIEW_STATE_ENABLED, false);
 	set_view_num_gauges(1, 1, false);
 	set_view_background(1, VIEW_BACKGROUND_USER1, false);
-	set_view_gauge_theme(1, 0, GAUGE_THEME_STOCK_ST, false);
+	set_view_gauge_theme(1, 0, GAUGE_THEME_LINEAR, false);
 	set_view_gauge_pid(1, 0, MODE1_ENGINE_SPEED_UUID, 0);
 	set_view_gauge_units(1, 0, PID_UNITS_RPM, 0);
 
@@ -726,11 +735,7 @@ int main(void)
 	}
 
 	/* Check for dynamic gauge change */
-	if( compare_values(FordFocusSTRS.dynamic[0].pid->pid_value, FordFocusSTRS.dynamic[0].thresh, FordFocusSTRS.dynamic[0].compare) ) {
-		active_view_idx = FordFocusSTRS.dynamic[0].view_index;
-	} else {
-		active_view_idx = 0;
-	}
+	active_view_idx = dynamic_gauge_check(&FordFocusSTRS, 0);
 
 	if( FordFocusSTRS.view[active_view_idx].enabled )
 		switch_screen(ui_view[active_view_idx]);
