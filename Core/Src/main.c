@@ -391,7 +391,7 @@ void spoof_config(void)
 	set_dynamic_enable(0, DYNAMIC_STATE_ENABLED, false);
 	set_dynamic_pid(0, MODE1_ENGINE_SPEED_UUID, false);
 	set_dynamic_priority(0, DYNAMIC_PRIORITY_HIGH, false);
-	set_dynamic_compare(0, DD_GREATER_THAN, false);
+	set_dynamic_compare(0, DYNAMIC_COMPARISON_GREATER_THAN, false);
 	set_dynamic_threshold(0, 5000, false);
 	set_dynamic_index(0, 1, false);
 }
