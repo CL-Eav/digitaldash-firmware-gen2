@@ -120,10 +120,13 @@ void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi)
 
 void log_minmax( PID_DATA* pid )
 {
-	if( pid->pid_value >= pid->pid_max )
-		pid->pid_max = pid->pid_value;
-	if( pid->pid_value <= pid->pid_min )
-		pid->pid_min = pid->pid_value;
+	// Only log min/max if a value has been read
+	if( pid->timestamp > 0 ) {
+		if( pid->pid_value >= pid->pid_max )
+			pid->pid_max = pid->pid_value;
+		if( pid->pid_value <= pid->pid_min )
+			pid->pid_min = pid->pid_value;
+	}
 }
 
 uint8_t compare_values(float a, float b, digitaldash_compare comparison)
