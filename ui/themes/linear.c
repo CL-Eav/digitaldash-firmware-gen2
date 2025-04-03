@@ -19,7 +19,9 @@ static void event_cb(lv_event_t * e)
     lv_obj_t * min = lv_obj_get_child(gauge, 3);
     lv_obj_t * max = lv_obj_get_child(gauge, 4);
 
-    lv_bar_set_value(needle, data->pid_value, LV_ANIM_OFF);
+    int32_t pid_value = data->pid_value;
+
+    lv_bar_set_value(needle, pid_value, LV_ANIM_OFF);
 
     // Update the numbers
     switch( data->precision )
@@ -67,7 +69,7 @@ lv_obj_t * add_linear_gauge( int32_t x, int32_t y, lv_obj_t * parent, PID_DATA *
 
     lv_obj_t * needle = lv_bar_create(gauge);
     lv_bar_set_range(needle, pid->lower_limit, pid->upper_limit);
-    lv_obj_set_width(needle, 700);
+    lv_obj_set_width(needle, 600);
     lv_obj_set_height(needle, 50);
     lv_obj_set_x(needle, 0);
     lv_obj_set_y(needle, 10);
@@ -94,7 +96,7 @@ lv_obj_t * add_linear_gauge( int32_t x, int32_t y, lv_obj_t * parent, PID_DATA *
     lv_obj_t * min = lv_label_create(gauge);
     lv_obj_set_width(min, 90);
     lv_obj_set_height(min, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(min, -350);
+    lv_obj_set_x(min, -300);
     lv_obj_set_y(min, 30);
     lv_obj_set_align(min, LV_ALIGN_CENTER);
     lv_label_set_text(min, "min");
@@ -106,7 +108,7 @@ lv_obj_t * add_linear_gauge( int32_t x, int32_t y, lv_obj_t * parent, PID_DATA *
     lv_obj_t * max = lv_label_create(gauge);
     lv_obj_set_width(max, 90);
     lv_obj_set_height(max, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(max, 350);
+    lv_obj_set_x(max, 300);
     lv_obj_set_y(max, 30);
     lv_obj_set_align(max, LV_ALIGN_CENTER);
     lv_label_set_text(max, "max");

@@ -401,7 +401,7 @@ void spoof_config(void)
 	set_dynamic_pid(0, MODE1_ENGINE_SPEED_UUID, false);
 	set_dynamic_priority(0, DYNAMIC_PRIORITY_HIGH, false);
 	set_dynamic_compare(0, DYNAMIC_COMPARISON_GREATER_THAN, false);
-	set_dynamic_threshold(0, 5000, false);
+	set_dynamic_threshold(0, 3500, false);
 	set_dynamic_index(0, 1, false);
 }
 
@@ -762,6 +762,9 @@ int main(void)
 		if( timestamp[active_view_idx][i] != FordFocusSTRS.view[active_view_idx].gauge[i].pid->timestamp ) {
 			 timestamp[active_view_idx][i] = FordFocusSTRS.view[active_view_idx].gauge[i].pid->timestamp;
 			 lv_obj_send_event(FordFocusSTRS.view[active_view_idx].gauge[i].obj, LV_EVENT_REFRESH, FordFocusSTRS.view[active_view_idx].gauge[i].pid);
+			 if(( i == 0 ) & (active_view_idx == 1)) {
+				 //lv_bar_set_value(lv_obj_get_child(FordFocusSTRS.view[active_view_idx].gauge[i].obj,1), (int32_t)FordFocusSTRS.view[active_view_idx].gauge[i].pid->pid_value, LV_ANIM_OFF);
+			 }
 		}
 
 	}
