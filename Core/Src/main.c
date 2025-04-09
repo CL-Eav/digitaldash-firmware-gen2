@@ -78,9 +78,6 @@ lv_obj_t * ui_view[MAX_VIEWS];
 lv_obj_t * ui_alert[MAX_ALERTS];
 lv_obj_t * ui_alert_container[MAX_ALERTS];
 
-volatile uint32_t can_tx_mailbox_status = 0;
-volatile uint32_t can_rx_mailbox_status = 0;
-
 uint32_t CAN_Filter_Count = 0;
 
 uint8_t active_view_idx = 0;
