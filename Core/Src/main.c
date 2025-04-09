@@ -467,12 +467,12 @@ int main(void)
   MX_USART1_UART_Init();
   MX_GPU2D_Init();
   MX_FLASH_Init();
-  MX_SPI1_Init();
   MX_DCACHE1_Init();
   MX_DCACHE2_Init();
   MX_FDCAN1_Init();
   MX_TIM17_Init();
   MX_I2C1_Init();
+  MX_SPI3_Init();
   /* USER CODE BEGIN 2 */
   lv_init();
   lv_tick_set_cb(HAL_GetTick);
