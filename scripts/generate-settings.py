@@ -371,6 +371,28 @@ def write_variables( file, prefix, cmd, depth ):
       else:
         file.write( "static " + cmd["dataType"] + " settings_" + prefix + "_" + cmd["cmd"].lower() +  " = DEFAULT_" + prefix.upper() + "_" + cmd["cmd"].upper() + ";\n" )
 
+def write_define_load_setting( file, prefix, cmd, depth ):
+   if cmd["index"]:
+      if( depth == 2 ):
+        file.write( "static " + cmd["dataType"] + " load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "(uint8_t idx_" + prefix.lower().split('_')[0] + ", uint8_t idx_" + prefix.lower().split('_')[1] + ");\n")
+      else:
+        file.write( "static " + cmd["dataType"] + " load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "(uint8_t idx);\n")
+   else:
+      file.write( "static " + cmd["dataType"] + " load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "(void);\n")
+
+def write_load_setting( file, prefix, cmd, depth ):
+   if( depth == 2):
+      variable1 = "idx_" + prefix.lower().split('_')[0]
+      variable2 = "idx_" + prefix.lower().split('_')[1]
+      file.write("    for( uint8_t " + variable1 + " = 0; " + variable1 + " < " + cmd["count"][0].upper() + "; " + variable1 +"++ )\n")
+      file.write("        for( uint8_t " + variable2 + " = 0; " + variable2 + " < " + cmd["count"][1].upper() + "; " + variable2 +"++ )\n")
+      file.write("            settings_" + prefix + "_" + cmd["cmd"].lower() +  "[" + variable1 + "][" + variable2 + "] = load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "(idx_" + prefix.lower().split('_')[0] + ", idx_" + prefix.lower().split('_')[1] + ");\n\n")
+   else:
+      variable1 = "idx"
+      file.write("    for( uint8_t " + variable1 + " = 0; " + variable1 + " < " + cmd["count"].upper() + "; " + variable1 +"++ )\n")
+      file.write("        settings_" + prefix + "_" + cmd["cmd"].lower() +  "[" + variable1 + "] = load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "(idx);\n\n")
+   
+
 def write_load_source( file, prefix, cmd, depth ):
    if cmd["index"]:
       if( depth == 2 ):
@@ -537,6 +559,38 @@ for i, struct in enumerate(config["config"]["struct_list"]):
         # If it's not a list, just process the struct
         for cmd in config[struct]:
             write_variables( config_c, struct, cmd, 1)
+
+config_c.write("\n\n")
+
+for i, struct in enumerate(config["config"]["struct_list"]):
+    if isinstance(struct, list):  # Check if the item is a list
+        parent_struct = config["config"]["struct_list"][i - 1]  # Get the parent struct name (previous item)
+        
+        for sub_struct in struct:  # Iterate through the sublist
+            print(f"Parent struct: {parent_struct}, Sub-struct: {sub_struct}")
+            for cmd in config[sub_struct]:
+                write_define_load_setting( config_c, str(parent_struct) + "_" + sub_struct, cmd, 2)
+    else:
+        # If it's not a list, just process the struct
+        for cmd in config[struct]:
+            write_define_load_setting( config_c, struct, cmd, 1)
+config_c.write("\n")
+
+config_h.write("\n\nvoid load_settings(void);\n")
+config_c.write("void load_settings(void)\n{\n")
+for i, struct in enumerate(config["config"]["struct_list"]):
+    if isinstance(struct, list):  # Check if the item is a list
+        parent_struct = config["config"]["struct_list"][i - 1]  # Get the parent struct name (previous item)
+        
+        for sub_struct in struct:  # Iterate through the sublist
+            print(f"Parent struct: {parent_struct}, Sub-struct: {sub_struct}")
+            for cmd in config[sub_struct]:
+                write_load_setting( config_c, str(parent_struct) + "_" + sub_struct, cmd, 2)
+    else:
+        # If it's not a list, just process the struct
+        for cmd in config[struct]:
+            write_load_setting( config_c, struct, cmd, 1)
+config_c.write("}\n")
 
 config_c.write("\n\n")
 
