@@ -607,8 +607,8 @@ int main(void)
 
 			  case VIEW_BACKGROUND_BLACK:
 			  default:
-				  color.red = 255;
-				  color.green = 255;
+				  color.red = 0;
+				  color.green = 0;
 				  color.blue = 0;
 				  is_image = 0;
 				  break;
