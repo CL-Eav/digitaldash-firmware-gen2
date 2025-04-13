@@ -17,6 +17,10 @@ static void event_cb(lv_event_t * e)
     lv_obj_t * value = lv_obj_get_child(needle, 0);
     lv_obj_t * minmax = lv_obj_get_child(needle, 1);
 
+    // Check if the value needs to be refreshed
+    //if( lv_arc_get_value(needle) == (int32_t)data->pid_value )
+    //	return;
+
     lv_arc_set_value(needle, data->pid_value);
 
     // Update the numbers

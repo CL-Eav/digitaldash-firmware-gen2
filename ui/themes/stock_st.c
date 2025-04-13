@@ -23,14 +23,20 @@ static void event_cb(lv_event_t * e)
     lv_obj_t * min = lv_obj_get_child(needle, 1);
     lv_obj_t * max = lv_obj_get_child(needle, 2);
 
+    int32_t angle = 0;
+
     // Calculate the needle angle
     if( data->pid_value >= data->upper_limit )
-    	lv_img_set_angle(needle, STOCK_ST_END_ANGLE);
+    	angle = STOCK_ST_END_ANGLE;
     else if ( data->pid_value <= data->lower_limit )
-    	lv_img_set_angle(needle, STOCK_ST_START_ANGLE);
+    	angle = STOCK_ST_START_ANGLE;
     else {
-        lv_img_set_angle(needle, STOCK_ST_START_ANGLE + ((data->pid_value - data->lower_limit) / (data->upper_limit - data->lower_limit)) * (STOCK_ST_END_ANGLE - STOCK_ST_START_ANGLE));
+    	angle = STOCK_ST_START_ANGLE + ((data->pid_value - data->lower_limit) / (data->upper_limit - data->lower_limit)) * (STOCK_ST_END_ANGLE - STOCK_ST_START_ANGLE);
     }
+
+    // Check if the image needs to be refreshed
+    if( lv_image_get_rotation(needle) != angle )
+    	lv_image_set_rotation(needle, angle);
 
     // Update the numbers
     switch( data->precision )
