@@ -410,7 +410,12 @@ def write_load_source( file, prefix, cmd, depth ):
          index = "idx_" + prefix.lower().split('_')[0] + "][idx_" + prefix.lower().split('_')[1]
       else:
          index = "idx"
-      if( get_eeprom_size(cmd) == 1 ):
+      if( cmd["type"] == "string" ):
+           byte_count = 1
+           while byte_count <= get_eeprom_size(cmd):
+            file.write("    load_" + prefix + "_" + cmd["cmd"].lower() + "_val[" + str(byte_count-1) + "] = read(map_"  + prefix + "_" + cmd["cmd"].lower() + "_byte" + str(byte_count) + "[" + index + "]);\n")
+            byte_count = byte_count + 1
+      elif( get_eeprom_size(cmd) == 1 ):
           file.write("    if (" + eeprom_status_check + ")\n    {\n");
           file.write("        load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = (uint8_t)read(map_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_byte1[" + index + "]);\n")
           file.write("    }\n")
@@ -425,7 +430,7 @@ def write_load_source( file, prefix, cmd, depth ):
           file.write("        load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = ((uint32_t)load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val << 8) | " + "(uint32_t)read(map_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_byte2[" + index + "]);\n")
           file.write("        load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = ((uint32_t)load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val << 16) | " + "(uint32_t)read(map_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_byte3[" + index + "]);\n")
           file.write("        load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = ((uint32_t)load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val << 24) | " + "(uint32_t)read(map_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_byte4[" + index + "]);\n")
-          file.write("    }\n")
+          file.write("    }\n")        
     else:
       if( get_eeprom_size(cmd) == 1 ):
           file.write("    if (" + eeprom_status_check + ")\n    {\n");
@@ -476,7 +481,7 @@ def write_save_source( file, prefix, cmd, depth ):
         if( cmd["type"] == "string" ):
            byte_count = 1
            while byte_count <= get_eeprom_size(cmd):
-            file.write("        write(map_"  + prefix + "_" + cmd["cmd"].lower() + "_byte" + str(byte_count) + "[" + index + "], " + prefix + "_" + cmd["cmd"].lower() + "[" + index + "][" + str(byte_count-1) + "]);\n")
+            file.write("        write(map_"  + prefix + "_" + cmd["cmd"].lower() + "_byte" + str(byte_count) + "[" + index + "], " + prefix + "_" + cmd["cmd"].lower() + "[" + str(byte_count-1) + "]);\n")
             byte_count = byte_count + 1
         else:
           byte_count = 1
