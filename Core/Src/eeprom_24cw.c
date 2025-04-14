@@ -14,7 +14,7 @@
 #define EEPROM_WRITE_DELAY_MS 1
 #define EEPROM_ADDRESS_SIZE 2
 #define CONFIG_EEPROM_7BIT_ADDR 0xA0
-#define EEPROM_TIMEOUT 500
+#define EEPROM_TIMEOUT 50
 
 // Function to read data from EEPROM
 uint8_t eeprom_24cw_read(I2C_HandleTypeDef *eeprom_handle, uint16_t bAdd)

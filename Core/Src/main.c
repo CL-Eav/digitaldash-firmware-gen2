@@ -88,8 +88,10 @@ uint8_t active_view_idx = 0;
 __IO uint32_t     Transfer_Direction = 0;
 __IO uint32_t     Xfer_Complete = 0;
 
-uint8_t aTxBuffer[4];
-uint8_t aRxBuffer[4];
+#define EEPROM_ADDRESS_SIZE
+uint8_t aTxBuffer[1];
+uint8_t aRxBuffer[1];
+uint8_t i2c_register_req[EEPROM_ADDRESS_SIZE] = {0};
 
 /* USER CODE END PV */
 
@@ -169,15 +171,8 @@ uint8_t compare_values(float a, float b, digitaldash_compare comparison)
   * @retval None
   */
 
-void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *I2cHandle)
+void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
-  /* Toggle LED4: Transfer in transmission process is correct */
-
-  Xfer_Complete = 1;
-  aTxBuffer[0]++;
-  aTxBuffer[1]++;
-  aTxBuffer[2]++;
-  aTxBuffer[3]++;
 
 }
 
@@ -189,18 +184,12 @@ void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *I2cHandle)
   *         you can add your own implementation.
   * @retval None
   */
-void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *I2cHandle)
+void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
-  /* Toggle LED4: Transfer in reception process is correct */
-
-  Xfer_Complete = 1;
-  aRxBuffer[0]=0x00;
-  aRxBuffer[1]=0x00;
-  aRxBuffer[2]=0x00;
-  aRxBuffer[3]=0x00;
+	if (HAL_I2C_Slave_Seq_Receive_IT(&hi2c1, &i2c_register_req, sizeof(i2c_register_req), I2C_NEXT_FRAME) != HAL_OK) {
+		Error_Handler();
+	}
 }
-
-
 
 /**
   * @brief  Slave Address Match callback.
@@ -211,16 +200,14 @@ void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *I2cHandle)
   * @retval None
   */
 void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, uint16_t AddrMatchCode) {
-    Transfer_Direction = TransferDirection;
-    if (Transfer_Direction != 0) {
-        /* While the I2C in reception process, user can transmit data through
-           "aTxBuffer" buffer */
-        if (HAL_I2C_Slave_Seq_Transmit_IT(&hi2c1, (uint8_t *)aTxBuffer, TXBUFFERSIZE, I2C_FIRST_AND_LAST_FRAME) != HAL_OK) {
-            Error_Handler();
-        }
-
+    if (TransferDirection == I2C_DIRECTION_TRANSMIT) {
+		if (HAL_I2C_Slave_Seq_Receive_IT(&hi2c1, i2c_register_req, sizeof(i2c_register_req), I2C_FIRST_FRAME) != HAL_OK) {
+			Error_Handler();
+		}
     } else {
-        if (HAL_I2C_Slave_Seq_Receive_IT(&hi2c1, (uint8_t *)aRxBuffer, RXBUFFERSIZE, I2C_FIRST_AND_LAST_FRAME) != HAL_OK) {
+    	uint16_t reg = (i2c_register_req[0] << 8) | i2c_register_req[1];
+        uint8_t value = 0x12; //eeprom_read(reg);
+        if (HAL_I2C_Slave_Seq_Transmit_IT(hi2c, &value, 1, I2C_FIRST_FRAME) != HAL_OK) {
             Error_Handler();
         }
     }
@@ -244,16 +231,22 @@ void HAL_I2C_ListenCpltCallback(I2C_HandleTypeDef *hi2c)
   *         add your own implementation.
   * @retval None
   */
-void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *I2cHandle)
+void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *hi2c)
 {
-  /** Error_Handler() function is called when error occurs.
-    * 1- When Slave doesn't acknowledge its address, Master restarts communication.
-    * 2- When Master doesn't acknowledge the last data transferred, Slave doesn't care in this example.
-    */
-  if (HAL_I2C_GetError(I2cHandle) != HAL_I2C_ERROR_AF)
-  {
-    Error_Handler();
-  }
+	uint32_t errorcode = HAL_I2C_GetError(hi2c);
+
+	/* BERR Error commonly occurs during the Direction switch
+	 * Here we the software reset bit is set by the HAL error handler
+	 * Before resetting this bit, we make sure the I2C lines are released and the bus is free
+	 * I am simply reinitializing the I2C to do so
+	 */
+	if (errorcode == 1)  // BERR Error
+	{
+		HAL_I2C_DeInit(hi2c);
+		HAL_I2C_Init(hi2c);
+	}
+
+	HAL_I2C_EnableListen_IT(hi2c);
 }
 
 HAL_StatusTypeDef can_filter( uint32_t id, uint32_t mask, uint32_t filterIndex, uint32_t FIFO  )
