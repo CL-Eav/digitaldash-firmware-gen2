@@ -200,17 +200,19 @@ void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c)
   * @retval None
   */
 void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, uint16_t AddrMatchCode) {
-    if (TransferDirection == I2C_DIRECTION_TRANSMIT) {
-		if (HAL_I2C_Slave_Seq_Receive_IT(&hi2c1, i2c_register_req, sizeof(i2c_register_req), I2C_FIRST_FRAME) != HAL_OK) {
-			Error_Handler();
+	if( hi2c == &hi2c1 ) {
+		if (TransferDirection == I2C_DIRECTION_TRANSMIT) {
+			if (HAL_I2C_Slave_Seq_Receive_IT(hi2c, i2c_register_req, sizeof(i2c_register_req), I2C_FIRST_FRAME) != HAL_OK) {
+				Error_Handler();
+			}
+		} else {
+			uint16_t reg = (i2c_register_req[0] << 8) | i2c_register_req[1];
+			uint8_t value = eeprom_read(reg);
+			if (HAL_I2C_Slave_Seq_Transmit_IT(hi2c, &value, 1, I2C_FIRST_FRAME) != HAL_OK) {
+				Error_Handler();
+			}
 		}
-    } else {
-    	uint16_t reg = (i2c_register_req[0] << 8) | i2c_register_req[1];
-        uint8_t value = 0x12; //eeprom_read(reg);
-        if (HAL_I2C_Slave_Seq_Transmit_IT(hi2c, &value, 1, I2C_FIRST_FRAME) != HAL_OK) {
-            Error_Handler();
-        }
-    }
+	}
 }
 
 /**
