@@ -95,6 +95,7 @@ lv_obj_t * add_stock_st_gauge( int32_t x, int32_t y, lv_obj_t * parent, PID_DATA
     lv_obj_set_height(needle, LV_SIZE_CONTENT);    /// 125
     lv_obj_set_x(needle, 0);
     lv_obj_set_y(needle, 0);
+    lv_image_set_rotation(needle, STOCK_ST_START_ANGLE);
     lv_obj_set_align(needle, LV_ALIGN_CENTER);
     lv_obj_set_user_data(needle, pid);
     lv_obj_add_event_cb(needle, event_cb, LV_EVENT_REFRESH, pid);
