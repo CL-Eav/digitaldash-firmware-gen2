@@ -71,6 +71,7 @@ static const __attribute__((section(".ExtFlash_Section"))) __attribute__((used))
 #define BKLT_TIM_CHANNEL TIM_CHANNEL_2
 
 #define ESP32_UART ESP32_UART /* ESP32 communication channel */
+#define EEPROM_I2C &hi2c2 /* EEPROM I2C channel */
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -114,13 +115,13 @@ static void SystemPower_Config(void);
 // Function to read data from EEPROM
 uint8_t eeprom_read(uint16_t bAdd)
 {
-	return eeprom_24cw_read(&hi2c2, bAdd);
+	return eeprom_24cw_read(EEPROM_I2C, bAdd);
 }
 
 // Function to write data to EEPROM with retries
 void eeprom_write(uint16_t bAdd, uint8_t bData)
 {
-	eeprom_24cw_write(&hi2c2, bAdd, bData);
+	eeprom_24cw_write(EEPROM_I2C, bAdd, bData);
 }
 
 
