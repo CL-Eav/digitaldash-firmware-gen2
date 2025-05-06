@@ -92,15 +92,7 @@ static uint8_t image_buffer[UI_HOR_RES * UI_VER_RES * 4] = {0};
 
 uint8_t active_view_idx = 0;
 
-#define COUNTOF(__BUFFER__)   (sizeof(__BUFFER__) / sizeof(*(__BUFFER__)))
-#define TXBUFFERSIZE                      (COUNTOF(aTxBuffer))
-#define RXBUFFERSIZE                      TXBUFFERSIZE
-__IO uint32_t     Transfer_Direction = 0;
-__IO uint32_t     Xfer_Complete = 0;
-
-#define EEPROM_ADDRESS_SIZE
-uint8_t aTxBuffer[1];
-uint8_t aRxBuffer[1];
+#define EEPROM_ADDRESS_SIZE 2
 uint8_t i2c_register_req[EEPROM_ADDRESS_SIZE] = {0};
 
 /* USER CODE END PV */
