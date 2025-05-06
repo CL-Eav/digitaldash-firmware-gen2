@@ -71,8 +71,10 @@ static const __attribute__((section(".ExtFlash_Section"))) __attribute__((used))
 #define BKLT_TIM_CHANNEL TIM_CHANNEL_2
 
 #define ESP32_UART ESP32_UART /* ESP32 communication channel */
-#define ESP32_I2C ESP32_I2C /* ESP32 to STM32 I2C channel */
+#define ESP32_I2C &hi2c1 /* ESP32 to STM32 I2C channel */
 #define EEPROM_I2C &hi2c2 /* EEPROM I2C channel */
+
+#define EXT_CAN_BUS &hfdcan1 /* External CAN bus channel */
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -282,8 +284,8 @@ HAL_StatusTypeDef can_filter( uint32_t id, uint32_t mask, uint32_t filterIndex, 
 	HAL_StatusTypeDef status = HAL_OK;
 
 	//TODO check if CAN is enabled
-	if( HAL_FDCAN_GetState(&hfdcan1) != HAL_FDCAN_STATE_RESET ) {
-		status = HAL_FDCAN_Stop(&hfdcan1);
+	if( HAL_FDCAN_GetState(EXT_CAN_BUS) != HAL_FDCAN_STATE_RESET ) {
+		status = HAL_FDCAN_Stop(EXT_CAN_BUS);
 
 		// Abort is CAN couldn't be stopped
 		if( status != HAL_OK )
@@ -306,13 +308,13 @@ HAL_StatusTypeDef can_filter( uint32_t id, uint32_t mask, uint32_t filterIndex, 
 	sFilterConfig.FilterConfig  = FIFO;
 	sFilterConfig.FilterIndex = filterIndex;
 
-	status = HAL_FDCAN_ConfigFilter(&hfdcan1, &sFilterConfig);
+	status = HAL_FDCAN_ConfigFilter(EXT_CAN_BUS, &sFilterConfig);
 
 	// Abort is CAN filter did not work
 	if( status != HAL_OK )
 		return status;
 
-	return HAL_FDCAN_Start(&hfdcan1);
+	return HAL_FDCAN_Start(EXT_CAN_BUS);
 }
 
 void Add_CAN_Filter( uint16_t id )
@@ -365,7 +367,7 @@ static uint8_t ECU_CAN_Tx( uint8_t data[], uint8_t len )
     memcpy(tx_buf, data, len);
 
 	/* Start the Transmission process */
-	HAL_FDCAN_AddMessageToTxFifoQ(&hfdcan1, &Header, tx_buf);
+	HAL_FDCAN_AddMessageToTxFifoQ(EXT_CAN_BUS, &Header, tx_buf);
 	//TODO What happens if tx fails?
 
 	return 1;
@@ -561,28 +563,28 @@ int main(void)
   lv_disp_set_theme(dispp, theme);
 
   /* Configure global filter to reject all non-matching frames */
-  HAL_FDCAN_ConfigGlobalFilter(&hfdcan1, FDCAN_REJECT, FDCAN_REJECT, FDCAN_REJECT_REMOTE, FDCAN_REJECT_REMOTE);
+  HAL_FDCAN_ConfigGlobalFilter(EXT_CAN_BUS, FDCAN_REJECT, FDCAN_REJECT, FDCAN_REJECT_REMOTE, FDCAN_REJECT_REMOTE);
 
-  if( HAL_FDCAN_ConfigInterruptLines(&hfdcan1, FDCAN_IT_GROUP_RX_FIFO0, FDCAN_INTERRUPT_LINE0) != HAL_OK ) {
+  if( HAL_FDCAN_ConfigInterruptLines(EXT_CAN_BUS, FDCAN_IT_GROUP_RX_FIFO0, FDCAN_INTERRUPT_LINE0) != HAL_OK ) {
 	  Error_Handler();
   }
 
   /* Activate Interrupts */
-  if( HAL_FDCAN_ActivateNotification(&hfdcan1, FDCAN_IT_RX_FIFO0_NEW_MESSAGE | FDCAN_IT_RX_FIFO1_NEW_MESSAGE, 0) != HAL_OK ) {
+  if( HAL_FDCAN_ActivateNotification(EXT_CAN_BUS, FDCAN_IT_RX_FIFO0_NEW_MESSAGE | FDCAN_IT_RX_FIFO1_NEW_MESSAGE, 0) != HAL_OK ) {
 	  Error_Handler();
   }
 
   /* Start the FDCAN module */
-  if (HAL_FDCAN_Start(&hfdcan1) != HAL_OK) {
+  if (HAL_FDCAN_Start(EXT_CAN_BUS) != HAL_OK) {
     Error_Handler();
   }
 
-  if( HAL_FDCAN_ConfigInterruptLines(&hfdcan1, FDCAN_IT_GROUP_RX_FIFO0, FDCAN_INTERRUPT_LINE0) != HAL_OK ) {
+  if( HAL_FDCAN_ConfigInterruptLines(EXT_CAN_BUS, FDCAN_IT_GROUP_RX_FIFO0, FDCAN_INTERRUPT_LINE0) != HAL_OK ) {
 	  Error_Handler();
   }
 
   /* Activate Interrupts */
-  if( HAL_FDCAN_ActivateNotification(&hfdcan1, FDCAN_IT_RX_FIFO0_NEW_MESSAGE | FDCAN_IT_RX_FIFO1_NEW_MESSAGE, 0) != HAL_OK ) {
+  if( HAL_FDCAN_ActivateNotification(EXT_CAN_BUS, FDCAN_IT_RX_FIFO0_NEW_MESSAGE | FDCAN_IT_RX_FIFO1_NEW_MESSAGE, 0) != HAL_OK ) {
 	  Error_Handler();
   }
 
