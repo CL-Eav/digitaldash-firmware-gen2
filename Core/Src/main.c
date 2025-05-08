@@ -70,7 +70,7 @@ static const __attribute__((section(".ExtFlash_Section"))) __attribute__((used))
 #define BKLT_TIM &htim15
 #define BKLT_TIM_CHANNEL TIM_CHANNEL_2
 
-#define ESP32_UART ESP32_UART /* ESP32 communication channel */
+#define ESP32_UART &huart1 /* ESP32 communication channel */
 #define ESP32_I2C &hi2c1 /* ESP32 to STM32 I2C channel */
 #define EEPROM_I2C &hi2c2 /* EEPROM I2C channel */
 
