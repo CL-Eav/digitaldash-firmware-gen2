@@ -204,6 +204,8 @@ void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *hi2c)
 
 }
 
+uint8_t value = 0x12;//eeprom_read(reg);
+volatile uint16_t reg = 0;
 
 /**
   * @brief  Rx Transfer completed callback.
@@ -214,9 +216,7 @@ void HAL_I2C_SlaveTxCpltCallback(I2C_HandleTypeDef *hi2c)
   */
 void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
-	if (HAL_I2C_Slave_Seq_Receive_IT(hi2c, i2c_register_req, sizeof(i2c_register_req), I2C_NEXT_FRAME) != HAL_OK) {
-		Error_Handler();
-	}
+
 }
 
 /**
@@ -227,6 +227,7 @@ void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c)
   *   AddrMatchCode: Address Match Code
   * @retval None
   */
+uint32_t count = 0;
 void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, uint16_t AddrMatchCode) {
 	if( hi2c == ESP32_I2C ) {
 		// Write
@@ -237,8 +238,8 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, ui
 
 		// Read
 		} else {
-			uint16_t reg = (i2c_register_req[0] << 8) | i2c_register_req[1];
-			uint8_t value = eeprom_read(reg);
+			reg = (i2c_register_req[1] << 8) | i2c_register_req[0];
+			value = get_eeprom_byte(reg);
 			if (HAL_I2C_Slave_Seq_Transmit_IT(hi2c, &value, 1, I2C_FIRST_FRAME) != HAL_OK) {
 				Error_Handler();
 			}
