@@ -61,11 +61,11 @@ config_h.write("typedef uint8_t(settings_read)(uint16_t bAdd);\n\n")
 config_h.write("void settings_setWriteHandler(settings_write *writeHandler);\n")
 config_h.write("void settings_setReadHandler(settings_read *readHandler);\n\n")
 
-config_h.write("#define GAUGES_PER_VIEW " + str(gauges_per_view) + "\n")
-config_h.write("#define MAX_ALERTS " + str(max_alerts) + "\n")
-config_h.write("#define ALERT_MESSAGE_LEN " + str(alert_message_len)+ "\n")
-config_h.write("#define MAX_VIEWS " + str(max_views)+ "\n")
-config_h.write("#define NUM_DYNAMIC " + str(num_dynamic)+ "")
+config_h.write(f"#define GAUGES_PER_VIEW {gauges_per_view}\n")
+config_h.write(f"#define MAX_ALERTS {max_alerts}\n")
+config_h.write(f"#define ALERT_MESSAGE_LEN {alert_message_len}\n")
+config_h.write(f"#define MAX_VIEWS {max_views}\n")
+config_h.write(f"#define NUM_DYNAMIC {num_dynamic}")
 
 config_c.write( "#include \"ke_config.h\"\n\n" )
 #config_c.write( "static " + top_level_struc + " " + top_level_name + ";\n\n")
@@ -85,6 +85,12 @@ def write_default_define(file, prefix, cmd, depth):
         file.write("#define DEFAULT_" + prefix.upper() + "_" + cmd["cmd"].upper() + " 0\n")
      else:
         file.write("#define DEFAULT_" + prefix.upper() + "_" + cmd["cmd"].upper() + " " + cmd["dataType"].replace(" ", "_").upper() + "_" + cmd["default"].replace(" ", "_").upper() + "\n")
+
+def write_size_define(file, prefix, cmd, depth):
+   if( str(cmd["EEBytes"]).isnumeric()):
+     file.write("#define EE_SIZE_" + prefix.upper() + "_" + cmd["cmd"].upper() + " " + str(cmd["EEBytes"]) + "\n")
+   else:
+      file.write("#define EE_SIZE_" + prefix.upper() + "_" + cmd["cmd"].upper() + " " + cmd["EEBytes"].upper() + "\n")
 
 def write_comment_block( file, prefix, cmd, depth ):
     file.write("\n\n")
@@ -173,7 +179,7 @@ def write_get_source(file, prefix, cmd, depth):
       output = "settings_" + prefix + "_" + cmd["cmd"].lower() + index
 
       file.write("void get_" + prefix + "_" + cmd["cmd"].lower() + "(" + input + ")\n{\n")
-      file.write("    memcpy(" + prefix + "_" + cmd["cmd"].lower() + ", " + output + ", " + cmd["EEBytes"].upper() + ");\n")
+      file.write("    memcpy(" + prefix + "_" + cmd["cmd"].lower() + ", (char)" + output + ", " + cmd["EEBytes"].upper() + ");\n")
 
       file.write("}\n\n")
     else:
@@ -238,7 +244,10 @@ def write_set_source(file, prefix, cmd, depth):
     file.write("        }\n")
     file.write("    }\n\n")
 
-    file.write("    " + output + " = " + prefix.lower() + "_" + cmd["cmd"].lower() + ";\n\n")
+    if( cmd["type"] == "string" ):
+      file.write("    memcpy(" + output + "[0], " + prefix.lower() + "_" + cmd["cmd"].lower() + ", " + cmd["EEBytes"].upper() + ");\n\n")
+    else:
+      file.write("    " + output + " = " + prefix.lower() + "_" + cmd["cmd"].lower() + ";\n\n")
     file.write("    return 1;\n" )
     file.write("}\n")
 
@@ -290,14 +299,11 @@ def sub_write_memory_organization( file, prefix, cmd, idx ):
   #define EEPROM byte offset
   while byte_count <= get_eeprom_size(cmd):
     if( idx > 0 ):
-      file.write("#define EEPROM_" + prefix.upper() + "_" + cmd["cmd"].upper() + str(idx) + "_BYTE" +  str(byte_count) + " (uint16_t)" + '0x{:02X}'.format(PageCount) + '{:02X}'.format(EEPROM_Count) + "\n")
+      file.write("#define EEPROM_" + prefix.upper() + "_" + cmd["cmd"].upper() + str(idx) + "_BYTE" +  str(byte_count) + " (uint16_t)" + '0x{:04X}'.format(EEPROM_Count) + "\n")
     else:
-       file.write("#define EEPROM_" + prefix.upper() + "_" + cmd["cmd"].upper() + "_BYTE" +  str(byte_count) + " (uint16_t)" + '0x{:02X}'.format(PageCount) + '{:02X}'.format(EEPROM_Count) + "\n\n")
+       file.write("#define EEPROM_" + prefix.upper() + "_" + cmd["cmd"].upper() + "_BYTE" +  str(byte_count) + " (uint16_t)" + '0x{:04X}'.format(EEPROM_Count) + "\n\n")
     EEPROM_Count = EEPROM_Count + 1
     TotalByteCount = TotalByteCount + 1
-    if( EEPROM_Count >= 32 ):
-        PageCount = PageCount + 1
-        EEPROM_Count = 0
     byte_count = byte_count + 1
 
 def sub_write_memory_organization_2d( file, prefix, cmd, idx1, idx2 ):
@@ -305,12 +311,9 @@ def sub_write_memory_organization_2d( file, prefix, cmd, idx1, idx2 ):
   byte_count = 1
   #define EEPROM byte offset
   while byte_count <= get_eeprom_size(cmd):
-    file.write("#define EEPROM_" + prefix.upper().split('_')[0].upper() + str(idx1) + "_" + prefix.upper().split('_')[1].upper() + "_" + cmd["cmd"].upper() + str(idx2) + "_BYTE" +  str(byte_count) + " (uint16_t)" + '0x{:02X}'.format(PageCount) + '{:02X}'.format(EEPROM_Count) + "\n")
+    file.write("#define EEPROM_" + prefix.upper().split('_')[0].upper() + str(idx1) + "_" + prefix.upper().split('_')[1].upper() + "_" + cmd["cmd"].upper() + str(idx2) + "_BYTE" +  str(byte_count) + " (uint16_t)" + '0x{:04X}'.format(EEPROM_Count) + "\n")
     EEPROM_Count = EEPROM_Count + 1
     TotalByteCount = TotalByteCount + 1
-    if( EEPROM_Count >= 32 ):
-        PageCount = PageCount + 1
-        EEPROM_Count = 0
     byte_count = byte_count + 1
 
 def sub_write_memory_map( file, prefix, cmd, byte, depth ):
@@ -402,7 +405,10 @@ def write_load_source( file, prefix, cmd, depth ):
    else:
       file.write( "static " + cmd["dataType"] + " load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "(void)\n")
    file.write( "{\n" )
-   file.write( "    " + cmd["dataType"] + " load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = DEFAULT_" + prefix.upper() + "_" + cmd["cmd"].upper() + ";\n\n") 
+   if cmd["type"] == "string":
+     file.write( "    " + cmd["dataType"] + " load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val[" + str(cmd["EEBytes"]).upper() + "] = {DEFAULT_" + prefix.upper() + "_" + cmd["cmd"].upper() + "};\n\n")
+   else:
+     file.write( "    " + cmd["dataType"] + " load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = DEFAULT_" + prefix.upper() + "_" + cmd["cmd"].upper() + ";\n\n") 
    # Only values that are saved in EEPROM need to be added
    if( get_eeprom_size(cmd) > 0 ):
     if( cmd["index"] ):
@@ -413,40 +419,40 @@ def write_load_source( file, prefix, cmd, depth ):
       if( cmd["type"] == "string" ):
            byte_count = 1
            while byte_count <= get_eeprom_size(cmd):
-            file.write("    load_" + prefix + "_" + cmd["cmd"].lower() + "_val[" + str(byte_count-1) + "] = read(map_"  + prefix + "_" + cmd["cmd"].lower() + "_byte" + str(byte_count) + "[" + index + "]);\n")
+            file.write("    load_" + prefix + "_" + cmd["cmd"].lower() + "_val[" + str(byte_count-1) + "] = read_eeprom(map_"  + prefix + "_" + cmd["cmd"].lower() + "_byte" + str(byte_count) + "[" + index + "]);\n")
             byte_count = byte_count + 1
       elif( get_eeprom_size(cmd) == 1 ):
           file.write("    if (" + eeprom_status_check + ")\n    {\n");
-          file.write("        load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = (uint8_t)read(map_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_byte1[" + index + "]);\n")
+          file.write("        load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = (uint8_t)read_eeprom(map_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_byte1[" + index + "]);\n")
           file.write("    }\n")
       elif( get_eeprom_size(cmd) == 2 ):
           file.write("    if (" + eeprom_status_check + ")\n    {\n");
-          file.write("        load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = (uint16_t)read(map_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_byte1[" + index + "]);\n")
-          file.write("        load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = ((uint16_t)load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val << 8) | " + "(uint16_t)read(map_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_byte2[" + index + "]);\n")
+          file.write("        load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = (uint16_t)read_eeprom(map_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_byte1[" + index + "]);\n")
+          file.write("        load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = ((uint16_t)load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val << 8) | " + "(uint16_t)read_eeprom(map_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_byte2[" + index + "]);\n")
           file.write("    }\n")
       elif( get_eeprom_size(cmd) == 4 ):
           file.write("    if (" + eeprom_status_check + ")\n    {\n");
-          file.write("        load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = (uint32_t)read(map_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_byte1[" + index + "]);\n")
-          file.write("        load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = ((uint32_t)load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val << 8) | " + "(uint32_t)read(map_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_byte2[" + index + "]);\n")
-          file.write("        load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = ((uint32_t)load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val << 16) | " + "(uint32_t)read(map_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_byte3[" + index + "]);\n")
-          file.write("        load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = ((uint32_t)load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val << 24) | " + "(uint32_t)read(map_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_byte4[" + index + "]);\n")
+          file.write("        load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = (uint32_t)read_eeprom(map_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_byte1[" + index + "]);\n")
+          file.write("        load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = ((uint32_t)load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val << 8) | " + "(uint32_t)read_eeprom(map_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_byte2[" + index + "]);\n")
+          file.write("        load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = ((uint32_t)load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val << 16) | " + "(uint32_t)read_eeprom(map_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_byte3[" + index + "]);\n")
+          file.write("        load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = ((uint32_t)load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val << 24) | " + "(uint32_t)read_eeprom(map_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_byte4[" + index + "]);\n")
           file.write("    }\n")        
     else:
       if( get_eeprom_size(cmd) == 1 ):
           file.write("    if (" + eeprom_status_check + ")\n    {\n");
-          file.write("        load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = (uint8_t)read(EEPROM_" + prefix.upper() + "_" + cmd["cmd"].upper() + "_BYTE1);\n")
+          file.write("        load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = (uint8_t)read_eeprom(EEPROM_" + prefix.upper() + "_" + cmd["cmd"].upper() + "_BYTE1);\n")
           file.write("    }\n")
       elif( get_eeprom_size(cmd) == 2 ):
           file.write("    if (" + eeprom_status_check + ")\n    {\n");
-          file.write("        load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = (uint16_t)read(EEPROM_" + prefix.upper() + "_" + cmd["cmd"].upper() + "1);\n")
-          file.write("        load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = ((uint16_t)load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val << 8) | " + "(uint16_t)read(EEPROM_" + prefix.upper() + "_" + cmd["cmd"].upper() + "_BYTE2);\n")
+          file.write("        load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = (uint16_t)read_eeprom(EEPROM_" + prefix.upper() + "_" + cmd["cmd"].upper() + "1);\n")
+          file.write("        load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = ((uint16_t)load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val << 8) | " + "(uint16_t)read_eeprom(EEPROM_" + prefix.upper() + "_" + cmd["cmd"].upper() + "_BYTE2);\n")
           file.write("    }\n")
       elif( get_eeprom_size(cmd) == 4 ):
           file.write("    if (" + eeprom_status_check + ")\n    {\n");
-          file.write("        load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = (uint32_t)read(EEPROM_" + prefix.lower() + "_" + cmd["cmd"].lower() + "1);\n")
-          file.write("        load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = ((uint32_t)load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val << 8) | " + "(uint32_t)read(EEPROM_" + prefix.upper() + "_" + cmd["cmd"].upper() + "_BYTE2);\n")
-          file.write("        load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = ((uint32_t)load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val << 16) | " + "(uint32_t)read(EEPROM_" + prefix.upper() + "_" + cmd["cmd"].upper() + "_BYTE3);\n")
-          file.write("        load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = ((uint32_t)load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val << 24) | " + "(uint32_t)read(EEPROM_" + prefix.upper() + "_" + cmd["cmd"].upper() + "_BYTE4);\n")
+          file.write("        load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = (uint32_t)read_eeprom(EEPROM_" + prefix.lower() + "_" + cmd["cmd"].lower() + "1);\n")
+          file.write("        load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = ((uint32_t)load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val << 8) | " + "(uint32_t)read_eeprom(EEPROM_" + prefix.upper() + "_" + cmd["cmd"].upper() + "_BYTE2);\n")
+          file.write("        load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = ((uint32_t)load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val << 16) | " + "(uint32_t)read_eeprom(EEPROM_" + prefix.upper() + "_" + cmd["cmd"].upper() + "_BYTE3);\n")
+          file.write("        load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val = ((uint32_t)load_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_val << 24) | " + "(uint32_t)read_eeprom(EEPROM_" + prefix.upper() + "_" + cmd["cmd"].upper() + "_BYTE4);\n")
           file.write("    }\n")
          
 
@@ -481,7 +487,7 @@ def write_save_source( file, prefix, cmd, depth ):
         if( cmd["type"] == "string" ):
            byte_count = 1
            while byte_count <= get_eeprom_size(cmd):
-            file.write("        write(map_"  + prefix + "_" + cmd["cmd"].lower() + "_byte" + str(byte_count) + "[" + index + "], " + prefix + "_" + cmd["cmd"].lower() + "[" + str(byte_count-1) + "]);\n")
+            file.write("        write_eeprom(map_"  + prefix + "_" + cmd["cmd"].lower() + "_byte" + str(byte_count) + "[" + index + "], " + prefix + "_" + cmd["cmd"].lower() + "[" + str(byte_count-1) + "]);\n")
             byte_count = byte_count + 1
         else:
           byte_count = 1
@@ -489,12 +495,12 @@ def write_save_source( file, prefix, cmd, depth ):
               offset = (get_eeprom_size(cmd)-byte_count)*8
               if offset > 0:
                   if( cmd["index"] ):
-                    file.write("        write(map_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_byte" + str(byte_count) + "[" + index + "], (" + input + " >> " + str(offset) + ") & 0xFF);\n")
+                    file.write("        write_eeprom(map_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_byte" + str(byte_count) + "[" + index + "], (" + input + " >> " + str(offset) + ") & 0xFF);\n")
                   else:
                     file.write("        write(EEPROM_" + cmd["cmd"].upper() + str(byte_count) + ", (" + input + " >> " + str(offset) + ") & 0xFF);\n")
               else:
                   if( cmd["index"] ):
-                    file.write("        write(map_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_byte" + str(byte_count) + "[" + index + "], " + input + " & 0xFF);\n")
+                    file.write("        write_eeprom(map_" + prefix.lower() + "_" + cmd["cmd"].lower() + "_byte" + str(byte_count) + "[" + index + "], " + input + " & 0xFF);\n")
                   else:
                     file.write("        write(EEPROM_" + cmd["cmd"].upper() + str(byte_count) + ", " + input + " & 0xFF);\n")
               byte_count = byte_count + 1
@@ -544,6 +550,21 @@ for i, struct in enumerate(config["config"]["struct_list"]):
         for sub_struct in struct:  # Iterate through the sublist
             print(f"Parent struct: {parent_struct}, Sub-struct: {sub_struct}")
             for cmd in config[sub_struct]:
+                write_size_define(config_c, str(parent_struct) + "_" + sub_struct, cmd, 2)
+    else:
+        # If it's not a list, just process the struct
+        for cmd in config[struct]:
+            write_size_define(config_c, struct, cmd, 1)
+
+config_c.write("\n")
+
+for i, struct in enumerate(config["config"]["struct_list"]):
+    if isinstance(struct, list):  # Check if the item is a list
+        parent_struct = config["config"]["struct_list"][i - 1]  # Get the parent struct name (previous item)
+        
+        for sub_struct in struct:  # Iterate through the sublist
+            print(f"Parent struct: {parent_struct}, Sub-struct: {sub_struct}")
+            for cmd in config[sub_struct]:
                 write_memory_organization( config_c, str(parent_struct) + "_" + sub_struct, cmd, 2)
     else:
         # If it's not a list, just process the struct
@@ -581,14 +602,42 @@ for i, struct in enumerate(config["config"]["struct_list"]):
             write_define_load_setting( config_c, struct, cmd, 1)
 config_c.write("\n")
 
-config_c.write("static settings_registers[" + str(TotalByteCount) + "];\n\n")
+config_c.write("static uint8_t cached_settings[" + str(TotalByteCount) + "];\n\n")
 
 config_c.write("static settings_write *write;\n")
 config_c.write("static settings_read *read;\n\n")
 config_c.write("void settings_setWriteHandler(settings_write *writeHandler) { write = writeHandler; }\n")
 config_c.write("void settings_setReadHandler(settings_read *readHandler) { read = readHandler; }\n\n")
 
+config_c.write("// Converts an EEPROM address to a linear array index\n")
+config_c.write("static uint16_t eeprom_address_to_linear_index(uint16_t address) {\n")
+config_c.write("    uint16_t page = address >> 5;\n")
+config_c.write("    uint16_t offset = address & 0x1F; // Mask lower 5 bits (0-31)\n")
+config_c.write("    return (page * 32) + offset;\n\n")
+config_c.write("}\n\n")
+
+config_c.write("uint8_t read_eeprom(uint16_t bAdd)\n")
+config_c.write("{\n")
+config_c.write("	uint8_t byte = 0xFF;\n")
+config_c.write("	byte = read(bAdd); // Read from the EEPROM\n")
+config_c.write("	cached_settings[bAdd] = byte; // cache the data\n")
+config_c.write("	return byte;\n")
+config_c.write("}\n\n")
+
+config_c.write("void write_eeprom(uint16_t bAdd, uint8_t bData)\n")
+config_c.write("{\n")
+config_c.write("	write(bAdd, bData); // Write to the EEPROM\n")
+config_c.write("	cached_settings[bAdd] = bData; // cache the data\n")
+config_c.write("}\n\n")
+
+config_c.write("uint8_t get_eeprom_byte(uint16_t bAdd)\n")
+config_c.write("{\n")
+config_c.write("	return cached_settings[bAdd];\n")
+config_c.write("}\n\n")
+
 config_h.write("\n\nvoid load_settings(void);\n")
+config_h.write("uint8_t get_eeprom_byte(uint16_t bAdd);")
+
 config_c.write("void load_settings(void)\n{\n")
 for i, struct in enumerate(config["config"]["struct_list"]):
     if isinstance(struct, list):  # Check if the item is a list
