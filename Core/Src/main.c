@@ -86,9 +86,8 @@ static const __attribute__((section(".ExtFlash_Section"))) __attribute__((used))
 
 /* USER CODE BEGIN PV */
 digitaldash FordFocusSTRS;
+lv_obj_t * ui_screen;
 lv_obj_t * ui_view[MAX_VIEWS];
-lv_obj_t * ui_alert[MAX_ALERTS];
-lv_obj_t * ui_alert_container[MAX_ALERTS];
 
 uint32_t CAN_Filter_Count = 0;
 
@@ -470,7 +469,7 @@ void spoof_config(void)
 	// View 1
 	set_view_enable(1, VIEW_STATE_ENABLED, true);
 	set_view_num_gauges(1, 1, true);
-	set_view_background(1, VIEW_BACKGROUND_USER1, true);
+	set_view_background(1, VIEW_BACKGROUND_BLACK, true);
 	set_view_gauge_theme(1, 0, GAUGE_THEME_LINEAR, true);
 	set_view_gauge_pid(1, 0, MODE1_ENGINE_SPEED_UUID, true);
 	set_view_gauge_units(1, 0, PID_UNITS_RPM, true);
@@ -634,15 +633,26 @@ int main(void)
 
   Digitaldash_Init();
 
+  // Create the base screen
+  ui_screen = lv_obj_create(NULL);
+  lv_obj_remove_flag(ui_screen, LV_OBJ_FLAG_SCROLLABLE);
+
   // Iterate through each view
   for(uint8_t view = 0; view < MAX_VIEWS; view++)
   {
 	  FordFocusSTRS.view[view].enabled = get_view_enable(view);
 
 	  if( FordFocusSTRS.view[view].enabled ) {
-		  // Create the view
-		  ui_view[view] = lv_obj_create(NULL);
-		  lv_obj_remove_flag(ui_view[view], LV_OBJ_FLAG_SCROLLABLE);
+		  // Create the view as a container
+		  ui_view[view] = lv_obj_create(ui_screen);
+		  lv_obj_remove_style_all(ui_view[view]);
+		  lv_obj_set_width(ui_view[view], lv_pct(100));
+		  lv_obj_set_height(ui_view[view], lv_pct(100));
+		  lv_obj_set_align(ui_view[view], LV_ALIGN_CENTER);
+		  lv_obj_add_flag(ui_view[view], LV_OBJ_FLAG_HIDDEN);
+		  lv_obj_remove_flag(ui_view[view], LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_PRESS_LOCK | LV_OBJ_FLAG_CLICK_FOCUSABLE |
+							   LV_OBJ_FLAG_GESTURE_BUBBLE | LV_OBJ_FLAG_SNAPPABLE | LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_SCROLL_ELASTIC |
+							   LV_OBJ_FLAG_SCROLL_MOMENTUM | LV_OBJ_FLAG_SCROLL_CHAIN);
 		  FordFocusSTRS.num_views++;
 
 		  FordFocusSTRS.view[view].num_gauges = get_view_num_gauges(view);
@@ -768,8 +778,8 @@ int main(void)
 		  FordFocusSTRS.dynamic[idx].pid = DigitalDash_Add_PID_To_Stream( &pid_req );
 	  }
   }
-
-  /*
+  lv_screen_load(ui_screen);
+  switch_view(0);
   ui_alert_container[0] = lv_obj_create(ui_view[0]);
   lv_obj_remove_style_all(ui_alert_container[0]);
   lv_obj_set_width(ui_alert_container[0], 450);
@@ -845,7 +855,7 @@ int main(void)
 	active_view_idx = dynamic_gauge_check(&FordFocusSTRS, 0);
 
 	if( FordFocusSTRS.view[active_view_idx].enabled )
-		switch_screen(ui_view[active_view_idx]);
+		switch_view(active_view_idx);
 
 
 	/* Check for Alert(s) */
