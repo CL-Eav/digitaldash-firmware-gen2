@@ -402,6 +402,22 @@ uint8_t dynamic_gauge_check( digitaldash *dash, uint8_t idx )
 	}
 }
 
+/**
+ * @brief Initializes the Digital Dash system with required configuration.
+ *
+ * This function sets up the Digital Dash by configuring its communication,
+ * control, display, and filtering interfaces. It populates a
+ * `DIGITALDASH_CONFIG` structure with references to relevant handler functions
+ * and passes it to `digitaldash_init()`.
+ *
+ * The configuration includes:
+ * - `dd_ecu_tx`: Pointer to the function handling CAN transmission to the ECU.
+ * - `dd_host_ctrl`: Pointer to the function controlling the host (e.g., ESP32 reset).
+ * - `dd_set_backlight`: Pointer to the function adjusting the LCD backlight.
+ * - `dd_filter`: Pointer to the function used to add CAN filters.
+ *
+ * If initialization fails, the system calls `Error_Handler()` to halt or report the failure.
+ */
 void Digitaldash_Init( void )
 {
     DIGITALDASH_CONFIG config;
