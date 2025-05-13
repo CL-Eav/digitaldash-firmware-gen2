@@ -15,4 +15,10 @@
 
 lv_obj_t * add_gauge( GAUGE_THEME theme, int32_t x, int32_t y, lv_obj_t * parent, PID_DATA * pid );
 
+
+lv_obj_t * add_alert( lv_obj_t * parent );
+bool get_alert(void);
+void set_alert(char *msg );
+void clear_alert(void);
+
 #endif /* UI_H_ */

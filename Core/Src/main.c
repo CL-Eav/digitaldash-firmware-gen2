@@ -795,47 +795,37 @@ int main(void)
 		  FordFocusSTRS.dynamic[idx].pid = DigitalDash_Add_PID_To_Stream( &pid_req );
 	  }
   }
+
+  for(uint8_t idx = 0; idx < MAX_ALERTS; idx++)
+  {
+	  FordFocusSTRS.alert[idx].enabled = get_alert_enable(idx);
+
+	  if( FordFocusSTRS.alert[idx].enabled == ALERT_STATE_ENABLED )
+	  {
+		  PID_DATA pid_req;
+
+		  pid_req.pid_uuid = get_alert_pid(idx);
+		  pid_req.pid = get_pid_by_uuid(pid_req.pid_uuid);
+		  pid_req.mode = get_mode_by_uuid(pid_req.pid_uuid);
+
+		  // Load the unit and default to base unit if error
+		  pid_req.pid_unit = get_alert_units(idx);
+		  if( pid_req.pid_unit == PID_UNITS_RESERVED )
+			  pid_req.pid_unit = get_pid_base_unit(pid_req.pid_uuid);
+
+		  // Start the PID stream and save the pointer
+		  FordFocusSTRS.alert[idx].pid = DigitalDash_Add_PID_To_Stream( &pid_req );
+
+		  FordFocusSTRS.alert[idx].compare = get_alert_compare(idx);
+		  FordFocusSTRS.alert[idx].thresh = get_alert_threshold(idx);
+		  get_alert_message(idx, FordFocusSTRS.alert[idx].msg);
+	  }
+  }
+
   lv_screen_load(ui_screen);
   switch_view(0);
-  ui_alert_container[0] = lv_obj_create(ui_view[0]);
-  lv_obj_remove_style_all(ui_alert_container[0]);
-  lv_obj_set_width(ui_alert_container[0], 450);
-  lv_obj_set_height(ui_alert_container[0], 75);
-  lv_obj_set_x(ui_alert_container[0], 0);
-  lv_obj_set_y(ui_alert_container[0], 5);
-  lv_obj_set_align(ui_alert_container[0], LV_ALIGN_TOP_MID);
-  //lv_obj_add_flag(ui_alert_container[0], LV_OBJ_FLAG_HIDDEN);     /// Flags
-  lv_obj_remove_flag(ui_alert_container[0],
-                     LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_PRESS_LOCK | LV_OBJ_FLAG_CLICK_FOCUSABLE | LV_OBJ_FLAG_GESTURE_BUBBLE |
-                     LV_OBJ_FLAG_SNAPPABLE | LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_SCROLL_ELASTIC | LV_OBJ_FLAG_SCROLL_MOMENTUM |
-                     LV_OBJ_FLAG_SCROLL_CHAIN);     /// Flags
-  lv_obj_set_style_radius(ui_alert_container[0], 10, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_bg_color(ui_alert_container[0], lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_bg_opa(ui_alert_container[0], 225, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_border_color(ui_alert_container[0], lv_color_hex(0xFF0000), LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_border_opa(ui_alert_container[0], 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_border_width(ui_alert_container[0], 3, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_shadow_color(ui_alert_container[0], lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_shadow_opa(ui_alert_container[0], 225, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_shadow_width(ui_alert_container[0], 20, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_shadow_spread(ui_alert_container[0], 5, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_shadow_offset_x(ui_alert_container[0], 12, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_shadow_offset_y(ui_alert_container[0], 12, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-  ui_alert[0] = lv_label_create(ui_alert_container[0]);
-  lv_obj_set_width(ui_alert[0], LV_SIZE_CONTENT);   /// 1
-  lv_obj_set_height(ui_alert[0], LV_SIZE_CONTENT);    /// 1
-  lv_obj_set_align(ui_alert[0], LV_ALIGN_CENTER);
-  lv_label_set_text(ui_alert[0], FordFocusSTRS.alert[0].msg);
-  lv_obj_set_style_text_font(ui_alert[0], &lv_font_montserrat_22, LV_PART_MAIN | LV_STATE_DEFAULT);
-
-  // Hide the alert by default
-  lv_obj_add_flag(ui_alert_container[0], LV_OBJ_FLAG_HIDDEN);
-
-  uint8_t alert_active = 1;
-  */
-
-  lv_screen_load(ui_view[1]);
+  add_alert(ui_screen);
 
   uint32_t timestamp[MAX_VIEWS][GAUGES_PER_VIEW] = {0};
   /* USER CODE END 2 */
@@ -874,22 +864,18 @@ int main(void)
 	if( FordFocusSTRS.view[active_view_idx].enabled )
 		switch_view(active_view_idx);
 
-
-	/* Check for Alert(s) */
-	/*
-	if( compare_values(FordFocusSTRS.alert[0].trigger.pid->pid_value, FordFocusSTRS.alert[0].trigger.thresh, FordFocusSTRS.alert[0].trigger.compare) )
+	for(uint8_t idx = 0; idx < MAX_ALERTS; idx++)
 	{
-		if( alert_active == 0 ) {
-			alert_active = 1;
-			lv_obj_remove_flag(ui_alert_container[0], LV_OBJ_FLAG_HIDDEN);
-		}
-	} else {
-		if( alert_active == 1 ) {
-			alert_active = 0;
-			lv_obj_add_flag(ui_alert_container[0], LV_OBJ_FLAG_HIDDEN);
+		if( FordFocusSTRS.alert[idx].enabled == ALERT_STATE_DISABLED ) {
+			// Skip if not enabled
+		} else if( compare_values(FordFocusSTRS.alert[idx].pid->pid_value, FordFocusSTRS.alert[idx].thresh, FordFocusSTRS.alert[idx].compare ) ) {
+			if(get_alert())
+				set_alert(FordFocusSTRS.alert[0].msg);
+			break;
+		} else {
+			clear_alert();
 		}
 	}
-	*/
 
 	/* Update gauges on current view */
 	for( uint8_t i = 0; i < FordFocusSTRS.view[active_view_idx].num_gauges; i++) {
