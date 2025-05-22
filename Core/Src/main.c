@@ -386,19 +386,20 @@ HAL_StatusTypeDef can_filter_remove( uint32_t id, uint32_t mask )
     return HAL_FDCAN_Start(EXT_CAN_BUS);
 }
 
-void Add_CAN_Filter( uint16_t id )
+void CAN_Filter( uint16_t id, uint8_t enable )
 {
-	if( CAN_Filter_Count < MAX_CAN_FILTERS ) {
-		can_filter_add( id, 0x7FF, CAN_Filter_Count++, FDCAN_FILTER_TO_RXFIFO0 ); // TODO add error handling
+	if(enable)
+	{
+		if( CAN_Filter_Count < MAX_CAN_FILTERS ) {
+			can_filter_add( id, 0x7FF, CAN_Filter_Count++, FDCAN_FILTER_TO_RXFIFO0 ); // TODO add error handling
+		}
+	} else {
+		if( CAN_Filter_Count > 0 ) {
+			can_filter_remove( id, 0x7FF );
+			CAN_Filter_Count--;
+		}
 	}
-}
 
-void Remove_CAN_Filter( uint16_t id )
-{
-	if( CAN_Filter_Count > 0 ) {
-		can_filter_remove( id, 0x7FF );
-		CAN_Filter_Count--;
-	}
 }
 
 void process_can_packet( FDCAN_HandleTypeDef *hfdcan, uint32_t fifo )
@@ -520,7 +521,7 @@ void Digitaldash_Init( void )
     config.dd_ecu_tx            = &ECU_CAN_Tx;
     config.dd_host_ctrl         = &esp32_reset;
     config.dd_set_backlight     = &LCD_Brightness;
-    config.dd_filter            = &Add_CAN_Filter;
+    config.dd_filter            = &CAN_Filter;
 
     if( digitaldash_init( &config ) != DIGITALDASH_INIT_OK )
         Error_Handler();
