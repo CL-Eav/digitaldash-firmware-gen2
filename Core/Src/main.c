@@ -94,7 +94,9 @@ uint32_t CAN_Filter_Count = 0;
 /* UART RX'd byte */
 static uint8_t rx_byte;
 static int image_byte = 0;
+#if !XIP_ENABLED
 static int image_size = 0;
+#endif
 static uint8_t image_buffer[UI_HOR_RES * UI_VER_RES * 4] = {0};
 
 uint8_t active_view_idx = 0;
