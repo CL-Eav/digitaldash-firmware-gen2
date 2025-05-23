@@ -15,7 +15,7 @@
 #define BAR_LABEL_Y 30
 #define BAR_FONT &lv_font_montserrat_22
 #elif UI_HOR_RES == 1024
-#define BAR_WIDTH 768
+#define BAR_WIDTH 680
 #define BAR_HEIGHT 64
 #define BAR_LABEL_Y 40
 #define BAR_FONT &lv_font_montserrat_24
