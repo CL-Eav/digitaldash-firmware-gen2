@@ -935,6 +935,7 @@ int main(void)
   add_alert(ui_screen);
 
   uint32_t timestamp[MAX_VIEWS][GAUGES_PER_VIEW] = {0};
+  float prev_pid_value[MAX_VIEWS][GAUGES_PER_VIEW] = {0};
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -988,12 +989,24 @@ int main(void)
 	}
 
 	/* Update gauges on current view */
-	for( uint8_t i = 0; i < FordFocusSTRS.view[active_view_idx].num_gauges; i++) {
-		if( timestamp[active_view_idx][i] != FordFocusSTRS.view[active_view_idx].gauge[i].pid->timestamp ) {
-			 timestamp[active_view_idx][i] = FordFocusSTRS.view[active_view_idx].gauge[i].pid->timestamp;
-			 lv_obj_send_event(FordFocusSTRS.view[active_view_idx].gauge[i].obj, LV_EVENT_REFRESH, FordFocusSTRS.view[active_view_idx].gauge[i].pid);
-		}
+	for( uint8_t i = 0; i < FordFocusSTRS.view[active_view_idx].num_gauges; i++)
+	{
+		// Check if new pid data has been received.
+		if( timestamp[active_view_idx][i] != FordFocusSTRS.view[active_view_idx].gauge[i].pid->timestamp )
+		{
+			// Log the timestamp
+			timestamp[active_view_idx][i] = FordFocusSTRS.view[active_view_idx].gauge[i].pid->timestamp;
 
+			// Check if the value has changed
+			if( prev_pid_value[active_view_idx][i] != FordFocusSTRS.view[active_view_idx].gauge[i].pid->pid_value )
+			{
+				// Log the value
+				prev_pid_value[active_view_idx][i] = FordFocusSTRS.view[active_view_idx].gauge[i].pid->pid_value;
+
+				// Send an event to the gauge
+				lv_obj_send_event(FordFocusSTRS.view[active_view_idx].gauge[i].obj, LV_EVENT_REFRESH, FordFocusSTRS.view[active_view_idx].gauge[i].pid);
+			}
+		}
 	}
 
     /* USER CODE END WHILE */
