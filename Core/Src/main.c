@@ -108,6 +108,10 @@ uint8_t i2c_register_req[EEPROM_ADDRESS_SIZE] = {0};
 #define CAN_FILTER_UNUSED 0x0000
 uint16_t can_filters[MAX_CAN_FILTERS] = {CAN_FILTER_UNUSED};
 
+// UI Variables
+uint32_t timestamp[MAX_VIEWS][GAUGES_PER_VIEW] = {0};
+float prev_pid_value[MAX_VIEWS][GAUGES_PER_VIEW] = {0};
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -933,9 +937,6 @@ int main(void)
   switch_view(0);
 
   add_alert(ui_screen);
-
-  uint32_t timestamp[MAX_VIEWS][GAUGES_PER_VIEW] = {0};
-  float prev_pid_value[MAX_VIEWS][GAUGES_PER_VIEW] = {0};
   /* USER CODE END 2 */
 
   /* Infinite loop */
