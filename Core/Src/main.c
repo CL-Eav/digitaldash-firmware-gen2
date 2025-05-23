@@ -86,8 +86,13 @@ static const __attribute__((section(".ExtFlash_Section"))) __attribute__((used))
 
 /* USER CODE BEGIN PV */
 digitaldash FordFocusSTRS;
+
+// UI Variables
 lv_obj_t * ui_screen;
 lv_obj_t * ui_view[MAX_VIEWS];
+uint8_t active_view_idx = 0;
+uint32_t timestamp[MAX_VIEWS][GAUGES_PER_VIEW] = {0};
+float prev_pid_value[MAX_VIEWS][GAUGES_PER_VIEW] = {0};
 
 uint32_t CAN_Filter_Count = 0;
 
@@ -107,10 +112,6 @@ uint8_t i2c_register_req[EEPROM_ADDRESS_SIZE] = {0};
 // You cannot search hardware filters by ID directly, therefore maintain a map of filter indexes and their IDs.
 #define CAN_FILTER_UNUSED 0x0000
 uint16_t can_filters[MAX_CAN_FILTERS] = {CAN_FILTER_UNUSED};
-
-// UI Variables
-uint32_t timestamp[MAX_VIEWS][GAUGES_PER_VIEW] = {0};
-float prev_pid_value[MAX_VIEWS][GAUGES_PER_VIEW] = {0};
 
 /* USER CODE END PV */
 
