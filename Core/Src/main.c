@@ -107,7 +107,10 @@ static int image_size = 0;
 static uint8_t image_buffer[UI_HOR_RES * UI_VER_RES * 4] = {0};
 
 #define EEPROM_ADDRESS_SIZE 2
-uint8_t i2c_register_req[EEPROM_ADDRESS_SIZE] = {0};
+#define EEPROM_DATA_SIZE 1
+static uint8_t i2c_rx_index = 0;
+static uint8_t i2c_buffer[EEPROM_ADDRESS_SIZE + EEPROM_DATA_SIZE] = {0};
+static uint16_t current_register = 0;
 
 // You cannot search hardware filters by ID directly, therefore maintain a map of filter indexes and their IDs.
 #define CAN_FILTER_UNUSED 0x0000
@@ -244,7 +247,26 @@ volatile uint16_t reg = 0;
   */
 void HAL_I2C_SlaveRxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
+	if (hi2c == ESP32_I2C) {
+		i2c_rx_index++;
 
+		if (i2c_rx_index == 1) {
+			// Received first byte (register LSB)
+			HAL_I2C_Slave_Seq_Receive_IT(hi2c, &i2c_buffer[1], 1, I2C_NEXT_FRAME);  // now receive second byte (MSB)
+		} else if (i2c_rx_index == 2) {
+			current_register = (i2c_buffer[1] << 8) | i2c_buffer[0];
+
+			// Now try to receive optional 3rd byte (data) — if it doesn't come, it's a read-only setup
+			HAL_I2C_Slave_Seq_Receive_IT(hi2c, &i2c_buffer[2], 1, I2C_LAST_FRAME);
+		} else if (i2c_rx_index == 3) {
+			// Third byte is data to be written to the register
+			write_eeprom(current_register, i2c_buffer[2]);
+			i2c_rx_index = 0;  // Reset for next transaction
+		} else {
+		    // Unexpected extra data
+		    i2c_rx_index = 0;
+		}
+	}
 }
 
 /**
@@ -260,15 +282,16 @@ void HAL_I2C_AddrCallback(I2C_HandleTypeDef *hi2c, uint8_t TransferDirection, ui
 	if( hi2c == ESP32_I2C ) {
 		// Write
 		if (TransferDirection == I2C_DIRECTION_TRANSMIT) {
-			if (HAL_I2C_Slave_Seq_Receive_IT(hi2c, i2c_register_req, sizeof(i2c_register_req), I2C_FIRST_FRAME) != HAL_OK) {
+			i2c_rx_index = 0;  // Reset index at start of new write
+			if (HAL_I2C_Slave_Seq_Receive_IT(hi2c, i2c_buffer, 1, I2C_FIRST_FRAME) != HAL_OK) {
 				Error_Handler();
 			}
 
 		// Read
 		} else {
-			reg = (i2c_register_req[1] << 8) | i2c_register_req[0];
-			value = get_eeprom_byte(reg);
-			if (HAL_I2C_Slave_Seq_Transmit_IT(hi2c, &value, 1, I2C_FIRST_FRAME) != HAL_OK) {
+			i2c_rx_index = 0; // A read has started, reset the index
+			value = get_eeprom_byte(current_register);
+			if (HAL_I2C_Slave_Seq_Transmit_IT(hi2c, &value, 1, I2C_FIRST_AND_LAST_FRAME) != HAL_OK) {
 				Error_Handler();
 			}
 		}
