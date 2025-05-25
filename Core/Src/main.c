@@ -467,10 +467,13 @@ static uint8_t ECU_CAN_Tx( uint8_t data[], uint8_t len )
 
 static void LCD_Brightness( uint8_t brightness )
 {
-	//if( brightness > 0 )
-		//HAL_GPIO_WritePin(BLKT_EN_GPIO_Port, BLKT_EN_Pin, GPIO_PIN_SET);
-	//else
-		//HAL_GPIO_WritePin(BLKT_EN_GPIO_Port, BLKT_EN_Pin, GPIO_PIN_RESET);
+	if( brightness > 0 )
+		__HAL_TIM_SET_COMPARE(BKLT_TIM, BKLT_TIM_CHANNEL, 64*brightness);
+	else {
+		if (HAL_TIM_PWM_Stop(BKLT_TIM, BKLT_TIM_CHANNEL) != HAL_OK) {
+			Error_Handler();
+		}
+	}
 }
 
 /**
