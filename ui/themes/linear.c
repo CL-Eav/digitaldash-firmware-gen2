@@ -31,13 +31,7 @@ static void event_cb(lv_event_t * e)
     lv_obj_t * min = lv_obj_get_child(gauge, 3);
     lv_obj_t * max = lv_obj_get_child(gauge, 4);
 
-    int32_t pid_value = data->pid_value;
-
-    // Check if the value needs to be refreshed
-    //if( lv_bar_get_value(needle) == (int32_t)data->pid_value )
-    //	return;
-
-    lv_bar_set_value(needle, pid_value, LV_ANIM_OFF);
+    lv_bar_set_value(needle, scale_float(data->pid_value, data->precision), LV_ANIM_OFF);
 
     // Update the numbers
     switch( data->precision )
@@ -84,7 +78,7 @@ lv_obj_t * add_linear_gauge( int32_t x, int32_t y, lv_obj_t * parent, PID_DATA *
     lv_obj_set_style_text_font(pid_label, BAR_FONT, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_t * needle = lv_bar_create(gauge);
-    lv_bar_set_range(needle, pid->lower_limit, pid->upper_limit);
+    lv_bar_set_range(needle, scale_float(pid->lower_limit, pid->precision), scale_float(pid->upper_limit, pid->precision));
     lv_obj_set_width(needle, BAR_WIDTH);
     lv_obj_set_height(needle, BAR_HEIGHT);
     lv_obj_set_x(needle, 0);

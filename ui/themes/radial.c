@@ -23,7 +23,7 @@ static void event_cb(lv_event_t * e)
     //if( lv_arc_get_value(needle) == (int32_t)data->pid_value )
     //	return;
 
-    lv_arc_set_value(needle, data->pid_value);
+    lv_arc_set_value(needle, scale_float(data->pid_value, data->precision));
 
     // Update the numbers
     switch( data->precision )
@@ -57,7 +57,7 @@ lv_obj_t * add_radial_gauge( int32_t x, int32_t y, lv_obj_t * parent, PID_DATA *
     lv_obj_remove_flag(needle, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_PRESS_LOCK | LV_OBJ_FLAG_CLICK_FOCUSABLE |
                        LV_OBJ_FLAG_GESTURE_BUBBLE | LV_OBJ_FLAG_SNAPPABLE | LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_SCROLL_ELASTIC |
                        LV_OBJ_FLAG_SCROLL_MOMENTUM | LV_OBJ_FLAG_SCROLL_CHAIN);     /// Flags
-    lv_arc_set_range(needle, pid->lower_limit, pid->upper_limit);
+    lv_arc_set_range(needle, scale_float(pid->lower_limit, pid->precision), scale_float(pid->upper_limit, pid->precision));
     lv_arc_set_value(needle, pid->pid_value);
     lv_arc_set_bg_angles(needle, RADIAL_START_ANGLE, RADIAL_END_ANGLE);
     lv_obj_set_style_arc_color(needle, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);

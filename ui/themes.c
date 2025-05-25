@@ -8,6 +8,13 @@
 
 #include "themes.h"
 
+static const float pow10_table[] = {1.0f, 10.0f, 100.0f};
+
+int32_t scale_float( float val, uint8_t precision )
+{
+	return (int32_t)(val * pow10_table[precision]);
+}
+
 lv_obj_t * add_gauge( GAUGE_THEME theme, int32_t x, int32_t y, lv_obj_t * parent, PID_DATA * pid)
 {
 	switch(theme)
