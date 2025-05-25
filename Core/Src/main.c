@@ -88,7 +88,9 @@ static const __attribute__((section(".ExtFlash_Section"))) __attribute__((used))
 digitaldash FordFocusSTRS;
 
 // UI Variables
+#define SPLASH_SCREEN_T 2500
 lv_obj_t * ui_screen;
+lv_obj_t * splash_screen;
 lv_obj_t * ui_view[MAX_VIEWS];
 uint8_t active_view_idx = 0;
 uint32_t timestamp[MAX_VIEWS][GAUGES_PER_VIEW] = {0};
@@ -772,6 +774,20 @@ int main(void)
 
   Digitaldash_Init();
 
+  // Create the splash screen
+  splash_screen = lv_obj_create(NULL);
+  lv_obj_remove_flag(splash_screen, LV_OBJ_FLAG_SCROLLABLE);
+
+  lv_obj_t * label;
+  label = lv_label_create(splash_screen);
+  lv_obj_set_width(label, LV_SIZE_CONTENT);   /// 1
+  lv_obj_set_height(label, LV_SIZE_CONTENT);    /// 1
+  lv_obj_set_x(label, 0);
+  lv_obj_set_y(label, -40);
+  lv_obj_set_align(label, LV_ALIGN_CENTER);
+  lv_label_set_text(label, "KE");
+  lv_obj_set_style_text_font(label, &lv_font_montserrat_48, LV_PART_MAIN | LV_STATE_DEFAULT);
+
   // Create the base screen
   ui_screen = lv_obj_create(NULL);
   lv_obj_remove_flag(ui_screen, LV_OBJ_FLAG_SCROLLABLE);
@@ -932,8 +948,8 @@ int main(void)
 	  }
   }
 
-  lv_screen_load(ui_screen);
-  switch_view(0);
+  // Load the splash screen
+  switch_screen(splash_screen);
 
   add_alert(ui_screen);
   lv_timer_handler();
@@ -959,6 +975,11 @@ int main(void)
 	//HAL_I2C_Master_Transmit(ESP32_I2C, 0x5a, aTxBuffer, 4, 0xFFFF);
 	lv_timer_handler();
 	digitaldash_service();
+
+	if( HAL_GetTick() <= SPLASH_SCREEN_T )
+		switch_screen(splash_screen);
+	else
+		switch_screen(ui_screen);
 
 	/* Log min/max values */
 	for( uint8_t idx = 0; idx < FordFocusSTRS.num_views; idx++) {
