@@ -619,7 +619,7 @@ void flash_init(void)
  */
 void backlight_init(void)
 {
-	__HAL_TIM_SET_COMPARE(BKLT_TIM, BKLT_TIM_CHANNEL, 6400);
+	__HAL_TIM_SET_COMPARE(BKLT_TIM, BKLT_TIM_CHANNEL, 0);
 	if (HAL_TIM_PWM_Start(BKLT_TIM, BKLT_TIM_CHANNEL) != HAL_OK) {
 		Error_Handler();
 	}
