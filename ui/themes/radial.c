@@ -5,7 +5,7 @@
  *      Author: Matth
  */
 
-#include "themes.h"
+#include "ui.h"
 
 #define ARC_THICKNESS 15
 #define RADIAL_START_ANGLE 180
@@ -29,19 +29,19 @@ static void event_cb(lv_event_t * e)
     switch( data->precision )
     {
 		case 2:
-			lv_label_set_text_fmt(value, "%.2f%s", data->pid_value, data->unit_label);
-			lv_label_set_text_fmt(minmax, "%.2f/%.2f", data->pid_min, data->pid_max);
+			label_set_text_fmt_with_check(value, "%.2f%s", data->pid_value, data->unit_label);
+			label_set_text_fmt_with_check(minmax, "%.2f/%.2f", data->pid_min, data->pid_max);
 			break;
 
 		case 1:
-			lv_label_set_text_fmt(value, "%.1f%s", data->pid_value, data->unit_label);
-			lv_label_set_text_fmt(minmax, "%.1f/%.1f", data->pid_min, data->pid_max);
+			label_set_text_fmt_with_check(value, "%.1f%s", data->pid_value, data->unit_label);
+			label_set_text_fmt_with_check(minmax, "%.1f/%.1f", data->pid_min, data->pid_max);
 			break;
 
 		case 0:
 		default:
-			lv_label_set_text_fmt(value, "%.0f%s", data->pid_value, data->unit_label);
-			lv_label_set_text_fmt(minmax, "%.0f/%.0f", data->pid_min, data->pid_max);
+			label_set_text_fmt_with_check(value, "%.0f%s", data->pid_value, data->unit_label);
+			label_set_text_fmt_with_check(minmax, "%.0f/%.0f", data->pid_min, data->pid_max);
 			break;
     }
 }

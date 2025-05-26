@@ -5,7 +5,7 @@
  *      Author: Matthew Kaiser
  */
 
-#include "themes.h"
+#include "ui.h"
 #include "lib_pid.h"
 
 LV_IMG_DECLARE(ui_img_grumpy_png);
