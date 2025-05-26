@@ -177,9 +177,9 @@ void log_minmax( PID_DATA* pid )
 {
 	// Only log min/max if a value has been read
 	if( pid->timestamp > 0 ) {
-		if( pid->pid_value >= pid->pid_max )
+		if( pid->pid_value > pid->pid_max )
 			pid->pid_max = pid->pid_value;
-		if( pid->pid_value <= pid->pid_min )
+		if( pid->pid_value < pid->pid_min )
 			pid->pid_min = pid->pid_value;
 	}
 }
