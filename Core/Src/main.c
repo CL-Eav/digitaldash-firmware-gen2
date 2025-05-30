@@ -89,6 +89,10 @@ digitaldash FordFocusSTRS;
 
 // UI Variables
 #define SPLASH_SCREEN_T 2500
+#define MIN_TO_MILLI (60 * 1000)
+#define SCREEN_SAVER_T 5 * MIN_TO_MILLI // 5 min
+#define SCREEN_SAVER_DURATION_T 1 * MIN_TO_MILLI // 1 min
+uint32_t next_screen_saver = SCREEN_SAVER_T;
 lv_obj_t * ui_screen;
 lv_obj_t * splash_screen;
 lv_obj_t * ui_view[MAX_VIEWS];
@@ -1015,10 +1019,15 @@ int main(void)
 	lv_timer_handler();
 	digitaldash_service();
 
-	if( HAL_GetTick() <= SPLASH_SCREEN_T )
+	if( HAL_GetTick() <= SPLASH_SCREEN_T ) {
 		switch_screen(splash_screen);
-	else
+	} else if( HAL_GetTick() >= next_screen_saver ) {
+		switch_screen(splash_screen);
+		if( HAL_GetTick() >= (next_screen_saver + SCREEN_SAVER_DURATION_T) )
+			next_screen_saver = HAL_GetTick() + SCREEN_SAVER_T;
+	} else {
 		switch_screen(ui_screen);
+	}
 
 	/* Log min/max values */
 	for( uint8_t idx = 0; idx < FordFocusSTRS.num_views; idx++) {
