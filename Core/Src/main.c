@@ -208,13 +208,13 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	if( huart == ESP32_UART )
 	{
-		/* Echo the UART byte to the ESP32 */
-		//HAL_UART_Transmit_IT( ESP32_UART, &rx_byte, 1 );
 		image_buffer[image_byte++] = rx_byte;
-		if( (image_byte <= 1) & (rx_byte == 0) )
+		if( (image_byte <= 1) & (rx_byte == 0) ) {
 			image_byte--;
-		//backgrounds_external[0][image_byte] = rx_byte;
-		//image_byte++;
+			HAL_GPIO_WritePin(DBG_LED2_GPIO_Port, DBG_LED2_Pin, GPIO_PIN_RESET);
+		}
+
+		HAL_GPIO_WritePin(DBG_LED2_GPIO_Port, DBG_LED2_Pin, GPIO_PIN_SET);
 
 		/* Wait for the next byte */
 		HAL_UART_Receive_IT( ESP32_UART, &rx_byte, 1 );
@@ -572,7 +572,7 @@ void spoof_config(void)
 	// View 0
 	set_view_enable(0, VIEW_STATE_ENABLED, true);
 	set_view_num_gauges(0, 3, true);
-	set_view_background(0, VIEW_BACKGROUND_BLACK, true);
+	set_view_background(0, VIEW_BACKGROUND_USER1, true);
 	set_view_gauge_theme(0, 0, GAUGE_THEME_RADIAL, true);
 	set_view_gauge_theme(0, 1, GAUGE_THEME_RADIAL, true);
 	set_view_gauge_theme(0, 2, GAUGE_THEME_RADIAL, true);
@@ -586,7 +586,7 @@ void spoof_config(void)
 	// View 1
 	set_view_enable(1, VIEW_STATE_ENABLED, true);
 	set_view_num_gauges(1, 1, true);
-	set_view_background(1, VIEW_BACKGROUND_BLACK, true);
+	set_view_background(1, VIEW_BACKGROUND_USER1, true);
 	set_view_gauge_theme(1, 0, GAUGE_THEME_LINEAR, true);
 	set_view_gauge_pid(1, 0, MODE1_ENGINE_SPEED_UUID, true);
 	set_view_gauge_units(1, 0, PID_UNITS_RPM, true);
@@ -861,7 +861,7 @@ int main(void)
 		    .header.magic = LV_IMAGE_HEADER_MAGIC,
 		    .header.w = UI_HOR_RES,
 		    .header.h = UI_VER_RES,
-		    .data_size = UI_HOR_RES * UI_VER_RES * 3,
+		    .data_size = UI_HOR_RES * UI_VER_RES * 4,
 		    .data = (const uint8_t *)backgrounds_external[0],
 		  };
 #endif
@@ -892,12 +892,12 @@ int main(void)
 				  break;
 		  }
 
-		  lv_obj_set_style_bg_opa(ui_view[view], LV_OPA_COVER, LV_PART_MAIN);
-
-		  if( is_image )
+		  if( is_image ) {
 			  lv_obj_set_style_bg_image_src(ui_view[view], img, LV_PART_MAIN | LV_STATE_DEFAULT);
-		  else
+		  } else {
+			  lv_obj_set_style_bg_opa(ui_view[view], LV_OPA_COVER, LV_PART_MAIN);
 			  lv_obj_set_style_bg_color(ui_view[view], color, LV_PART_MAIN | LV_STATE_DEFAULT);
+		  }
 
 		  int x_pos[GAUGES_PER_VIEW] = {0};
 
@@ -998,7 +998,7 @@ int main(void)
   while (1)
   {
 #if !XIP_ENABLED
-	image_size = 1024*25*3;
+	image_size = 1024*200*4;
 	if( image_byte >= image_size )
 	{
 		BSP_HSPI_NOR_Erase_Chip(0);
@@ -1007,6 +1007,7 @@ int main(void)
 		}
 		BSP_HSPI_NOR_Write(0, image_buffer, 0, image_size);
 		image_byte = 0;
+		HAL_GPIO_WritePin(DBG_LED2_GPIO_Port, DBG_LED2_Pin, GPIO_PIN_RESET);
 	}
 #endif
 
