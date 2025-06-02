@@ -108,7 +108,7 @@ static int image_byte = 0;
 #if !XIP_ENABLED
 static int image_size = 0;
 #endif
-static uint8_t image_buffer[UI_HOR_RES * UI_VER_RES * 4] = {0};
+static uint8_t image_buffer[UI_HOR_RES * UI_VER_RES * UI_BYTES_PER_PIXEL] = {0};
 
 #define EEPROM_ADDRESS_SIZE 2
 #define EEPROM_DATA_SIZE 1
@@ -1004,7 +1004,7 @@ int main(void)
   while (1)
   {
 #if !XIP_ENABLED
-	image_size = UI_HOR_RES*UI_VER_RES*UI_BYTES_PER_PIXEL;
+	image_size = UI_HOR_RES * UI_VER_RES * UI_BYTES_PER_PIXEL;
 	if( image_byte >= image_size )
 	{
 		HAL_GPIO_WritePin(DBG_LED2_GPIO_Port, DBG_LED2_Pin, GPIO_PIN_SET);
