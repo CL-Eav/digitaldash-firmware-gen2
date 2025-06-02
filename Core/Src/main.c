@@ -215,10 +215,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		image_buffer[image_byte++] = rx_byte;
 		if( (image_byte <= 1) & (rx_byte == 0) ) {
 			image_byte--;
-			HAL_GPIO_WritePin(DBG_LED2_GPIO_Port, DBG_LED2_Pin, GPIO_PIN_RESET);
 		}
-
-		HAL_GPIO_WritePin(DBG_LED2_GPIO_Port, DBG_LED2_Pin, GPIO_PIN_SET);
 
 		/* Wait for the next byte */
 		HAL_UART_Receive_IT( ESP32_UART, &rx_byte, 1 );
@@ -1010,6 +1007,7 @@ int main(void)
 	image_size = 1024*200*4;
 	if( image_byte >= image_size )
 	{
+		HAL_GPIO_WritePin(DBG_LED2_GPIO_Port, DBG_LED2_Pin, GPIO_PIN_SET);
 		BSP_HSPI_NOR_Erase_Chip(0);
 		while( BSP_HSPI_NOR_GetStatus(0) != BSP_ERROR_NONE) {
 			HAL_Delay(50);
