@@ -7,9 +7,10 @@
 
 #include "ui.h"
 
-#define ARC_THICKNESS 15
+#define ARC_THICKNESS 20
 #define RADIAL_START_ANGLE 180
 #define RADIAL_END_ANGLE 0
+#define RADIAL_SIZE 230
 
 static void event_cb(lv_event_t * e)
 {
@@ -28,8 +29,8 @@ static void event_cb(lv_event_t * e)
 lv_obj_t * add_radial_gauge( int32_t x, int32_t y, lv_obj_t * parent, PID_DATA * pid)
 {
 	lv_obj_t * needle = lv_arc_create(parent);
-    lv_obj_set_width(needle, 200);
-    lv_obj_set_height(needle, 200);
+    lv_obj_set_width(needle, RADIAL_SIZE);
+    lv_obj_set_height(needle, RADIAL_SIZE);
     lv_obj_set_x(needle, x);
     lv_obj_set_y(needle, y+5);
     lv_obj_set_align(needle, LV_ALIGN_TOP_MID);
@@ -58,7 +59,7 @@ lv_obj_t * add_radial_gauge( int32_t x, int32_t y, lv_obj_t * parent, PID_DATA *
     lv_obj_set_width(value, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(value, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(value, 0);
-    lv_obj_set_y(value, -48);
+    lv_obj_set_y(value, -50);
     lv_obj_set_align(value, LV_ALIGN_CENTER);
     lv_label_set_text(value, "value");
     lv_obj_remove_flag(value, LV_OBJ_FLAG_PRESS_LOCK | LV_OBJ_FLAG_CLICK_FOCUSABLE | LV_OBJ_FLAG_GESTURE_BUBBLE |
@@ -70,19 +71,19 @@ lv_obj_t * add_radial_gauge( int32_t x, int32_t y, lv_obj_t * parent, PID_DATA *
     lv_obj_set_width(minmax, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(minmax, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(minmax, 0);
-    lv_obj_set_y(minmax, 0);
+    lv_obj_set_y(minmax, 4);
     lv_obj_set_align(minmax, LV_ALIGN_CENTER);
     lv_label_set_text(minmax, "min/max");
-    lv_obj_set_style_text_font(minmax, &lv_font_montserrat_16, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(minmax, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_t * label = lv_label_create(needle);
     lv_obj_set_width(label, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(label, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(label, 0);
-    lv_obj_set_y(label, -21);
+    lv_obj_set_y(label, -22);
     lv_obj_set_align(label, LV_ALIGN_CENTER);
     lv_label_set_text(label, pid->label);
-    lv_obj_set_style_text_font(label, &lv_font_montserrat_16, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(label, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     return needle;
 }
