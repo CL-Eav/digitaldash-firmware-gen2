@@ -50,7 +50,7 @@
 #include "lib_digital_dash.h"
 #include "ke_config.h"
 #include "eeprom_24cw.h"
-
+#include "build_info.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -60,8 +60,6 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define FIRMWARE_VERSION "v1.0.0"
-
 #define BACKGROUND_EXT_ALLOC MX25LM51245G_SECTOR_64K * 13
 static const __attribute__((section(".ExtFlash_Section")))
 __attribute__((used))
