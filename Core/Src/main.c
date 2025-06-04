@@ -91,7 +91,11 @@ digitaldash FordFocusSTRS;
 // UI Variables
 #define SPLASH_SCREEN_T 2500
 #define MIN_TO_MILLI (60 * 1000)
-#define SCREEN_SAVER_T 5 * MIN_TO_MILLI // 5 min
+#ifdef DEBUG
+#define SCREEN_SAVER_T 10 * MIN_TO_MILLI // 10 min
+#else
+#define SCREEN_SAVER_T 120 * MIN_TO_MILLI // 120 min
+#endif
 #define SCREEN_SAVER_DURATION_T 1 * MIN_TO_MILLI // 1 min
 uint32_t next_screen_saver = SCREEN_SAVER_T;
 lv_obj_t * ui_screen;
