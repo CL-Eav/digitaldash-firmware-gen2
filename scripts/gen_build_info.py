@@ -5,7 +5,7 @@ import subprocess
 from datetime import datetime, timezone
 
 # Get current UTC timestamp in a safe format
-timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")
 
 # Try to get the latest Git tag (e.g., v2.1.3)
 try:
