@@ -11,7 +11,7 @@
 #define EEPROM_WRITE_RETRY_COUNT 10
 #define EEPROM_READ_TRIAL_COUNT 3
 #define EEPROM_READY_TIMEOUT 10
-#define EEPROM_WRITE_DELAY_MS 5
+#define EEPROM_WRITE_DELAY_MS 2
 #define EEPROM_ADDRESS_SIZE 2
 #define CONFIG_EEPROM_7BIT_ADDR 0xA0
 #define EEPROM_TIMEOUT 10
@@ -44,7 +44,15 @@ void eeprom_24cw_write(I2C_HandleTypeDef *eeprom_handle, uint16_t bAdd, uint8_t 
 	// Perform I2C write operation
 	HAL_I2C_Mem_Write(eeprom_handle, CONFIG_EEPROM_7BIT_ADDR, bAdd, EEPROM_ADDRESS_SIZE, wbuf, sizeof(wbuf), EEPROM_TIMEOUT);
 
-    // Block until the EEPROM write cycle is complete
-	HAL_I2C_IsDeviceReady(eeprom_handle, CONFIG_EEPROM_7BIT_ADDR, EEPROM_WRITE_RETRY_COUNT, EEPROM_TIMEOUT);
+
+    // Wait until EEPROM completes the internal write cycle
+    for (int retry = 0; retry < EEPROM_WRITE_RETRY_COUNT; retry++)
+    {
+        if (HAL_I2C_IsDeviceReady(eeprom_handle, CONFIG_EEPROM_7BIT_ADDR, 1, EEPROM_TIMEOUT) == HAL_OK)
+        {
+            return; // EEPROM is ready
+        }
+        HAL_Delay(EEPROM_WRITE_DELAY_MS); // Delay between retries
+    }
 }
 
