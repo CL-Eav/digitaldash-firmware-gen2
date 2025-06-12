@@ -116,6 +116,15 @@ def write_custom_struct( file, prefix, cmd, depth ):
     file.write("    " + cmd["dataType"] + "_" + cmd["limit"].replace(" ", "_").upper() + "\n")
     file.write("} " + cmd["dataType"] + ";\n\n")
 
+def write_array_string_def(file, prefix, cmd, depth):
+    if cmd["type"] == "list":
+        file.write("const char *" + cmd["dataType"].lower() + "_string[] = {\n")
+        options = cmd["options"]
+        for i, enum in enumerate(options):
+            comma = "," if i < len(options) - 1 else ""
+            file.write(f'    "{enum}"{comma}\n')
+        file.write("};\n\n")
+
 def write_verify_declare( file, prefix, cmd, depth ):
     if( cmd["type"] == "string" ):
        pointer = "*"
@@ -467,6 +476,7 @@ def process_struct( prefix, cmd, depth ):
    write_comment_block( config_h, prefix, cmd, depth )
    write_comment_block( config_c, prefix, cmd, depth )
    write_custom_struct( config_h, prefix, cmd, depth )
+   write_array_string_def( config_h, prefix, cmd, depth )
    write_verify_declare( config_h, prefix, cmd, depth )
    write_load_source( config_c, prefix, cmd, depth )
    write_save_source( config_c, prefix, cmd, depth )
@@ -584,6 +594,7 @@ config_c.write("	return cached_settings[bAdd];\n")
 config_c.write("}\n\n")
 
 config_h.write("\n\nvoid load_settings(void);\n")
+config_h.write("void write_eeprom(uint16_t bAdd, uint8_t bData);\n")
 config_h.write("uint8_t get_eeprom_byte(uint16_t bAdd);")
 
 config_c.write("void load_settings(void)\n{\n")
