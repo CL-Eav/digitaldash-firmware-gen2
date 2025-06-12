@@ -127,6 +127,8 @@ uint16_t can_filters[MAX_CAN_FILTERS] = {CAN_FILTER_UNUSED};
 #define ERASE_BLOCK_BYTES    65536
 #define ERASE_TOTAL_BYTES    UI_HOR_RES * UI_VER_RES * UI_BYTES_PER_PIXEL
 
+char uart_buffer[0xFFFF] = {0};
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -1038,6 +1040,8 @@ int main(void)
 
   // Indicate Boot has ended
   HAL_GPIO_WritePin(DBG_LED1_GPIO_Port, DBG_LED1_Pin, GPIO_PIN_RESET);
+  digitaldash_to_json(&FordFocusSTRS, uart_buffer, sizeof(uart_buffer));
+  HAL_UART_Transmit(ESP32_UART, (uint8_t*)uart_buffer, strlen(uart_buffer), HAL_MAX_DELAY);
   /* USER CODE END 2 */
 
   /* Infinite loop */
