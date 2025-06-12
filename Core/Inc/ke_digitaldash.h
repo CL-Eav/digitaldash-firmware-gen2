@@ -11,6 +11,7 @@
  #include "lib_pid.h"
  #include "stdio.h"
  #include "ke_config.h"
+ #include "lvgl.h"
  
  typedef enum {
      DD_LESS_THAN,
@@ -44,6 +45,10 @@
  typedef struct {
      GAUGE_THEME theme;   // Style of the gauge
      PID_DATA * pid; // Parameter that is being streamed
+     float min;
+     float max;
+     float value;
+     float position;
      lv_obj_t * obj;
  }digitaldash_gauge;
  
@@ -70,5 +75,8 @@
      digitaldash_dynamic dynamic[NUM_DYNAMIC];
  }digitaldash;
  
+ bool digitaldash_to_json(const digitaldash *dash, char *buffer, size_t buffer_size);
+ bool json_to_digitaldash(const char* json_str, digitaldash* dash_out);
+
  #endif /* INC_KE_DIGITALDASH_H_ */
  
