@@ -53,6 +53,7 @@ config_h.write("#endif\n\n")
 
 config_h.write("#include \"stdbool.h\"\n")
 config_h.write("#include \"string.h\"\n")
+config_h.write("#include \"cJSON.h\"\n")
 config_h.write("#include \"lib_pid.h\"\n\n")
 
 config_h.write("typedef void(settings_write)(uint16_t bAdd, uint8_t bData);\n")
@@ -590,7 +591,7 @@ config_c.write("\n")
 
 config_c.write("bool config_to_json(char *buffer, size_t buffer_size) {\n")
 config_c.write("    cJSON *root = cJSON_CreateObject();\n\n")
-config_c.write("    if (!root) return false;\n\n")
+config_c.write("    if (!root) return false;\n")
 
 for i, struct in enumerate(config["config"]["struct_list"]):
     if isinstance(struct, list):  # Check if the item is a list
@@ -598,17 +599,36 @@ for i, struct in enumerate(config["config"]["struct_list"]):
         
         for sub_struct in struct:  # Iterate through the sublist
             print(f"Parent struct: {parent_struct}, Sub-struct: {sub_struct}")
-            config_c.write(f"    // Serialize {sub_struct}\n")
-            config_c.write(f"    cJSON *{sub_struct} = cJSON_AddArrayToObject(root, \"{sub_struct}\");\n")
-            config_c.write(f"    for(int i = 0; i < ; i++) \n")
+            config_c.write(f"\n    // Serialize {sub_struct}\n")
+            config_c.write(f"    cJSON *{sub_struct}s = cJSON_AddArrayToObject(root, \"{sub_struct}\");\n")
+            config_c.write(f"    for(int i = 0; i < MAX_{sub_struct.upper()}S; i++) {{\n")
+            config_c.write(f"        cJSON *{sub_struct} = cJSON_CreateObject();\n")
             for cmd in config[sub_struct]:
                 config_c.write(f"        // CMD {cmd["cmd"]}\n")
     else:
         # If it's not a list, just process the struct
-        config_c.write(f"    // Serialize {struct}\n")
-        config_c.write(f"    cJSON *{struct} = cJSON_AddArrayToObject(root, \"{struct}\");\n")
+        config_c.write(f"\n    // Serialize {struct}\n")
+        config_c.write(f"    cJSON *{struct}s = cJSON_AddArrayToObject(root, \"{struct}\");\n")
+        config_c.write(f"    for(int i = 0; i < MAX_{struct.upper()}S; i++) {{\n")
+        config_c.write(f"        cJSON *{struct} = cJSON_CreateObject();\n")
         for cmd in config[struct]:
-           config_c.write(f"        // CMD {cmd["cmd"]}\n")
+          if cmd["type"] == "string" or cmd["type"] == "list":
+            function = "cJSON_AddStringToObject"
+          else:
+            function = "cJSON_AddNumberToObject"
+
+          if cmd["type"] == "list":
+            get_function = f"{cmd["dataType"].lower()}_string[get_{struct}_{cmd["cmd"].lower()}(i)]"
+          else:
+            get_function = f"get_{struct}_{cmd["cmd"].lower()}(i)"
+          config_c.write(f"        {function}({struct}, \"{cmd["cmd"]}\", {get_function});\n")
+          config_c.write(f"        cJSON_AddItemToArray({struct}s, {struct});\n")
+        config_c.write(f"    }}\n")
+config_c.write("\n    // Print into user buffer\n")
+config_c.write("    bool success = cJSON_PrintPreallocated(root, buffer, buffer_size, /*format*/ 1);\n")
+config_c.write("    cJSON_Delete(root);\n")
+config_c.write("    return success;\n")
+config_c.write("}\n\n")
 
 
 config_c.write("static uint8_t cached_settings[" + str(TotalByteCount) + "];\n\n")
@@ -647,6 +667,7 @@ config_c.write("}\n\n")
 config_h.write("\n\nvoid load_settings(void);\n")
 config_h.write("void write_eeprom(uint16_t bAdd, uint8_t bData);\n")
 config_h.write("uint8_t get_eeprom_byte(uint16_t bAdd);")
+config_h.write("bool config_to_json(char *buffer, size_t buffer_size);")
 
 config_c.write("void load_settings(void)\n{\n")
 for i, struct in enumerate(config["config"]["struct_list"]):

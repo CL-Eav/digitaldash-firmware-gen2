@@ -1040,7 +1040,7 @@ int main(void)
 
   // Indicate Boot has ended
   HAL_GPIO_WritePin(DBG_LED1_GPIO_Port, DBG_LED1_Pin, GPIO_PIN_RESET);
-  digitaldash_to_json(&FordFocusSTRS, uart_buffer, sizeof(uart_buffer));
+  config_to_json(uart_buffer, sizeof(uart_buffer));
   HAL_UART_Transmit(ESP32_UART, (uint8_t*)uart_buffer, strlen(uart_buffer), HAL_MAX_DELAY);
   /* USER CODE END 2 */
 
