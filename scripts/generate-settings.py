@@ -591,7 +591,8 @@ config_c.write("\n")
 
 config_c.write("bool config_to_json(char *buffer, size_t buffer_size) {\n")
 config_c.write("    cJSON *root = cJSON_CreateObject();\n\n")
-config_c.write("    if (!root) return false;\n")
+config_c.write("    if (!root) return false;\n\n")
+config_c.write("    char str_buf[1024];\n")
 
 for i, struct in enumerate(config["config"]["struct_list"]):
     if isinstance(struct, list):  # Check if the item is a list
@@ -605,6 +606,7 @@ for i, struct in enumerate(config["config"]["struct_list"]):
             config_c.write(f"        cJSON *{sub_struct} = cJSON_CreateObject();\n")
             for cmd in config[sub_struct]:
                 config_c.write(f"        // CMD {cmd["cmd"]}\n")
+            config_c.write(f"    }}\n")
     else:
         # If it's not a list, just process the struct
         config_c.write(f"\n    // Serialize {struct}\n")
@@ -612,13 +614,25 @@ for i, struct in enumerate(config["config"]["struct_list"]):
         config_c.write(f"    for(int i = 0; i < MAX_{struct.upper()}S; i++) {{\n")
         config_c.write(f"        cJSON *{struct} = cJSON_CreateObject();\n")
         for cmd in config[struct]:
-          if cmd["type"] == "string" or cmd["type"] == "list":
+          if "jsonOverride" in cmd:
+            type = cmd["jsonOverride"]
+          else:
+             type = cmd["type"]
+
+          if type == "string" or type == "list":
             function = "cJSON_AddStringToObject"
           else:
             function = "cJSON_AddNumberToObject"
 
-          if cmd["type"] == "list":
+          if type == "list":
             get_function = f"{cmd["dataType"].lower()}_string[get_{struct}_{cmd["cmd"].lower()}(i)]"
+          elif type == "string":
+            get_function = f"str_buf"
+            string_function = f"get_{struct}_{cmd["cmd"].lower()}"
+            if "getFunc" in cmd:
+               config_c.write(f"        {cmd["getFunc"]}({string_function}(i), str_buf);\n")
+            else:
+               config_c.write(f"        {string_function}(i, str_buf);\n")
           else:
             get_function = f"get_{struct}_{cmd["cmd"].lower()}(i)"
           config_c.write(f"        {function}({struct}, \"{cmd["cmd"]}\", {get_function});\n")

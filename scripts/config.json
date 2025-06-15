@@ -92,8 +92,9 @@
             "default": 0,
             "min": 1,
             "max": 16777215,
-            "limit": "Reserved",
-            "EEBytes": 4
+            "EEBytes": 4,
+            "jsonOverride": "string",
+            "getFunc": "get_pid_desc"
         },
         {
             "index" : true,
@@ -248,8 +249,9 @@
             "default": 0,
             "min": 1,
             "max": 16777215,
-            "limit": "Reserved",
-            "EEBytes": 4
+            "EEBytes": 4,
+            "jsonOverride": "string",
+            "getFunc": "get_pid_desc"
         },
         {
             "index" : true,
@@ -296,8 +298,9 @@
             "default": 0,
             "min": 1,
             "max": 16777215,
-            "limit": "Reserved",
-            "EEBytes": 4
+            "EEBytes": 4,
+            "jsonOverride": "string",
+            "getFunc": "get_pid_desc"
         },
         {
             "index" : true,
