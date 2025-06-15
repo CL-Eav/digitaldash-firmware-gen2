@@ -498,6 +498,32 @@ def write_save_source( file, prefix, cmd, depth ):
 
     file.write("}\n\n")
 
+def write_json_entry(cmd, struct, config_c):
+    # Determine the type, optionally overridden
+    type_ = cmd.get("jsonOverride", cmd["type"])
+
+    # Choose the appropriate cJSON function
+    if type_ in ("string", "list"):
+        function = "cJSON_AddStringToObject"
+    else:
+        function = "cJSON_AddNumberToObject"
+
+    # Determine the value-getting expression
+    if type_ == "list":
+        get_function = f'{cmd["dataType"].lower()}_string[get_{struct}_{cmd["cmd"].lower()}(i)]'
+    elif type_ == "string":
+        get_function = "str_buf"
+        string_function = f'get_{struct}_{cmd["cmd"].lower()}'
+        if "getFunc" in cmd:
+            config_c.write(f'        {cmd["getFunc"]}({string_function}(i), str_buf);\n')
+        else:
+            config_c.write(f'        {string_function}(i, str_buf);\n')
+    else:
+        get_function = f'get_{struct}_{cmd["cmd"].lower()}(i)'
+
+    # Write the final cJSON call
+    config_c.write(f'        {function}({struct}, "{cmd["cmd"]}", {get_function});\n')
+
 def process_struct( prefix, cmd, depth ):
    write_comment_block( config_h, prefix, cmd, depth )
    write_comment_block( config_c, prefix, cmd, depth )
@@ -599,13 +625,12 @@ for i, struct in enumerate(config["config"]["struct_list"]):
         parent_struct = config["config"]["struct_list"][i - 1]  # Get the parent struct name (previous item)
         
         for sub_struct in struct:  # Iterate through the sublist
-            print(f"Parent struct: {parent_struct}, Sub-struct: {sub_struct}")
             config_c.write(f"\n    // Serialize {sub_struct}\n")
             config_c.write(f"    cJSON *{sub_struct}s = cJSON_AddArrayToObject(root, \"{sub_struct}\");\n")
             config_c.write(f"    for(int i = 0; i < MAX_{sub_struct.upper()}S; i++) {{\n")
             config_c.write(f"        cJSON *{sub_struct} = cJSON_CreateObject();\n")
             for cmd in config[sub_struct]:
-                config_c.write(f"        // CMD {cmd["cmd"]}\n")
+                write_json_entry(cmd, sub_struct, config_c)
             config_c.write(f"    }}\n")
     else:
         # If it's not a list, just process the struct
@@ -614,28 +639,7 @@ for i, struct in enumerate(config["config"]["struct_list"]):
         config_c.write(f"    for(int i = 0; i < MAX_{struct.upper()}S; i++) {{\n")
         config_c.write(f"        cJSON *{struct} = cJSON_CreateObject();\n")
         for cmd in config[struct]:
-          if "jsonOverride" in cmd:
-            type = cmd["jsonOverride"]
-          else:
-             type = cmd["type"]
-
-          if type == "string" or type == "list":
-            function = "cJSON_AddStringToObject"
-          else:
-            function = "cJSON_AddNumberToObject"
-
-          if type == "list":
-            get_function = f"{cmd["dataType"].lower()}_string[get_{struct}_{cmd["cmd"].lower()}(i)]"
-          elif type == "string":
-            get_function = f"str_buf"
-            string_function = f"get_{struct}_{cmd["cmd"].lower()}"
-            if "getFunc" in cmd:
-               config_c.write(f"        {cmd["getFunc"]}({string_function}(i), str_buf);\n")
-            else:
-               config_c.write(f"        {string_function}(i, str_buf);\n")
-          else:
-            get_function = f"get_{struct}_{cmd["cmd"].lower()}(i)"
-          config_c.write(f"        {function}({struct}, \"{cmd["cmd"]}\", {get_function});\n")
+          write_json_entry(cmd, struct, config_c)
         config_c.write(f"        cJSON_AddItemToArray({struct}s, {struct});\n")
         config_c.write(f"    }}\n")
 config_c.write("\n    // Print into user buffer\n")
