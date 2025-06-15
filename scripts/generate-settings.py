@@ -498,7 +498,8 @@ def write_save_source( file, prefix, cmd, depth ):
 
     file.write("}\n\n")
 
-def write_json_entry(cmd, struct, config_c):
+def write_json_entry(cmd, struct, config_c, indentation):
+    indent = " " * indentation
     # Determine the type, optionally overridden
     type_ = cmd.get("jsonOverride", cmd["type"])
 
@@ -515,14 +516,14 @@ def write_json_entry(cmd, struct, config_c):
         get_function = "str_buf"
         string_function = f'get_{struct}_{cmd["cmd"].lower()}'
         if "getFunc" in cmd:
-            config_c.write(f'        {cmd["getFunc"]}({string_function}(i), str_buf);\n')
+            config_c.write(f'{indent}{cmd["getFunc"]}({string_function}(i), str_buf);\n')
         else:
-            config_c.write(f'        {string_function}(i, str_buf);\n')
+            config_c.write(f'{indent}{string_function}(i, str_buf);\n')
     else:
         get_function = f'get_{struct}_{cmd["cmd"].lower()}(i)'
 
     # Write the final cJSON call
-    config_c.write(f'        {function}({struct}, "{cmd["cmd"]}", {get_function});\n')
+    config_c.write(f'{indent}{function}({struct}, "{cmd["cmd"]}", {get_function});\n')
 
 def process_struct( prefix, cmd, depth ):
    write_comment_block( config_h, prefix, cmd, depth )
@@ -541,78 +542,78 @@ def process_struct( prefix, cmd, depth ):
    write_string_compare_declare( config_h, prefix, cmd, depth )
    write_string_compare( config_c, prefix, cmd, depth )
 
-for i, struct in enumerate(config["config"]["struct_list"]):
-    if isinstance(struct, list):  # Check if the item is a list
-        parent_struct = config["config"]["struct_list"][i - 1]  # Get the parent struct name (previous item)
-        
-        for sub_struct in struct:  # Iterate through the sublist
-            print(f"Parent struct: {parent_struct}, Sub-struct: {sub_struct}")
-            for cmd in config[sub_struct]:
-                write_default_define(config_c, str(parent_struct) + "_" + sub_struct, cmd, 2)
-    else:
-        # If it's not a list, just process the struct
-        for cmd in config[struct]:
-            write_default_define(config_c, struct, cmd, 1)
+for struct_entry in config["config"]["struct_list"]:
+    for parent_struct, sub_structs in struct_entry.items():
+        # Always process the parent struct
+        for cmd in config[parent_struct]:
+            write_default_define(config_c, parent_struct, cmd, 1)
+
+        # Then process any sub-structs if they exist
+        if sub_structs:
+            for sub_struct in sub_structs:
+                for cmd in config[sub_struct]:
+                    write_default_define(config_c, f"{parent_struct}_{sub_struct}", cmd, 2)
 
 config_c.write("\n")
 
-for i, struct in enumerate(config["config"]["struct_list"]):
-    if isinstance(struct, list):  # Check if the item is a list
-        parent_struct = config["config"]["struct_list"][i - 1]  # Get the parent struct name (previous item)
-        
-        for sub_struct in struct:  # Iterate through the sublist
-            print(f"Parent struct: {parent_struct}, Sub-struct: {sub_struct}")
-            for cmd in config[sub_struct]:
-                write_size_define(config_c, str(parent_struct) + "_" + sub_struct, cmd, 2)
-    else:
-        # If it's not a list, just process the struct
-        for cmd in config[struct]:
-            write_size_define(config_c, struct, cmd, 1)
+for struct_entry in config["config"]["struct_list"]:
+    for parent_struct, sub_structs in struct_entry.items():
+        # Always process the parent struct
+        for cmd in config[parent_struct]:
+            write_size_define(config_c, parent_struct, cmd, 1)
+
+        # Then process any sub-structs if they exist
+        if sub_structs:
+            for sub_struct in sub_structs:
+                for cmd in config[sub_struct]:
+                    write_size_define(config_c, f"{parent_struct}_{sub_struct}", cmd, 2)
+
 
 config_c.write("\n")
 
-for i, struct in enumerate(config["config"]["struct_list"]):
-    if isinstance(struct, list):  # Check if the item is a list
-        parent_struct = config["config"]["struct_list"][i - 1]  # Get the parent struct name (previous item)
-        
-        for sub_struct in struct:  # Iterate through the sublist
-            print(f"Parent struct: {parent_struct}, Sub-struct: {sub_struct}")
-            for cmd in config[sub_struct]:
-                write_memory_organization( config_c, str(parent_struct) + "_" + sub_struct, cmd, 2)
-    else:
-        # If it's not a list, just process the struct
-        for cmd in config[struct]:
-            write_memory_organization( config_c, struct, cmd, 1)
+for struct_entry in config["config"]["struct_list"]:
+    for parent_struct, sub_structs in struct_entry.items():
+        # Always process the parent struct
+        for cmd in config[parent_struct]:
+          write_memory_organization(config_c, parent_struct, cmd, 1)
+
+        # Then process any sub-structs if they exist
+        if sub_structs:
+            for sub_struct in sub_structs:
+                for cmd in config[sub_struct]:
+                    write_memory_organization(config_c, f"{parent_struct}_{sub_struct}", cmd, 2)
+
 
 config_c.write("\n")
 
-for i, struct in enumerate(config["config"]["struct_list"]):
-    if isinstance(struct, list):  # Check if the item is a list
-        parent_struct = config["config"]["struct_list"][i - 1]  # Get the parent struct name (previous item)
-        
-        for sub_struct in struct:  # Iterate through the sublist
-            print(f"Parent struct: {parent_struct}, Sub-struct: {sub_struct}")
-            for cmd in config[sub_struct]:
-                write_variables( config_c, str(parent_struct) + "_" + sub_struct, cmd, 2)
-    else:
-        # If it's not a list, just process the struct
-        for cmd in config[struct]:
-            write_variables( config_c, struct, cmd, 1)
+for struct_entry in config["config"]["struct_list"]:
+    for parent_struct, sub_structs in struct_entry.items():
+        # Always process the parent struct
+        for cmd in config[parent_struct]:
+          write_variables(config_c, parent_struct, cmd, 1)
+
+        # Then process any sub-structs if they exist
+        if sub_structs:
+            for sub_struct in sub_structs:
+                for cmd in config[sub_struct]:
+                    write_variables(config_c, f"{parent_struct}_{sub_struct}", cmd, 2)
+
 
 config_c.write("\n\n")
 
-for i, struct in enumerate(config["config"]["struct_list"]):
-    if isinstance(struct, list):  # Check if the item is a list
-        parent_struct = config["config"]["struct_list"][i - 1]  # Get the parent struct name (previous item)
-        
-        for sub_struct in struct:  # Iterate through the sublist
-            print(f"Parent struct: {parent_struct}, Sub-struct: {sub_struct}")
-            for cmd in config[sub_struct]:
-                write_define_load_setting( config_c, str(parent_struct) + "_" + sub_struct, cmd, 2)
-    else:
-        # If it's not a list, just process the struct
-        for cmd in config[struct]:
-            write_define_load_setting( config_c, struct, cmd, 1)
+for struct_entry in config["config"]["struct_list"]:
+    for parent_struct, sub_structs in struct_entry.items():
+        # Always process the parent struct
+        for cmd in config[parent_struct]:
+          write_define_load_setting(config_c, parent_struct, cmd, 1)
+
+        # Then process any sub-structs if they exist
+        if sub_structs:
+            for sub_struct in sub_structs:
+                for cmd in config[sub_struct]:
+                    write_define_load_setting(config_c, f"{parent_struct}_{sub_struct}", cmd, 2)
+
+
 config_c.write("\n")
 
 config_c.write("bool config_to_json(char *buffer, size_t buffer_size) {\n")
@@ -620,28 +621,30 @@ config_c.write("    cJSON *root = cJSON_CreateObject();\n\n")
 config_c.write("    if (!root) return false;\n\n")
 config_c.write("    char str_buf[1024];\n")
 
-for i, struct in enumerate(config["config"]["struct_list"]):
-    if isinstance(struct, list):  # Check if the item is a list
-        parent_struct = config["config"]["struct_list"][i - 1]  # Get the parent struct name (previous item)
-        
-        for sub_struct in struct:  # Iterate through the sublist
-            config_c.write(f"\n    // Serialize {sub_struct}\n")
-            config_c.write(f"    cJSON *{sub_struct}s = cJSON_AddArrayToObject(root, \"{sub_struct}\");\n")
-            config_c.write(f"    for(int i = 0; i < MAX_{sub_struct.upper()}S; i++) {{\n")
-            config_c.write(f"        cJSON *{sub_struct} = cJSON_CreateObject();\n")
-            for cmd in config[sub_struct]:
-                write_json_entry(cmd, sub_struct, config_c)
-            config_c.write(f"    }}\n")
-    else:
-        # If it's not a list, just process the struct
-        config_c.write(f"\n    // Serialize {struct}\n")
-        config_c.write(f"    cJSON *{struct}s = cJSON_AddArrayToObject(root, \"{struct}\");\n")
-        config_c.write(f"    for(int i = 0; i < MAX_{struct.upper()}S; i++) {{\n")
-        config_c.write(f"        cJSON *{struct} = cJSON_CreateObject();\n")
-        for cmd in config[struct]:
-          write_json_entry(cmd, struct, config_c)
-        config_c.write(f"        cJSON_AddItemToArray({struct}s, {struct});\n")
+for struct_entry in config["config"]["struct_list"]:
+    for parent_struct, sub_structs in struct_entry.items():
+        # Always process the parent struct
+        config_c.write(f"\n    // Serialize {parent_struct}\n")
+        config_c.write(f"    cJSON *{parent_struct}s = cJSON_AddArrayToObject(root, \"{parent_struct}\");\n")
+        config_c.write(f"    for(int i = 0; i < MAX_{parent_struct.upper()}S; i++) {{\n")
+        config_c.write(f"        cJSON *{parent_struct} = cJSON_CreateObject();\n")
+        for cmd in config[parent_struct]:
+          write_json_entry(cmd, parent_struct, config_c, 8)
+
+        if sub_structs:  # Parent has sub-items
+            for sub_struct in sub_structs:
+                config_c.write(f"\n        // Serialize {sub_struct} within {parent_struct}\n")
+                config_c.write(f"        cJSON *{sub_struct}s = cJSON_AddArrayToObject({parent_struct}, \"{sub_struct}\");\n")
+                config_c.write(f"        for(int i = 0; i < MAX_{sub_struct.upper()}S; i++) {{\n")
+                config_c.write(f"            cJSON *{sub_struct} = cJSON_CreateObject();\n")
+                for cmd in config[sub_struct]:
+                  write_json_entry(cmd, sub_struct, config_c, 12)
+                config_c.write(f"            cJSON_AddItemToArray({sub_struct}s, {sub_struct});\n")
+                config_c.write(f"        }}\n")
+
+        config_c.write(f"        cJSON_AddItemToArray({parent_struct}s, {parent_struct});\n")
         config_c.write(f"    }}\n")
+
 config_c.write("\n    // Print into user buffer\n")
 config_c.write("    bool success = cJSON_PrintPreallocated(root, buffer, buffer_size, /*format*/ 1);\n")
 config_c.write("    cJSON_Delete(root);\n")
@@ -688,33 +691,35 @@ config_h.write("uint8_t get_eeprom_byte(uint16_t bAdd);\n")
 config_h.write("bool config_to_json(char *buffer, size_t buffer_size);")
 
 config_c.write("void load_settings(void)\n{\n")
-for i, struct in enumerate(config["config"]["struct_list"]):
-    if isinstance(struct, list):  # Check if the item is a list
-        parent_struct = config["config"]["struct_list"][i - 1]  # Get the parent struct name (previous item)
-        
-        for sub_struct in struct:  # Iterate through the sublist
-            print(f"Parent struct: {parent_struct}, Sub-struct: {sub_struct}")
-            for cmd in config[sub_struct]:
-                write_load_setting( config_c, str(parent_struct) + "_" + sub_struct, cmd, 2)
-    else:
-        # If it's not a list, just process the struct
-        for cmd in config[struct]:
-            write_load_setting( config_c, struct, cmd, 1)
+for struct_entry in config["config"]["struct_list"]:
+    for parent_struct, sub_structs in struct_entry.items():
+        # Always process the parent struct
+        for cmd in config[parent_struct]:
+            write_load_setting(config_c, parent_struct, cmd, 1)
+
+        if sub_structs:  # Parent has sub-items
+            for sub_struct in sub_structs:
+                print(f"Parent struct: {parent_struct}, Sub-struct: {sub_struct}")
+                for cmd in config[sub_struct]:
+                    write_load_setting(config_c, f"{parent_struct}_{sub_struct}", cmd, 2)
+
 config_c.write("}\n")
 
 config_c.write("\n\n")
 
-for i, struct in enumerate(config["config"]["struct_list"]):
-    if isinstance(struct, list):  # Check if the item is a list
-        parent_struct = config["config"]["struct_list"][i - 1]  # Get the parent struct name (previous item)
-        
-        for sub_struct in struct:  # Iterate through the sublist
-            print(f"Parent struct: {parent_struct}, Sub-struct: {sub_struct}")
-            for cmd in config[sub_struct]:
-              process_struct(str(parent_struct) + "_" + sub_struct, cmd, 2)
-    else:
-      for cmd in config[struct]:
-        process_struct( struct, cmd, 1 )
+for struct_entry in config["config"]["struct_list"]:
+    for parent_struct, sub_structs in struct_entry.items():
+        # Always process the parent struct
+        for cmd in config[parent_struct]:
+            process_struct(parent_struct, cmd, 1)
+
+        # Then process any sub-structs if they exist
+        if sub_structs:
+            for sub_struct in sub_structs:
+                print(f"Parent struct: {parent_struct}, Sub-struct: {sub_struct}")
+                for cmd in config[sub_struct]:
+                    process_struct(f"{parent_struct}_{sub_struct}", cmd, 2)
+
 
 config_h.write("\n#ifdef __cplusplus\n")
 config_h.write("}\n")

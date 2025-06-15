@@ -9,10 +9,9 @@
         "top_level_struc": "digitaldash",
         "top_level_name": "config",
         "struct_list": [
-            "view",
-             [ "gauge" ],
-            "alert",
-            "dynamic"
+            { "view": ["gauge"] },
+            { "alert": [] },
+            { "dynamic": [] }
         ]
     },
     "view": [
