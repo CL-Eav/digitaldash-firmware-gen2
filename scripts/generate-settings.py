@@ -498,7 +498,7 @@ def write_save_source( file, prefix, cmd, depth ):
 
     file.write("}\n\n")
 
-def write_json_entry(cmd, struct, config_c, indentation):
+def write_json_entry(cmd, struct, config_c, indentation, depth):
     indent = " " * indentation
     # Determine the type, optionally overridden
     type_ = cmd.get("jsonOverride", cmd["type"])
@@ -509,18 +509,23 @@ def write_json_entry(cmd, struct, config_c, indentation):
     else:
         function = "cJSON_AddNumberToObject"
 
+    if depth == 2:
+       idx = "(i, j)"
+    else:
+       idx = "(i)"
+
     # Determine the value-getting expression
     if type_ == "list":
-        get_function = f'{cmd["dataType"].lower()}_string[get_{struct}_{cmd["cmd"].lower()}(i)]'
+        get_function = f'{cmd["dataType"].lower()}_string[get_{struct}_{cmd["cmd"].lower()}{idx}]'
     elif type_ == "string":
         get_function = "str_buf"
         string_function = f'get_{struct}_{cmd["cmd"].lower()}'
         if "getFunc" in cmd:
-            config_c.write(f'{indent}{cmd["getFunc"]}({string_function}(i), str_buf);\n')
+            config_c.write(f'{indent}{cmd["getFunc"]}({string_function}{idx}, str_buf);\n')
         else:
             config_c.write(f'{indent}{string_function}(i, str_buf);\n')
     else:
-        get_function = f'get_{struct}_{cmd["cmd"].lower()}(i)'
+        get_function = f'get_{struct}_{cmd["cmd"].lower()}{idx}'
 
     # Write the final cJSON call
     config_c.write(f'{indent}{function}({struct}, "{cmd["cmd"]}", {get_function});\n')
@@ -629,17 +634,17 @@ for struct_entry in config["config"]["struct_list"]:
         config_c.write(f"    for(int i = 0; i < MAX_{parent_struct.upper()}S; i++) {{\n")
         config_c.write(f"        cJSON *{parent_struct} = cJSON_CreateObject();\n")
         for cmd in config[parent_struct]:
-          write_json_entry(cmd, parent_struct, config_c, 8)
+          write_json_entry(cmd, parent_struct, config_c, 8, 1)
 
         if sub_structs:  # Parent has sub-items
             for sub_struct in sub_structs:
                 config_c.write(f"\n        // Serialize {sub_struct} within {parent_struct}\n")
-                config_c.write(f"        cJSON *{sub_struct}s = cJSON_AddArrayToObject({parent_struct}, \"{sub_struct}\");\n")
-                config_c.write(f"        for(int i = 0; i < MAX_{sub_struct.upper()}S; i++) {{\n")
-                config_c.write(f"            cJSON *{sub_struct} = cJSON_CreateObject();\n")
+                config_c.write(f"        cJSON *{parent_struct}_{sub_struct}s = cJSON_AddArrayToObject({parent_struct}, \"{sub_struct}\");\n")
+                config_c.write(f"        for(int j = 0; j < MAX_{sub_struct.upper()}S_PER_{parent_struct.upper()}; j++) {{\n")
+                config_c.write(f"            cJSON *{parent_struct}_{sub_struct} = cJSON_CreateObject();\n")
                 for cmd in config[sub_struct]:
-                  write_json_entry(cmd, sub_struct, config_c, 12)
-                config_c.write(f"            cJSON_AddItemToArray({sub_struct}s, {sub_struct});\n")
+                  write_json_entry(cmd, (f"{parent_struct}_{sub_struct}"), config_c, 12, 2)
+                config_c.write(f"            cJSON_AddItemToArray({parent_struct}_{sub_struct}s, {parent_struct}_{sub_struct});\n")
                 config_c.write(f"        }}\n")
 
         config_c.write(f"        cJSON_AddItemToArray({parent_struct}s, {parent_struct});\n")
