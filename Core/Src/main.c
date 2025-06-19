@@ -97,6 +97,7 @@ digitaldash FordFocusSTRS;
 #define SCREEN_SAVER_T 120 * MIN_TO_MILLI // 120 min
 #endif
 #define SCREEN_SAVER_DURATION_T 1 * MIN_TO_MILLI // 1 min
+uint32_t boot_time = 0;
 uint32_t next_screen_saver = SCREEN_SAVER_T;
 lv_obj_t * ui_screen;
 lv_obj_t * splash_screen;
@@ -1049,6 +1050,8 @@ int main(void)
   HAL_UART_Transmit(ESP32_UART, (uint8_t*)uart_buffer, strlen(uart_buffer), HAL_MAX_DELAY);
   //json_to_config(default_config_json);
 
+  // Log the start of the main while() loop
+  boot_time = HAL_GetTick();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -1097,7 +1100,7 @@ int main(void)
 	lv_timer_handler();
 	digitaldash_service();
 
-	if( HAL_GetTick() <= SPLASH_SCREEN_T ) {
+	if( HAL_GetTick() <= (SPLASH_SCREEN_T + boot_time) ) {
 		switch_screen(splash_screen);
 	} else if( HAL_GetTick() >= next_screen_saver ) {
 		switch_screen(splash_screen);
