@@ -702,15 +702,13 @@ for struct_entry in config["config"]["struct_list"]:
         if sub_structs:  # Parent has sub-items
             for sub_struct in sub_structs:
                 config_c.write(f"\n        // Get {sub_struct} within {parent_struct}\n")
-                config_c.write(f"        cJSON *{parent_struct}_{sub_struct}s = cJSON_AddArrayToObject({parent_struct}, \"{sub_struct}\");\n")
+                config_c.write(f"        cJSON *{parent_struct}_{sub_struct}s = cJSON_GetObjectItem({parent_struct}, \"{sub_struct}\");\n")
                 config_c.write(f"        for(int j = 0; j < MAX_{sub_struct.upper()}S_PER_{parent_struct.upper()}; j++) {{\n")
-                config_c.write(f"            cJSON *{parent_struct}_{sub_struct} = cJSON_CreateObject();\n")
+                config_c.write(f"            cJSON *{parent_struct}_{sub_struct} = cJSON_GetArrayItem({parent_struct}_{sub_struct}s, j);\n")
                 for cmd in config[sub_struct]:
                   write_json_get_entry(cmd, (f"{parent_struct}_{sub_struct}"), config_c, 12, 2)
-                config_c.write(f"            cJSON_AddItemToArray({parent_struct}_{sub_struct}s, {parent_struct}_{sub_struct});\n")
                 config_c.write(f"        }}\n")
 
-        config_c.write(f"        cJSON_AddItemToArray({parent_struct}s, {parent_struct});\n")
         config_c.write(f"    }}\n")
 
 config_c.write("\n    // Print into user buffer\n")

@@ -51,6 +51,7 @@
 #include "ke_config.h"
 #include "eeprom_24cw.h"
 #include "../build_info.h"
+#include "config_json_example.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -631,7 +632,11 @@ void spoof_config(void)
 	set_alert_compare(0, ALERT_COMPARISON_GREATER_THAN_OR_EQUAL_TO, true );
 	set_alert_threshold(0, 6500, true );
 	char msg[64] = "This is a test of the EEPROM string saving";
-	set_alert_message(0, msg, true);
+	set_alert_message(0, msg, false);
+	set_alert_message(1, msg, false);
+	set_alert_message(2, msg, false);
+	set_alert_message(3, msg, false);
+	set_alert_message(4, msg, false);
 }
 
 /**
@@ -1042,6 +1047,8 @@ int main(void)
   HAL_GPIO_WritePin(DBG_LED1_GPIO_Port, DBG_LED1_Pin, GPIO_PIN_RESET);
   config_to_json(uart_buffer, sizeof(uart_buffer));
   HAL_UART_Transmit(ESP32_UART, (uint8_t*)uart_buffer, strlen(uart_buffer), HAL_MAX_DELAY);
+  //json_to_config(default_config_json);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
