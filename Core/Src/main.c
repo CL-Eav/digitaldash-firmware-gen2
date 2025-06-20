@@ -61,9 +61,44 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define BACKGROUND_IMAGE_COUNT      (20U)
+#define BACKGROUND_BLOCK_SIZE       (0x10000U) // 64KB
+#define BACKGROUND_PIXEL_WIDTH      UI_HOR_RES
+#define BACKGROUND_PIXEL_HEIGHT     UI_VER_RES
+#define BACKGROUND_BYTES_PER_PIXEL  UI_BYTES_PER_PIXEL       // e.g. ARGB8888 = 4 bytes, RGB565 = 2 bytes
+#define BACKGROUND_BASE_ADDRESS    (0x00000000U)
+
+// Macro to perform integer ceiling division
+#define CEIL_DIV(x, y)              (((x) + (y) - 1) / (y))
+
+// Raw image size in bytes
+#define BACKGROUND_RAW_SIZE         (BACKGROUND_PIXEL_WIDTH * BACKGROUND_PIXEL_HEIGHT * BACKGROUND_BYTES_PER_PIXEL)
+
+// Aligned image size (to next 64KB boundary)
+#define BACKGROUND_IMAGE_SIZE       (CEIL_DIV(BACKGROUND_RAW_SIZE, BACKGROUND_BLOCK_SIZE) * BACKGROUND_BLOCK_SIZE)
+
+// Start addresses of backgrounds (computed for BACKGROUND_IMAGE_SIZE)
+static const uint32_t USER_BACKGROUND_ADDRESSES[BACKGROUND_IMAGE_COUNT] = {
+    BACKGROUND_BASE_ADDRESS,
+    BACKGROUND_BASE_ADDRESS + 1 * BACKGROUND_IMAGE_SIZE,
+    BACKGROUND_BASE_ADDRESS + 2 * BACKGROUND_IMAGE_SIZE,
+    BACKGROUND_BASE_ADDRESS + 3 * BACKGROUND_IMAGE_SIZE,
+    BACKGROUND_BASE_ADDRESS + 4 * BACKGROUND_IMAGE_SIZE,
+    BACKGROUND_BASE_ADDRESS + 5 * BACKGROUND_IMAGE_SIZE,
+    BACKGROUND_BASE_ADDRESS + 6 * BACKGROUND_IMAGE_SIZE,
+    BACKGROUND_BASE_ADDRESS + 7 * BACKGROUND_IMAGE_SIZE,
+    BACKGROUND_BASE_ADDRESS + 8 * BACKGROUND_IMAGE_SIZE,
+    BACKGROUND_BASE_ADDRESS + 9 * BACKGROUND_IMAGE_SIZE,
+    BACKGROUND_BASE_ADDRESS + 10 * BACKGROUND_IMAGE_SIZE,
+    BACKGROUND_BASE_ADDRESS + 11 * BACKGROUND_IMAGE_SIZE,
+    BACKGROUND_BASE_ADDRESS + 12 * BACKGROUND_IMAGE_SIZE,
+    BACKGROUND_BASE_ADDRESS + 13 * BACKGROUND_IMAGE_SIZE,
+    BACKGROUND_BASE_ADDRESS + 14 * BACKGROUND_IMAGE_SIZE
+};
+
 #define BACKGROUND_EXT_ALLOC MX25LM51245G_SECTOR_64K * 13
 static const __attribute__((section(".ExtFlash_Section")))
-__attribute__((used)) uint8_t backgrounds_external[20][UI_HOR_RES*UI_VER_RES*UI_BYTES_PER_PIXEL];
+__attribute__((used)) uint8_t backgrounds_external[BACKGROUND_IMAGE_COUNT][BACKGROUND_IMAGE_SIZE];
 LV_IMG_DECLARE(ui_img_ford_performance_logo_png);
 
 #define BKLT_MIN_DUTY 3
@@ -1060,7 +1095,7 @@ int main(void)
   {
 	if( image_byte >= image_size )
 	{
-		uint32_t background_addr = VIEW_BACKGROUND_USER1_ADDR;
+		uint32_t background_addr = USER_BACKGROUND_ADDRESSES[0];
 
 		// Memory can only be written when NOT in memory mapped mode.
 		if(BSP_HSPI_NOR_DisableMemoryMappedMode(0) == BSP_ERROR_NONE)
@@ -1077,7 +1112,7 @@ int main(void)
 			}
 
 			// Write the new background.
-			BSP_HSPI_NOR_Write(background_addr, image_buffer, 0, image_size);
+			BSP_HSPI_NOR_Write(0, image_buffer, background_addr, image_size);
 
 			// Re-enable Memory mapped mode.
 			if( BSP_HSPI_NOR_EnableMemoryMappedMode(0) != BSP_ERROR_NONE)
