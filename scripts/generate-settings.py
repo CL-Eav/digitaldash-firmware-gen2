@@ -35,9 +35,6 @@ print("Alert_Message_Len: " + str(alert_message_len))
 max_dynamics = config["config"]["max_dynamics"]
 print("max_dynamics: " + str(max_dynamics))
 
-top_level_struc = config["config"]["top_level_struc"]
-top_level_name = config["config"]["top_level_name"]
-
 # Create the c file
 config_c = open("../lib/lib_digitaldash_config/src/ke_config.c", "w")
 config_h = open("../lib/lib_digitaldash_config/inc/ke_config.h", "w")
@@ -69,65 +66,87 @@ config_h.write(f"#define MAX_VIEWS {max_views}\n")
 config_h.write(f"#define MAX_DYNAMICS {max_dynamics}")
 
 config_c.write( "#include \"ke_config.h\"\n\n" )
-#config_c.write( "static " + top_level_struc + " " + top_level_name + ";\n\n")
 
-def get_eeprom_size(cmd):
-   if isinstance(cmd["EEBytes"], int):
-      return cmd["EEBytes"]
-   else:
-      return config["config"][cmd["EEBytes"]]
+def get_eeprom_size(cmd: dict) -> int:
+    size = cmd.get("EEBytes")
+    if isinstance(size, int):
+        return size
+    elif isinstance(size, str):
+        return config["config"].get(size, 0)  # Or raise an error
+    else:
+        raise TypeError("EEBytes must be int or str")
 
 def write_default_define(file, prefix, cmd, depth):
-   print("[ADDED] " + cmd["name"])
-   if( str(cmd["default"]).isnumeric()):
-     file.write("#define DEFAULT_" + prefix.upper() + "_" + cmd["cmd"].upper() + " " + str(cmd["default"]) + "\n")
-   else:
-     if( cmd["type"] == "string" ):
-        file.write("#define DEFAULT_" + prefix.upper() + "_" + cmd["cmd"].upper() + " 0\n")
-     else:
-        file.write("#define DEFAULT_" + prefix.upper() + "_" + cmd["cmd"].upper() + " " + cmd["dataType"].replace(" ", "_").upper() + "_" + cmd["default"].replace(" ", "_").upper() + "\n")
+    print(f"[ADDED] {cmd['name']}")
+
+    define_name = f"DEFAULT_{prefix.upper()}_{cmd['cmd'].upper()}"
+
+    default = str(cmd["default"])
+    if default.isnumeric():
+        value = default
+    elif cmd["type"] == "string":
+        value = "0"
+    else:
+        data_type = cmd["dataType"].replace(" ", "_").upper()
+        default_value = default.replace(" ", "_").upper()
+        value = f"{data_type}_{default_value}"
+
+    file.write(f"#define {define_name} {value}\n")
 
 def write_size_define(file, prefix, cmd, depth):
-   if( str(cmd["EEBytes"]).isnumeric()):
-     file.write("#define EE_SIZE_" + prefix.upper() + "_" + cmd["cmd"].upper() + " " + str(cmd["EEBytes"]) + "\n")
-   else:
-      file.write("#define EE_SIZE_" + prefix.upper() + "_" + cmd["cmd"].upper() + " " + cmd["EEBytes"].upper() + "\n")
+    define_name = f"EE_SIZE_{prefix.upper()}_{cmd['cmd'].upper()}"
 
-def write_comment_block( file, prefix, cmd, depth ):
+    ee_bytes = cmd["EEBytes"]
+    value = str(ee_bytes) if str(ee_bytes).isnumeric() else str(ee_bytes).upper()
+
+    file.write(f"#define {define_name} {value}\n")
+
+def write_comment_block(file, prefix, cmd, depth):
     file.write("\n\n")
     file.write("/********************************************************************************\n")
-    file.write("*" + cmd["name"].center(79) + "\n")
+    file.write(f"*{cmd['name'].center(79)}\n")
     file.write("*\n")
+
     if cmd["index"]:
-      if depth == 2:
-        file.write("* @param idx_" + prefix.split('_')[0].lower() + "    index of the " + prefix.split('_')[0] + "\n")
-        file.write("* @param idx_" + prefix.split('_')[1].lower() + "    index of the " + prefix.split('_')[1] + "\n")
-      else:
-         file.write("* @param idx_" + prefix.lower() + "    index of the " + prefix + "\n")
-    file.write("* @param " + cmd["cmd"] + "    " + cmd["desc"] + "\n")
+        parts = prefix.split('_')
+        if depth == 2 and len(parts) >= 2:
+            file.write(f"* @param idx_{parts[0].lower()}    index of the {parts[0]}\n")
+            file.write(f"* @param idx_{parts[1].lower()}    index of the {parts[1]}\n")
+        else:
+            file.write(f"* @param idx_{prefix.lower()}    index of the {prefix}\n")
+
+    file.write(f"* @param {cmd['cmd']}    {cmd['desc']}\n")
     file.write("* @param save    Set true to save to the EEPROM, otherwise value is non-volatile\n")
     file.write("*\n")
     file.write("********************************************************************************/\n")
 
-def write_custom_struct( file, prefix, cmd, depth ):
-  if cmd["type"] == "list":
-    file.write("typedef enum\n{\n")
-    for enum in cmd["options"]:
-        file.write("    " + cmd["dataType"] + "_" + enum.replace(" ", "_").upper() + ",\n")
-    file.write("    " + cmd["dataType"] + "_" + cmd["limit"].replace(" ", "_").upper() + "\n")
-    file.write("} " + cmd["dataType"] + ";\n\n")
+def write_custom_struct(file, prefix, cmd, depth):
+    if cmd["type"] == "list":
+        enum_type = cmd["dataType"]
+        file.write("typedef enum\n{\n")
+
+        for option in cmd["options"]:
+            enum_name = f"{enum_type}_{option.replace(' ', '_').upper()}"
+            file.write(f"    {enum_name},\n")
+
+        limit_name = f"{enum_type}_{cmd['limit'].replace(' ', '_').upper()}"
+        file.write(f"    {limit_name}\n")
+        file.write(f"}} {enum_type};\n\n")
 
 def write_array_string_def_extern(file, prefix, cmd, depth):
     if cmd["type"] == "list":
-        file.write("extern const char *" + cmd["dataType"].lower() + "_string[];\n")
+        array_name = f'{cmd["dataType"].lower()}_string'
+        file.write(f"extern const char *{array_name}[];\n")
 
 def write_array_string_def(file, prefix, cmd, depth):
     if cmd["type"] == "list":
-        file.write("const char *" + cmd["dataType"].lower() + "_string[] = {\n")
-        options = cmd["options"]
-        for i, enum in enumerate(options):
-            comma = "," if i < len(options) - 1 else ""
-            file.write(f'    "{enum}"{comma}\n')
+        array_name = f'{cmd["dataType"].lower()}_string'
+        file.write(f"const char *{array_name}[] = {{\n")
+
+        for i, option in enumerate(cmd["options"]):
+            comma = "," if i < len(cmd["options"]) - 1 else ""
+            file.write(f'    "{option}"{comma}\n')
+
         file.write("};\n\n")
 
 def write_verify_declare( file, prefix, cmd, depth ):
