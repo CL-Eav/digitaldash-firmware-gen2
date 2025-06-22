@@ -18,7 +18,7 @@
 #define SAFE_SHUTDOWN 0 // This is only needed for the Pi
 #define LCD_ALWAYS_ON 1
 
-#define USE_KE_PROTOCOL 0
+#define USE_KE_PROTOCOL 1
 #define USE_UNIT_CONVERSION 1
 #define USE_LIB_OBDII 1
 #define USE_LIB_CAN_BUS_SNIFFER 1
@@ -35,13 +35,14 @@
 * Hardware configuration                                            *
 ********************************************************************/
 #define SD_CARD_ACTIVE 0
-#define KE_ACTIVE 0
+#define KE_ACTIVE 1
 #define ECU_ACTIVE 1
 #define BKLT_CTRL_ACTIVE 1
 #define FAN_CTRL_ACTIVE 0
 #define HOST_CTRL_ACTIVE 1
 #define USB_PWR_CTRL 0
 #define HW_CAN_FILTERS 1
+#define BACKGROUND_IMG_SAVE 1
 
 #define POWER_CYCLE_TIME 1000
 #define FORD_MAX_BRIGHTNESS 31
@@ -59,6 +60,15 @@
 #define FORCE_USB_ON     0
 
 #define DD_MAX_PIDS 25
+
+#define KE_MAX_TX_PAYLOAD             0xFFFF + 0xF
+#define KE_MAX_RX_PAYLOAD             819200 + 16
+
+#define DIGITALDASH_DATA_ACQ_ONLY 0
+#define DIGITALDASH_GRAPHICS_ONLY 1
+#define DIGITALDASH_DATA_ACQ_AND_GRAPHICS 2
+
+#define DIGITALDASH_TYPE DIGITALDASH_DATA_ACQ_AND_GRAPHICS
 
 /********************************************************************
 * CAN Bus Configuration                                             *

@@ -145,9 +145,6 @@ uint32_t CAN_Filter_Count = 0;
 
 /* UART RX'd byte */
 static uint8_t rx_byte;
-static int image_byte = 0;
-static int image_size = UI_HOR_RES * UI_VER_RES * UI_BYTES_PER_PIXEL;
-static uint8_t image_buffer[UI_HOR_RES * UI_VER_RES * UI_BYTES_PER_PIXEL] = {0};
 
 #define EEPROM_ADDRESS_SIZE 2
 #define EEPROM_DATA_SIZE 1
@@ -163,8 +160,6 @@ uint16_t can_filters[MAX_CAN_FILTERS] = {CAN_FILTER_UNUSED};
 #define ERASE_BLOCK_SIZE     MX25LM51245G_ERASE_64K
 #define ERASE_BLOCK_BYTES    65536
 #define ERASE_TOTAL_BYTES    UI_HOR_RES * UI_VER_RES * UI_BYTES_PER_PIXEL
-
-char uart_buffer[0xFFFF] = {0};
 
 /* USER CODE END PV */
 
@@ -258,10 +253,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	if( huart == ESP32_UART )
 	{
-		image_buffer[image_byte++] = rx_byte;
-		if( (image_byte <= 1) & (rx_byte == 0) ) {
-			image_byte--;
-		}
+		DigitalDash_Add_UART_byte(rx_byte);
 
 		/* Wait for the next byte */
 		HAL_UART_Receive_IT( ESP32_UART, &rx_byte, 1 );
@@ -560,6 +552,43 @@ void erase_background(uint32_t start_address)
 	}
 }
 
+void write_background( uint8_t *image_buffer, uint32_t image_size, uint8_t idx )
+{
+	uint32_t background_addr = USER_BACKGROUND_ADDRESSES[idx];
+
+	// Memory can only be written when NOT in memory mapped mode.
+	if(BSP_HSPI_NOR_DisableMemoryMappedMode(0) == BSP_ERROR_NONE)
+	{
+		// Indicate write in process.
+		HAL_GPIO_WritePin(DBG_LED2_GPIO_Port, DBG_LED2_Pin, GPIO_PIN_SET);
+
+		// Erase the current background.
+		erase_background(background_addr);
+
+		// Wait for the erase to complete.
+		while( BSP_HSPI_NOR_GetStatus(0) != BSP_ERROR_NONE) {
+			HAL_Delay(50);
+		}
+
+		// Write the new background.
+		BSP_HSPI_NOR_Write(0, image_buffer, background_addr, image_size);
+
+		// Re-enable Memory mapped mode.
+		if( BSP_HSPI_NOR_EnableMemoryMappedMode(0) != BSP_ERROR_NONE)
+			Error_Handler();
+
+		// Invalidate DCache
+		HAL_DCACHE_Invalidate(&hdcache1);
+		HAL_DCACHE_Invalidate(&hdcache2);
+		HAL_ICACHE_Invalidate();
+
+		// Indicate completion.
+		HAL_GPIO_WritePin(DBG_LED2_GPIO_Port, DBG_LED2_Pin, GPIO_PIN_RESET);
+	} else {
+		Error_Handler();
+	}
+}
+
 /**
  * @brief Controls the reset line for the ESP32 host device.
  *
@@ -619,10 +648,11 @@ int8_t dynamic_gauge_check( digitaldash *dash, uint8_t idx )
 void Digitaldash_Init( void )
 {
     DIGITALDASH_CONFIG config;
-    config.dd_ecu_tx            = &ECU_CAN_Tx;
-    config.dd_host_ctrl         = &esp32_reset;
-    config.dd_set_backlight     = &LCD_Brightness;
-    config.dd_filter            = &CAN_Filter;
+    config.dd_ecu_tx               = &ECU_CAN_Tx;
+    config.dd_host_ctrl            = &esp32_reset;
+    config.dd_set_backlight        = &LCD_Brightness;
+    config.dd_filter               = &CAN_Filter;
+    config.dd_background_save      = &write_background;
 
     if( digitaldash_init( &config ) != DIGITALDASH_INIT_OK )
         Error_Handler();
@@ -1081,8 +1111,8 @@ int main(void)
 
   // Indicate Boot has ended
   HAL_GPIO_WritePin(DBG_LED1_GPIO_Port, DBG_LED1_Pin, GPIO_PIN_RESET);
-  config_to_json(uart_buffer, sizeof(uart_buffer));
-  HAL_UART_Transmit(ESP32_UART, (uint8_t*)uart_buffer, strlen(uart_buffer), HAL_MAX_DELAY);
+  //config_to_json(uart_buffer, sizeof(uart_buffer));
+  //HAL_UART_Transmit(ESP32_UART, (uint8_t*)uart_buffer, strlen(uart_buffer), HAL_MAX_DELAY);
   //json_to_config(default_config_json);
 
   // Log the start of the main while() loop
@@ -1093,44 +1123,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	if( image_byte >= image_size )
-	{
-		uint32_t background_addr = USER_BACKGROUND_ADDRESSES[0];
-
-		// Memory can only be written when NOT in memory mapped mode.
-		if(BSP_HSPI_NOR_DisableMemoryMappedMode(0) == BSP_ERROR_NONE)
-		{
-			// Indicate write in process.
-			HAL_GPIO_WritePin(DBG_LED2_GPIO_Port, DBG_LED2_Pin, GPIO_PIN_SET);
-
-			// Erase the current background.
-			erase_background(background_addr);
-
-			// Wait for the erase to complete.
-			while( BSP_HSPI_NOR_GetStatus(0) != BSP_ERROR_NONE) {
-				HAL_Delay(50);
-			}
-
-			// Write the new background.
-			BSP_HSPI_NOR_Write(0, image_buffer, background_addr, image_size);
-
-			// Re-enable Memory mapped mode.
-			if( BSP_HSPI_NOR_EnableMemoryMappedMode(0) != BSP_ERROR_NONE)
-				Error_Handler();
-
-			// Invalidate DCache
-			HAL_DCACHE_Invalidate(&hdcache1);
-			HAL_DCACHE_Invalidate(&hdcache2);
-			HAL_ICACHE_Invalidate();
-
-			// Clear byte data and indicate completion.
-			image_byte = 0;
-			HAL_GPIO_WritePin(DBG_LED2_GPIO_Port, DBG_LED2_Pin, GPIO_PIN_RESET);
-		} else {
-			Error_Handler();
-		}
-	}
-
 	//HAL_I2C_Master_Transmit(ESP32_I2C, 0x5a, aTxBuffer, 4, 0xFFFF);
 	lv_timer_handler();
 	digitaldash_service();
