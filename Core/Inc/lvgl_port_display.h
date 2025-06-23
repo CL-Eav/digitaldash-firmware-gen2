@@ -28,8 +28,7 @@ extern "C" {
  * GLOBAL PROTOTYPES
  **********************/
 
-void
-lvgl_display_init (void);
+void lvgl_display_init (void);
 
 #ifdef __cplusplus
 } /*extern "C"*/

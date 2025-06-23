@@ -64,11 +64,8 @@
 #define KE_MAX_TX_PAYLOAD             0xFFFF + 0xF
 #define KE_MAX_RX_PAYLOAD             819200 + 16
 
-#define DIGITALDASH_DATA_ACQ_ONLY 0
-#define DIGITALDASH_GRAPHICS_ONLY 1
-#define DIGITALDASH_DATA_ACQ_AND_GRAPHICS 2
-
-#define DIGITALDASH_TYPE DIGITALDASH_DATA_ACQ_AND_GRAPHICS
+#define DIGITALDASH_DATA_ACQ 1
+#define DIGITALDASH_GRAPHICS 1
 
 /********************************************************************
 * CAN Bus Configuration                                             *

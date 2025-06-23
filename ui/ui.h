@@ -17,6 +17,10 @@ extern const char *float_with_units[3];
 extern const char *float_only[3];
 extern const char *two_float_with_slash[3];
 
+void build_ui(void);
+void ui_service(void);
+void ui_tick();
+
 lv_obj_t * add_grumpy_cat_gauge( int32_t x, int32_t y, lv_obj_t * parent, PID_DATA * pid);
 lv_obj_t * add_linear_gauge( int32_t x, int32_t y, lv_obj_t * parent, PID_DATA * pid);
 lv_obj_t * add_radial_gauge( int32_t x, int32_t y, lv_obj_t * parent, PID_DATA * pid);
