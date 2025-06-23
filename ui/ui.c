@@ -240,7 +240,7 @@ void build_ui(void)
 			    .header.w = UI_HOR_RES,
 			    .header.h = UI_VER_RES,
 			    .data_size = UI_HOR_RES * UI_VER_RES * UI_BYTES_PER_PIXEL,
-			    .data = (const uint8_t *)backgrounds_external[1],
+			    .data = (const uint8_t *)backgrounds_external[0],
 			  };
 
 			  switch( get_view_background(view) )

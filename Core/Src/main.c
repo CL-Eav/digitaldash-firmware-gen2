@@ -37,20 +37,13 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <string.h>
 #include "ltdc.h"
 #include "dma2d.h"
-#include "lvgl.h"
 #include "lvgl_port_display.h"
-#include <string.h>
 #include "stm32u5g9j_discovery_hspi.h"
-#include "ui.h"
-#include "lib_pid.h"
-#include "ke_digitaldash.h"
 #include "lib_digital_dash.h"
-#include "ke_config.h"
 #include "eeprom_24cw.h"
-#include "../build_info.h"
-#include "config_json_example.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
