@@ -517,6 +517,14 @@ static void esp32_reset( HOST_PWR_STATE state )
 		HAL_GPIO_WritePin(ESP32_RESET_N_GPIO_Port, ESP32_RESET_N_Pin, GPIO_PIN_RESET);
 }
 
+static int esp32_tx( uint8_t *data, uint8_t len )
+{
+    if( HAL_UART_Transmit_IT(ESP32_UART, data, len) == HAL_OK )
+        return 1;
+    else
+        return 0;
+}
+
 
 /**
  * @brief Initializes the Digital Dash system with required configuration.
@@ -542,6 +550,7 @@ void Digitaldash_Init( void )
     config.dd_set_backlight        = &LCD_Brightness;
     config.dd_filter               = &CAN_Filter;
     config.dd_background_save      = &write_background;
+    config.dd_ke_tx                = &esp32_tx;
 
     if( digitaldash_init( &config ) != DIGITALDASH_INIT_OK )
         Error_Handler();
