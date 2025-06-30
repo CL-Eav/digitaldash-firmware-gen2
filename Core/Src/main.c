@@ -532,7 +532,7 @@ void spoof_config(void)
 	// View 0
 	set_view_enable(0, VIEW_STATE_ENABLED, true);
 	set_view_num_gauges(0, 3, true);
-	set_view_background(0, VIEW_BACKGROUND_USER2, true);
+	set_view_background(0, VIEW_BACKGROUND_USER1, true);
 	set_view_gauge_theme(0, 0, GAUGE_THEME_RADIAL, true);
 	set_view_gauge_theme(0, 1, GAUGE_THEME_RADIAL, true);
 	set_view_gauge_theme(0, 2, GAUGE_THEME_RADIAL, true);
