@@ -46,25 +46,41 @@ static const uint32_t USER_BACKGROUND_ADDRESSES[BACKGROUND_IMAGE_COUNT] = {
     BACKGROUND_BASE_ADDRESS + 14 * BACKGROUND_IMAGE_SIZE
 };
 
+uint32_t get_background_addr(uint8_t idx, ADDR_MEMORYMAPPED_MODE mode)
+{
+	if( mode )
+		return USER_BACKGROUND_ADDRESSES[idx];
+	else
+		return USER_BACKGROUND_ADDRESSES[idx] - BACKGROUND_BASE_ADDRESS;
+}
+
 #define BACKGROUND_COLOR_FORMAT LV_COLOR_FORMAT_NATIVE_WITH_ALPHA
 
-const lv_image_dsc_t ui_background_user1 = {
-    .header.w = UI_HOR_RES,
-    .header.h = UI_VER_RES,
-    .data_size = UI_HOR_RES * UI_VER_RES * UI_BYTES_PER_PIXEL,
-    .header.cf = BACKGROUND_COLOR_FORMAT,
-    .header.magic = LV_IMAGE_HEADER_MAGIC,
-    .data = (const uint8_t *)USER_BACKGROUND_ADDRESSES[VIEW_BACKGROUND_USER1]
-};
+#define DEFINE_BACKGROUND_USER(n) \
+const lv_image_dsc_t ui_background_user##n = { \
+    .header.w = UI_HOR_RES, \
+    .header.h = UI_VER_RES, \
+    .data_size = UI_HOR_RES * UI_VER_RES * UI_BYTES_PER_PIXEL, \
+    .header.cf = BACKGROUND_COLOR_FORMAT, \
+    .header.magic = LV_IMAGE_HEADER_MAGIC, \
+    .data = (const uint8_t *)USER_BACKGROUND_ADDRESSES[VIEW_BACKGROUND_USER##n] \
+}
 
-const lv_image_dsc_t ui_background_user2 = {
-    .header.w = UI_HOR_RES,
-    .header.h = UI_VER_RES,
-    .data_size = UI_HOR_RES * UI_VER_RES * UI_BYTES_PER_PIXEL,
-    .header.cf = BACKGROUND_COLOR_FORMAT,
-    .header.magic = LV_IMAGE_HEADER_MAGIC,
-    .data = (const uint8_t *)USER_BACKGROUND_ADDRESSES[VIEW_BACKGROUND_USER2]
-};
+DEFINE_BACKGROUND_USER(1);
+DEFINE_BACKGROUND_USER(2);
+DEFINE_BACKGROUND_USER(3);
+DEFINE_BACKGROUND_USER(4);
+DEFINE_BACKGROUND_USER(5);
+DEFINE_BACKGROUND_USER(6);
+DEFINE_BACKGROUND_USER(7);
+DEFINE_BACKGROUND_USER(8);
+DEFINE_BACKGROUND_USER(9);
+DEFINE_BACKGROUND_USER(10);
+DEFINE_BACKGROUND_USER(11);
+DEFINE_BACKGROUND_USER(12);
+DEFINE_BACKGROUND_USER(13);
+DEFINE_BACKGROUND_USER(14);
+DEFINE_BACKGROUND_USER(15);
 
 bool is_all_ff(const uint8_t *data, uint32_t size) {
 	for (uint32_t i = 0; i < size; i++) {
@@ -73,6 +89,22 @@ bool is_all_ff(const uint8_t *data, uint32_t size) {
 		}
 	}
 	return true;
+}
+
+uint32_t calc_crc32(const uint8_t *data, uint32_t size) {
+    uint32_t crc = 0xFFFFFFFF;
+
+    for (uint32_t i = 0; i < size; i++) {
+        crc ^= data[i];
+        for (int j = 0; j < 8; j++) {
+            if (crc & 1)
+                crc = (crc >> 1) ^ 0xEDB88320;
+            else
+                crc >>= 1;
+        }
+    }
+
+    return ~crc;
 }
 
 // UI Variables

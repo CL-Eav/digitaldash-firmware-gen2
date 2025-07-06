@@ -35,6 +35,7 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
+#include "stdbool.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -65,7 +66,7 @@
 
 #define EXT_CAN_BUS &hfdcan1 /* External CAN bus channel */
 
-#define RX_BUFFER_SIZE 4096
+#define RX_BUFFER_SIZE 0xFFFF
 uint8_t rx_buffer[RX_BUFFER_SIZE];
 /* USER CODE END PD */
 
@@ -80,8 +81,6 @@ uint8_t rx_buffer[RX_BUFFER_SIZE];
 uint32_t CAN_Filter_Count = 0;
 
 /* UART RX'd byte */
-static uint8_t rx_byte;
-
 #define EEPROM_ADDRESS_SIZE 2
 #define EEPROM_DATA_SIZE 1
 static uint8_t i2c_rx_index = 0;
@@ -417,13 +416,13 @@ void erase_background(uint32_t start_address)
 	}
 }
 
-void write_background( uint8_t *image_buffer, uint32_t image_size, uint8_t idx )
+bool write_background( char *image_buffer, uint32_t image_size, uint8_t idx )
 {
-	uint32_t background_addr = 0;
-
 	// Memory can only be written when NOT in memory mapped mode.
 	if(BSP_HSPI_NOR_DisableMemoryMappedMode(0) == BSP_ERROR_NONE)
 	{
+		uint32_t background_addr = get_background_addr(idx, ADDR_MEMORYMAPPED_DISABLED);
+
 		// Indicate write in process.
 		HAL_GPIO_WritePin(DBG_LED2_GPIO_Port, DBG_LED2_Pin, GPIO_PIN_SET);
 
@@ -436,7 +435,7 @@ void write_background( uint8_t *image_buffer, uint32_t image_size, uint8_t idx )
 		}
 
 		// Write the new background.
-		BSP_HSPI_NOR_Write(0, image_buffer, background_addr, image_size);
+		BSP_HSPI_NOR_Write(0, (uint8_t*)image_buffer, background_addr, image_size);
 
 		// Re-enable Memory mapped mode.
 		if( BSP_HSPI_NOR_EnableMemoryMappedMode(0) != BSP_ERROR_NONE)
@@ -449,8 +448,11 @@ void write_background( uint8_t *image_buffer, uint32_t image_size, uint8_t idx )
 
 		// Indicate completion.
 		HAL_GPIO_WritePin(DBG_LED2_GPIO_Port, DBG_LED2_Pin, GPIO_PIN_RESET);
+
+		return true;
 	} else {
 		Error_Handler();
+		return false;
 	}
 }
 

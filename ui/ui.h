@@ -35,4 +35,11 @@ bool get_alert(void);
 void set_alert(char *msg );
 void clear_alert(void);
 
+typedef enum {
+	ADDR_MEMORYMAPPED_DISABLED,
+	ADDR_MEMORYMAPPED_ENABLED
+} ADDR_MEMORYMAPPED_MODE;
+
+uint32_t get_background_addr(uint8_t idx, ADDR_MEMORYMAPPED_MODE mode);
+
 #endif /* UI_H_ */

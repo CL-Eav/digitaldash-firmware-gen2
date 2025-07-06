@@ -61,8 +61,8 @@
 
 #define DD_MAX_PIDS 25
 
-#define KE_MAX_TX_PAYLOAD             0xFFFF + 0xF
-#define KE_MAX_RX_PAYLOAD             819200 + 16
+#define KE_MAX_TX_PAYLOAD             6000
+#define KE_MAX_RX_PAYLOAD             819200 + 128
 
 #define DIGITALDASH_DATA_ACQ 1
 #define DIGITALDASH_GRAPHICS 1
