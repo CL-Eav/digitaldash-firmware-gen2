@@ -69,11 +69,11 @@ lv_obj_t * add_radial_gauge( int32_t x, int32_t y, lv_obj_t * parent, PID_DATA *
 
     // Create spans
     lv_span_t * span_val = lv_spangroup_new_span(span_group);
-    lv_style_set_text_font(lv_span_get_style(span_val), &lv_font_montserrat_30);
+    lv_style_set_text_font(lv_span_get_style(span_val), &lv_font_montserrat_38);
     lv_style_set_text_color(lv_span_get_style(span_val), lv_color_white());
 
     lv_span_t * span_unit = lv_spangroup_new_span(span_group);
-    lv_style_set_text_font(lv_span_get_style(span_unit), &lv_font_montserrat_20);
+    lv_style_set_text_font(lv_span_get_style(span_unit), &lv_font_montserrat_24);
     lv_style_set_text_color(lv_span_get_style(span_unit), lv_color_hex(0xBBBBBB));
 
     // Split value and unit (assuming value is number and unit is already stored)
@@ -104,7 +104,7 @@ lv_obj_t * add_radial_gauge( int32_t x, int32_t y, lv_obj_t * parent, PID_DATA *
     lv_obj_set_y(minmax, 4);
     lv_obj_set_align(minmax, LV_ALIGN_CENTER);
     lv_label_set_text(minmax, "min/max");
-    lv_obj_set_style_text_font(minmax, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(minmax, &lv_font_montserrat_24, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_t * label = lv_label_create(needle);
     lv_obj_set_width(label, LV_SIZE_CONTENT);   /// 1
@@ -113,7 +113,7 @@ lv_obj_t * add_radial_gauge( int32_t x, int32_t y, lv_obj_t * parent, PID_DATA *
     lv_obj_set_y(label, -22);
     lv_obj_set_align(label, LV_ALIGN_CENTER);
     lv_label_set_text(label, pid->label);
-    lv_obj_set_style_text_font(label, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(label, &lv_font_montserrat_24, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     return needle;
 }
