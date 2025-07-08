@@ -569,11 +569,11 @@ void spoof_config(void)
 	set_alert_compare(0, ALERT_COMPARISON_GREATER_THAN_OR_EQUAL_TO, true );
 	set_alert_threshold(0, 6500, true );
 	char msg[64] = "This is a test of the EEPROM string saving";
-	set_alert_message(0, msg, true);
-	set_alert_message(1, msg, true);
-	set_alert_message(2, msg, true);
-	set_alert_message(3, msg, true);
-	set_alert_message(4, msg, true);
+	set_alert_message(0, msg, false);
+	set_alert_message(1, msg, false);
+	set_alert_message(2, msg, false);
+	set_alert_message(3, msg, false);
+	set_alert_message(4, msg, false);
 }
 
 /**
@@ -745,7 +745,7 @@ int main(void)
   }
 
   // Spoof a config if EEPROM isn't present
-  spoof_config();
+  // spoof_config();
 
   // Initialize the external flash
   flash_init();
