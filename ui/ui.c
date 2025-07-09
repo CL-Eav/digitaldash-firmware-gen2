@@ -11,6 +11,8 @@
 
 LV_IMG_DECLARE(ui_img_ford_performance_logo_png);
 
+#define X_OFFSET 21 // Screen is not perfectly centered, shift by X to center in housing
+
 #define BACKGROUND_IMAGE_COUNT      (15U)
 #define BACKGROUND_BLOCK_SIZE       (0x10000U) // 64KB
 #define BACKGROUND_PIXEL_WIDTH      UI_HOR_RES
@@ -342,7 +344,7 @@ void show_build_info_overlay(void)
     lv_obj_set_style_text_font(build_label, &lv_font_montserrat_18, 0);
 
     // Align to bottom center with small vertical padding
-    lv_obj_align(build_label, LV_ALIGN_BOTTOM_MID, 0, -5);
+    lv_obj_align(build_label, LV_ALIGN_BOTTOM_MID, 0 + X_OFFSET, -5);
 }
 
 
@@ -367,8 +369,8 @@ void build_ui(void)
 	  lv_image_set_src(splash_icon, &ui_img_ford_performance_logo_png);
 	  lv_obj_set_width(splash_icon, LV_SIZE_CONTENT);   /// 1
 	  lv_obj_set_height(splash_icon, LV_SIZE_CONTENT);    /// 1
-	  lv_obj_set_x(splash_icon, 0);
-	  lv_obj_set_y(splash_icon, 50);
+	  lv_obj_set_x(splash_icon, 0 + X_OFFSET);
+	  lv_obj_set_y(splash_icon, 20);
 	  lv_obj_set_align(splash_icon, LV_ALIGN_TOP_MID);
 	  lv_obj_remove_flag(splash_icon, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
@@ -391,29 +393,28 @@ void build_ui(void)
 								   LV_OBJ_FLAG_GESTURE_BUBBLE | LV_OBJ_FLAG_SNAPPABLE | LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_SCROLL_ELASTIC |
 								   LV_OBJ_FLAG_SCROLL_MOMENTUM | LV_OBJ_FLAG_SCROLL_CHAIN);
 
-			  uint8_t is_image = 0;
+			  uint8_t is_image = 1;
 			  const lv_image_dsc_t * img = NULL;
 			  lv_color_t color = {0};
 
 			  switch( get_view_background(view) )
 			  {
-
-				  case VIEW_BACKGROUND_USER1:
-					  img = &ui_background_user1;
-					  is_image = 1;
-					  break;
-
-				  case VIEW_BACKGROUND_USER2:
-					  img = &ui_background_user2;
-					  is_image = 1;
-					  break;
-
-				  default:
-					  color.red = 0;
-					  color.green = 0;
-					  color.blue = 0;
-					  is_image = 0;
-					  break;
+					case VIEW_BACKGROUND_USER1:  img = &ui_background_user1;  break;
+					case VIEW_BACKGROUND_USER2:  img = &ui_background_user2;  break;
+					case VIEW_BACKGROUND_USER3:  img = &ui_background_user3;  break;
+					case VIEW_BACKGROUND_USER4:  img = &ui_background_user4;  break;
+					case VIEW_BACKGROUND_USER5:  img = &ui_background_user5;  break;
+					case VIEW_BACKGROUND_USER6:  img = &ui_background_user6;  break;
+					case VIEW_BACKGROUND_USER7:  img = &ui_background_user7;  break;
+					case VIEW_BACKGROUND_USER8:  img = &ui_background_user8;  break;
+					case VIEW_BACKGROUND_USER9:  img = &ui_background_user9;  break;
+					case VIEW_BACKGROUND_USER10: img = &ui_background_user10; break;
+					case VIEW_BACKGROUND_USER11: img = &ui_background_user11; break;
+					case VIEW_BACKGROUND_USER12: img = &ui_background_user12; break;
+					case VIEW_BACKGROUND_USER13: img = &ui_background_user13; break;
+					case VIEW_BACKGROUND_USER14: img = &ui_background_user14; break;
+					case VIEW_BACKGROUND_USER15: img = &ui_background_user15; break;
+					default: is_image = 0; break; // Default to black
 			  }
 
 			  if( is_image ) {
@@ -435,17 +436,17 @@ void build_ui(void)
 			  switch( num_gauges )
 			  {
 			  	  case 1:
-			  		  x_pos[0] = 0;
+			  		  x_pos[0] = 0 + X_OFFSET;
 			  		  break;
 			  	  case 2:
-					  x_pos[0] = -200;
-					  x_pos[1] = 200;
+					  x_pos[0] = -200 + X_OFFSET;
+					  x_pos[1] = 200 + X_OFFSET;
 					  break;
 			  	  case 3:
 			  	  default:
-					  x_pos[0] = -300;
-					  x_pos[1] = 0;
-					  x_pos[2] = 300;
+					  x_pos[0] = -300 + X_OFFSET;
+					  x_pos[1] = 0 + X_OFFSET;
+					  x_pos[2] = 300 + X_OFFSET;
 					  break;
 
 			  }
