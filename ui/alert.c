@@ -13,7 +13,7 @@ lv_obj_t * ui_alert = NULL;
 lv_obj_t * add_alert( lv_obj_t * parent ){
 	  ui_alert_container = lv_obj_create(parent);
 	  lv_obj_remove_style_all(ui_alert_container);
-	  lv_obj_set_width(ui_alert_container, 550);
+	  lv_obj_set_width(ui_alert_container, 670);
 	  lv_obj_set_height(ui_alert_container, 75);
 	  lv_obj_set_x(ui_alert_container, 0);
 	  lv_obj_set_y(ui_alert_container, 5);
@@ -41,7 +41,7 @@ lv_obj_t * add_alert( lv_obj_t * parent ){
 	  lv_obj_set_height(ui_alert, LV_SIZE_CONTENT);    /// 1
 	  lv_obj_set_align(ui_alert, LV_ALIGN_CENTER);
 	  lv_label_set_text(ui_alert, "No error set");
-	  lv_obj_set_style_text_font(ui_alert, &lv_font_montserrat_22, LV_PART_MAIN | LV_STATE_DEFAULT);
+	  lv_obj_set_style_text_font(ui_alert, &lv_font_montserrat_30, LV_PART_MAIN | LV_STATE_DEFAULT);
 	  lv_obj_add_flag(ui_alert_container, LV_OBJ_FLAG_HIDDEN);
 
 	  // Hide the alert by default
