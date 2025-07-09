@@ -13,6 +13,8 @@
 #include "lvgl_port_display.h"
 #include "ke_config.h"
 
+#define X_OFFSET 21 // Screen is not perfectly centered, shift by X to center in housing
+
 extern const char *float_with_units[3];
 extern const char *float_only[3];
 extern const char *two_float_with_slash[3];

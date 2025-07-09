@@ -11,8 +11,6 @@
 
 LV_IMG_DECLARE(ui_img_ford_performance_logo_png);
 
-#define X_OFFSET 21 // Screen is not perfectly centered, shift by X to center in housing
-
 #define BACKGROUND_IMAGE_COUNT      (15U)
 #define BACKGROUND_BLOCK_SIZE       (0x10000U) // 64KB
 #define BACKGROUND_PIXEL_WIDTH      UI_HOR_RES
