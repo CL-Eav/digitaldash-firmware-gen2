@@ -548,7 +548,7 @@ void spoof_config(void)
 	// View 1
 	set_view_enable(1, VIEW_STATE_ENABLED, true);
 	set_view_num_gauges(1, 1, true);
-	set_view_background(1, VIEW_BACKGROUND_USER1, true);
+	set_view_background(1, VIEW_BACKGROUND_USER15, true);
 	set_view_gauge_theme(1, 0, GAUGE_THEME_LINEAR, true);
 	set_view_gauge_pid(1, 0, CALC1_TURBOCHARGER_COMPRESSOR_INLET_PRESSURE_UUID, true);
 	set_view_gauge_units(1, 0, PID_UNITS_PSI, true);
@@ -561,6 +561,14 @@ void spoof_config(void)
 	set_dynamic_compare(0, DYNAMIC_COMPARISON_GREATER_THAN, true);
 	set_dynamic_threshold(0, 3000, true);
 	set_dynamic_index(0, 1, true);
+
+	set_dynamic_enable(1, DYNAMIC_STATE_DISABLED, true);
+	set_dynamic_pid(1, MODE1_ENGINE_SPEED_UUID, true);
+	set_dynamic_units(1, PID_UNITS_RPM, true);
+	set_dynamic_priority(1, DYNAMIC_PRIORITY_LOW, true);
+	set_dynamic_compare(1, DYNAMIC_COMPARISON_GREATER_THAN, true);
+	set_dynamic_threshold(1, 8000, true);
+	set_dynamic_index(1, 0, true);
 
 	// Alert 0
 	set_alert_enable(0, ALERT_STATE_ENABLED, true );
@@ -745,7 +753,7 @@ int main(void)
   }
 
   // Spoof a config if EEPROM isn't present
-  // spoof_config();
+  spoof_config();
 
   // Initialize the external flash
   flash_init();
