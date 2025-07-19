@@ -753,7 +753,7 @@ int main(void)
   }
 
   // Spoof a config if EEPROM isn't present
-  spoof_config();
+  // spoof_config();
 
   // Initialize the external flash
   flash_init();
