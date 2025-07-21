@@ -540,9 +540,9 @@ void spoof_config(void)
 	set_view_gauge_theme(0, 2, GAUGE_THEME_RADIAL, true);
 	set_view_gauge_pid(0, 0, MODE1_ENGINE_SPEED_UUID, true);
 	set_view_gauge_units(0, 0, PID_UNITS_RPM, true);
-	set_view_gauge_pid(0, 1, CALC1_TURBOCHARGER_COMPRESSOR_INLET_PRESSURE_UUID, true);
+	set_view_gauge_pid(0, 1, CALC1_BOOST_VACUUM_UUID, true);
 	set_view_gauge_units(0, 1, PID_UNITS_PSI, true);
-	set_view_gauge_pid(0, 2, MODE1_ENGINE_COOLANT_TEMPERATURE_UUID, true);
+	set_view_gauge_pid(0, 2, MODE1_ENGINE_COOLANT_TEMP_UUID, true);
 	set_view_gauge_units(0, 2, PID_UNITS_FAHRENHEIT, true);
 
 	// View 1
@@ -550,12 +550,12 @@ void spoof_config(void)
 	set_view_num_gauges(1, 1, true);
 	set_view_background(1, VIEW_BACKGROUND_USER15, true);
 	set_view_gauge_theme(1, 0, GAUGE_THEME_LINEAR, true);
-	set_view_gauge_pid(1, 0, CALC1_TURBOCHARGER_COMPRESSOR_INLET_PRESSURE_UUID, true);
+	set_view_gauge_pid(1, 0, CALC1_BOOST_VACUUM_UUID, true);
 	set_view_gauge_units(1, 0, PID_UNITS_PSI, true);
 
 	// Dynamic
 	set_dynamic_enable(0, DYNAMIC_STATE_ENABLED, true);
-	set_dynamic_pid(0, CALC1_TURBOCHARGER_COMPRESSOR_INLET_PRESSURE_UUID, true);
+	set_dynamic_pid(0, CALC1_BOOST_VACUUM_UUID, true);
 	set_dynamic_units(0, PID_UNITS_PSI, true);
 	set_dynamic_priority(0, DYNAMIC_PRIORITY_HIGH, true);
 	set_dynamic_compare(0, DYNAMIC_COMPARISON_GREATER_THAN, true);
