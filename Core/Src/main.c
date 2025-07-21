@@ -35,11 +35,11 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
-#include "stdbool.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <string.h>
+#include "stdbool.h"
 #include "ltdc.h"
 #include "dma2d.h"
 #include "lvgl_port_display.h"
@@ -498,6 +498,13 @@ void UART_IdleCallback(UART_HandleTypeDef *huart)
     HAL_UART_Receive_DMA(huart, rx_buffer, RX_BUFFER_SIZE);
 }
 
+bool read_splash_override( void )
+{
+	if( HAL_GPIO_ReadPin(SPLASH_EN_GPIO_Port, SPLASH_EN_Pin) == GPIO_PIN_SET )
+		return true;
+	else
+		return false;
+}
 
 /**
  * @brief Initializes the Digital Dash system with required configuration.
@@ -524,6 +531,7 @@ void Digitaldash_Init( void )
     config.dd_filter               = &CAN_Filter;
     config.dd_background_save      = &write_background;
     config.dd_ke_tx                = &esp32_tx;
+    config.dd_splash_override      = &read_splash_override;
 
     if( digitaldash_init( &config ) != DIGITALDASH_INIT_OK )
         Error_Handler();

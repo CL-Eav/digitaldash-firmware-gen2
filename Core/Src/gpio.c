@@ -163,6 +163,12 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : SPLASH_EN_Pin */
+  GPIO_InitStruct.Pin = SPLASH_EN_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(SPLASH_EN_GPIO_Port, &GPIO_InitStruct);
+
   /*Configure GPIO pins : CAN_STBY_Pin PWR_HOLD_Pin */
   GPIO_InitStruct.Pin = CAN_STBY_Pin|PWR_HOLD_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;

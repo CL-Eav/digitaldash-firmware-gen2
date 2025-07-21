@@ -75,6 +75,8 @@ void Error_Handler(void);
 #define DBG_LED1_GPIO_Port GPIOA
 #define DBG_LED2_Pin GPIO_PIN_12
 #define DBG_LED2_GPIO_Port GPIOA
+#define SPLASH_EN_Pin GPIO_PIN_15
+#define SPLASH_EN_GPIO_Port GPIOA
 #define CAN_STBY_Pin GPIO_PIN_2
 #define CAN_STBY_GPIO_Port GPIOD
 #define PWR_HOLD_Pin GPIO_PIN_7

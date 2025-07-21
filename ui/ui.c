@@ -171,6 +171,7 @@ uint32_t calc_crc32(uint8_t idx, uint32_t reserved) {
 #define SCREEN_SAVER_T 120 * MIN_TO_MILLI // 120 min
 #endif
 #define SCREEN_SAVER_DURATION_T 1 * MIN_TO_MILLI // 1 min
+uint32_t splash_screen_t = 0;
 uint32_t boot_time = 0;
 uint32_t next_screen_saver = SCREEN_SAVER_T;
 lv_obj_t * ui_screen;
@@ -223,6 +224,12 @@ static void switch_screen(lv_obj_t *scr, uint32_t anim_ms)
         return;
 
     lv_screen_load_anim(scr, LV_SCR_LOAD_ANIM_FADE_IN, anim_ms, 0, false);
+}
+
+void skip_splash(void)
+{
+	splash_screen_t = 0;
+	switch_screen(ui_screen, 0);
 }
 
 static void log_minmax( PID_DATA* pid )
@@ -519,14 +526,16 @@ void build_ui(void)
 
 	  add_alert(ui_screen);
 	  show_build_info_overlay();
+
+	  splash_screen_t = ui_tick_cnt + SPLASH_SCREEN_T;
 }
 
 void ui_service(void)
 {
 	lv_timer_handler();
 
-	if( ui_tick_cnt <= SPLASH_SCREEN_T ) {
-		switch_screen(splash_screen, SCREEN_FADE_T);
+	if( ui_tick_cnt <= splash_screen_t ) {
+			switch_screen(splash_screen, SCREEN_FADE_T);
 	} else if( ui_tick_cnt >= next_screen_saver ) {
 		switch_screen(splash_screen, SCREEN_FADE_T);
 		if( ui_tick_cnt >= (next_screen_saver + SCREEN_SAVER_DURATION_T) )
