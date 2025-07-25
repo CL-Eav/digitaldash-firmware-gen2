@@ -57,12 +57,14 @@ static void event_cb(lv_event_t * e)
     }
 }
 
-lv_obj_t * add_linear_gauge( int32_t x, int32_t y, lv_obj_t * parent, PID_DATA * pid)
+lv_obj_t * add_linear_gauge( int32_t x, int32_t y, int32_t w, int32_t h, lv_obj_t * parent, PID_DATA * pid)
 {
 	lv_obj_t * gauge = lv_obj_create(parent);
     lv_obj_remove_style_all(gauge);
-    lv_obj_set_width(gauge, UI_HOR_RES);
-    lv_obj_set_height(gauge, 110);
+    lv_obj_set_width(gauge, w);
+    lv_obj_set_height(gauge, h);
+    lv_obj_set_x(gauge, x);
+    lv_obj_set_y(gauge, y);
     lv_obj_set_align(gauge, LV_ALIGN_TOP_MID);
     lv_obj_remove_flag(gauge, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_obj_set_user_data(gauge, pid);

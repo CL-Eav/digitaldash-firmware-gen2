@@ -442,8 +442,11 @@ void build_ui(void)
 			  }
 
 			  int x_pos[MAX_GAUGES_PER_VIEW] = {0};
+			  int width = 0;
+			  int height = Y_HEIGHT;
 
 			  uint8_t num_gauges = get_view_num_gauges(view);
+			  width = (UI_HOR_RES - X_PADDING)/num_gauges;
 			  switch( num_gauges )
 			  {
 			  	  case 1:
@@ -479,7 +482,7 @@ void build_ui(void)
 				  ui_gauge_pid[view][gauge] = DigitalDash_Add_PID_To_Stream( &pid_req );
 
 				  // Finally, add the gauge to the view
-				  ui_gauge[view][gauge] = add_gauge(get_view_gauge_theme(view, gauge), x_pos[gauge], 0, ui_view[view], ui_gauge_pid[view][gauge]);
+				  ui_gauge[view][gauge] = add_gauge(get_view_gauge_theme(view, gauge), x_pos[gauge], 0, width, height, ui_view[view], ui_gauge_pid[view][gauge]);
 			  }
 		  }
 	  }

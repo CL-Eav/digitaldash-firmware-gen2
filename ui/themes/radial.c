@@ -31,7 +31,7 @@ static void event_cb(lv_event_t * e)
     lv_label_set_text_fmt(minmax, two_float_with_slash[data->precision], data->pid_min, data->pid_max);
 }
 
-lv_obj_t * add_radial_gauge( int32_t x, int32_t y, lv_obj_t * parent, PID_DATA * pid)
+lv_obj_t * add_radial_gauge( int32_t x, int32_t y, int32_t w, int32_t h, lv_obj_t * parent, PID_DATA * pid)
 {
 	lv_obj_t * needle = lv_arc_create(parent);
     lv_obj_set_width(needle, RADIAL_SIZE);
