@@ -85,6 +85,7 @@ lv_obj_t * add_linear_gauge( int32_t x, int32_t y, int32_t w, int32_t h, lv_obj_
 
     lv_obj_t * needle = lv_bar_create(gauge);
     lv_bar_set_range(needle, scale_float(pid->lower_limit, pid->precision), scale_float(pid->upper_limit, pid->precision));
+    lv_bar_set_mode(needle, LV_BAR_MODE_SYMMETRICAL);
     lv_obj_set_width(needle, w - BAR_PADDING);
     lv_obj_set_height(needle, BAR_HEIGHT);
     lv_obj_set_x(needle, 0);
