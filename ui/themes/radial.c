@@ -11,7 +11,6 @@
 #define RADIAL_START_ANGLE 180
 #define RADIAL_END_ANGLE 0
 #define RADIAL_SIZE 230
-#define ANIM_SPEED 250
 
 static void event_cb(lv_event_t * e)
 {
