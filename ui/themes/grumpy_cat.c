@@ -47,7 +47,7 @@ static void event_cb(lv_event_t * e)
     }
 }
 
-lv_obj_t * add_grumpy_cat_gauge( int32_t x, int32_t y, lv_obj_t * parent, PID_DATA * pid)
+lv_obj_t * add_grumpy_cat_gauge( int32_t x, int32_t y, int32_t w, int32_t h, lv_obj_t * parent, PID_DATA * pid)
 {
 	lv_obj_t * needle;
     needle = lv_image_create(parent);
