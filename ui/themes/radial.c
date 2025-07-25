@@ -88,20 +88,6 @@ lv_obj_t * add_radial_gauge( int32_t x, int32_t y, int32_t w, int32_t h, lv_obj_
     lv_span_set_text(span_unit, pid->unit_label);
     lv_spangroup_refresh(span_group);
 
-    /*
-    lv_obj_t * value = lv_label_create(needle);
-    lv_obj_set_width(value, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_height(value, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(value, 0);
-    lv_obj_set_y(value, -50);
-    lv_obj_set_align(value, LV_ALIGN_CENTER);
-    lv_label_set_text_fmt(value, float_with_units[pid->precision], pid->pid_value, pid->unit_label);
-    lv_obj_remove_flag(value, LV_OBJ_FLAG_PRESS_LOCK | LV_OBJ_FLAG_CLICK_FOCUSABLE | LV_OBJ_FLAG_GESTURE_BUBBLE |
-                       LV_OBJ_FLAG_SNAPPABLE | LV_OBJ_FLAG_SCROLLABLE | LV_OBJ_FLAG_SCROLL_ELASTIC | LV_OBJ_FLAG_SCROLL_MOMENTUM |
-                       LV_OBJ_FLAG_SCROLL_CHAIN);     /// Flags
-    lv_obj_set_style_text_font(value, &lv_font_montserrat_30, LV_PART_MAIN | LV_STATE_DEFAULT);
-    */
-
     lv_obj_t * minmax = lv_label_create(needle);
     lv_obj_set_width(minmax, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(minmax, LV_SIZE_CONTENT);    /// 1
