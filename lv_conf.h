@@ -1007,7 +1007,11 @@
 #define LV_USE_SNAPSHOT 0
 
 /** 1: Enable system monitor component */
+#ifdef DEBUG
 #define LV_USE_SYSMON   1
+#else
+#define LV_USE_SYSMON   0
+#endif
 #if LV_USE_SYSMON
     /** Get the idle percentage. E.g. uint32_t my_get_idle(void); */
     #define LV_SYSMON_GET_IDLE lv_os_get_idle_percent
