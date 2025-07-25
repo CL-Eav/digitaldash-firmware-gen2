@@ -15,10 +15,11 @@
 #define BAR_LABEL_Y 30
 #define BAR_FONT &lv_font_montserrat_22
 #elif UI_HOR_RES == 1024
-#define BAR_WIDTH 680
-#define BAR_HEIGHT 64
-#define BAR_LABEL_Y 40
-#define BAR_FONT &lv_font_montserrat_24
+#define BAR_PADDING 40
+#define BAR_Y_OFFSET 10
+#define BAR_HEIGHT 50
+#define BAR_FONT &lv_font_montserrat_38
+#define BAR_LABEL_Y BAR_Y_OFFSET + BAR_HEIGHT + 5
 #endif
 
 static void event_cb(lv_event_t * e)
@@ -31,7 +32,11 @@ static void event_cb(lv_event_t * e)
     lv_obj_t * min = lv_obj_get_child(gauge, 3);
     lv_obj_t * max = lv_obj_get_child(gauge, 4);
 
+    lv_color_t needle_color = get_needle_color_from_value(data->pid_value, data->lower_limit, data->upper_limit);
+
     lv_bar_set_value(needle, scale_float(data->pid_value, data->precision), LV_ANIM_OFF);
+
+    lv_obj_set_style_bg_color(needle, needle_color, LV_PART_INDICATOR);
 
     // Update the numbers
     switch( data->precision )
@@ -71,20 +76,19 @@ lv_obj_t * add_linear_gauge( int32_t x, int32_t y, int32_t w, int32_t h, lv_obj_
     lv_obj_add_event_cb(gauge, event_cb, LV_EVENT_REFRESH, pid);
 
     lv_obj_t * pid_label = lv_label_create(gauge);
-    lv_obj_set_width(pid_label, 200);
+    lv_obj_set_width(pid_label, LV_SIZE_CONTENT);
     lv_obj_set_height(pid_label, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(pid_label, 110);
-    lv_obj_set_y(pid_label, BAR_LABEL_Y);
-    lv_obj_set_align(pid_label, LV_ALIGN_CENTER);
+    lv_obj_align(pid_label, LV_ALIGN_TOP_MID, 0, BAR_LABEL_Y);
     lv_label_set_text(pid_label, pid->label);
     lv_obj_set_style_text_font(pid_label, BAR_FONT, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_add_flag(pid_label, LV_OBJ_FLAG_HIDDEN);
 
     lv_obj_t * needle = lv_bar_create(gauge);
     lv_bar_set_range(needle, scale_float(pid->lower_limit, pid->precision), scale_float(pid->upper_limit, pid->precision));
-    lv_obj_set_width(needle, BAR_WIDTH);
+    lv_obj_set_width(needle, w - BAR_PADDING);
     lv_obj_set_height(needle, BAR_HEIGHT);
     lv_obj_set_x(needle, 0);
-    lv_obj_set_y(needle, 10);
+    lv_obj_set_y(needle, BAR_Y_OFFSET);
     lv_obj_set_align(needle, LV_ALIGN_TOP_MID);
     lv_obj_set_style_radius(needle, 5, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_outline_color(needle, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -96,37 +100,28 @@ lv_obj_t * add_linear_gauge( int32_t x, int32_t y, int32_t w, int32_t h, lv_obj_
     if(lv_obj_get_style_pad_top(needle, LV_PART_MAIN) > 0) lv_obj_set_style_pad_right(needle, lv_obj_get_style_pad_right(needle, LV_PART_MAIN) + 1, LV_PART_MAIN);
 
     lv_obj_t * value = lv_label_create(gauge);
-    lv_obj_set_width(value, 200);
+    lv_obj_set_width(value, LV_SIZE_CONTENT);
     lv_obj_set_height(value, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(value, -110);
-    lv_obj_set_y(value, BAR_LABEL_Y);
-    lv_obj_set_align(value, LV_ALIGN_CENTER);
+    lv_obj_align(value, LV_ALIGN_TOP_MID, 0, BAR_LABEL_Y);
     lv_label_set_text(value, "value");
-    lv_obj_set_style_text_align(value, LV_TEXT_ALIGN_RIGHT, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(value, BAR_FONT, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_t * min = lv_label_create(gauge);
-    lv_obj_set_width(min, 90);
+    lv_obj_set_width(min, LV_SIZE_CONTENT);
     lv_obj_set_height(min, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(min, -1 * (BAR_WIDTH/2));
-    lv_obj_set_y(min, BAR_LABEL_Y);
-    lv_obj_set_align(min, LV_ALIGN_CENTER);
+    lv_obj_align(min, LV_ALIGN_TOP_LEFT, BAR_PADDING/2, BAR_LABEL_Y);
     lv_label_set_text(min, "min");
     lv_obj_set_style_text_color(min, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(min, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_align(min, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(min, BAR_FONT, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_t * max = lv_label_create(gauge);
-    lv_obj_set_width(max, 90);
+    lv_obj_set_width(max, LV_SIZE_CONTENT);
     lv_obj_set_height(max, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(max, BAR_WIDTH/2);
-    lv_obj_set_y(max, BAR_LABEL_Y);
-    lv_obj_set_align(max, LV_ALIGN_CENTER);
+    lv_obj_align(max, LV_ALIGN_TOP_RIGHT, -1*BAR_PADDING/2, BAR_LABEL_Y);
     lv_label_set_text(max, "max");
     lv_obj_set_style_text_color(max, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(max, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_align(max, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(max, BAR_FONT, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     return gauge;
