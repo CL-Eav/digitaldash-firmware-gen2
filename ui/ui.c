@@ -446,21 +446,21 @@ void build_ui(void)
 			  int height = Y_HEIGHT;
 
 			  uint8_t num_gauges = get_view_num_gauges(view);
-			  width = (UI_HOR_RES - X_PADDING)/num_gauges;
+			  width = (UI_HOR_RES - X_PADDING - (GAUGE_PADDING*num_gauges))/num_gauges;
 			  switch( num_gauges )
 			  {
 			  	  case 1:
 			  		  x_pos[0] = 0 + X_OFFSET;
 			  		  break;
 			  	  case 2:
-					  x_pos[0] = -200 + X_OFFSET;
-					  x_pos[1] = 200 + X_OFFSET;
+					  x_pos[0] = (-1*width) + X_OFFSET - GAUGE_PADDING;
+					  x_pos[1] = width + X_OFFSET + GAUGE_PADDING;
 					  break;
 			  	  case 3:
 			  	  default:
-					  x_pos[0] = -300 + X_OFFSET;
+					  x_pos[0] = (-1*width) + X_OFFSET - GAUGE_PADDING;
 					  x_pos[1] = 0 + X_OFFSET;
-					  x_pos[2] = 300 + X_OFFSET;
+					  x_pos[2] = width + X_OFFSET + GAUGE_PADDING;
 					  break;
 
 			  }
