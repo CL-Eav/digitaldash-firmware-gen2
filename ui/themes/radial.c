@@ -39,8 +39,8 @@ static void event_cb(lv_event_t * e)
     lv_spangroup_refresh(span_group);
 
     // Update min/max label
-    if( minmax != NULL )
-    	lv_label_set_text_fmt(minmax, two_float_with_slash[data->precision], data->pid_min, data->pid_max);
+    //if( minmax != NULL )
+    	//lv_label_set_text_fmt(minmax, two_float_with_slash[data->precision], data->pid_min, data->pid_max);
 }
 
 lv_obj_t * add_radial_gauge( int32_t x, int32_t y, int32_t w, int32_t h, lv_obj_t * parent, PID_DATA * pid)
@@ -99,7 +99,7 @@ lv_obj_t * add_radial_gauge( int32_t x, int32_t y, int32_t w, int32_t h, lv_obj_
     lv_span_set_text(span_val, value_buf);
     lv_span_set_text(span_unit, pid->unit_label);
     lv_spangroup_refresh(span_group);
-
+    /*
     lv_obj_t * minmax = lv_label_create(needle);
     lv_obj_set_width(minmax, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(minmax, LV_SIZE_CONTENT);    /// 1
@@ -108,6 +108,7 @@ lv_obj_t * add_radial_gauge( int32_t x, int32_t y, int32_t w, int32_t h, lv_obj_
     lv_obj_set_align(minmax, LV_ALIGN_CENTER);
     lv_label_set_text(minmax, "min/max");
     lv_obj_set_style_text_font(minmax, &lv_font_montserrat_24, LV_PART_MAIN | LV_STATE_DEFAULT);
+    */
 
     lv_obj_t * label = lv_label_create(needle);
     lv_obj_set_width(label, LV_SIZE_CONTENT);   /// 1
