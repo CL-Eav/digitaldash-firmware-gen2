@@ -116,12 +116,18 @@ lv_obj_t * add_linear_gauge( int32_t x, int32_t y, int32_t w, int32_t h, lv_obj_
     lv_style_set_text_font(lv_span_get_style(span_unit), &lv_font_montserrat_24);
     lv_style_set_text_color(lv_span_get_style(span_unit), lv_color_hex(0xBBBBBB));
 
+    lv_span_t * span_pid = lv_spangroup_new_span(span_group);
+    lv_style_set_text_font(lv_span_get_style(span_pid), &lv_font_montserrat_24);
+    lv_style_set_text_color(lv_span_get_style(span_pid), lv_color_white());
+
     // Split value and unit (assuming value is number and unit is already stored)
     char buf[24];
     snprintf(buf, sizeof(buf), float_only[pid->precision], pid->pid_value);
     lv_span_set_text(span_val, buf);
     snprintf(buf, sizeof(buf), " %s", pid->unit_label);
     lv_span_set_text(span_unit, buf);
+    snprintf(buf, sizeof(buf), " %s", pid->label);
+    lv_span_set_text(span_pid, buf);
     lv_spangroup_refresh(span_group);
 
     if( w >= 350 )
