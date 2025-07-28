@@ -14,9 +14,9 @@
 #include "ke_config.h"
 
 #define X_OFFSET 21 // Screen is not perfectly centered, shift by X to center in housing
-#define GAUGE_PADDING 20
+#define GAUGE_PADDING 5
 #define Y_HEIGHT 118
-#define X_PADDING 224
+#define X_PADDING 124
 #define ANIM_SPEED 50
 
 extern const char *float_with_units[3];

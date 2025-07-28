@@ -15,7 +15,7 @@
 #define BAR_LABEL_Y 30
 #define BAR_FONT &lv_font_montserrat_22
 #elif UI_HOR_RES == 1024
-#define BAR_PADDING 10
+#define BAR_PADDING 20
 #define BAR_Y_OFFSET 10
 #define BAR_HEIGHT 50
 #define BAR_FONT &lv_font_montserrat_38
@@ -75,6 +75,11 @@ lv_obj_t * add_linear_gauge( int32_t x, int32_t y, int32_t w, int32_t h, lv_obj_
     lv_obj_remove_flag(gauge, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_obj_set_user_data(gauge, pid);
     lv_obj_add_event_cb(gauge, event_cb, LV_EVENT_REFRESH, pid);
+	#if UI_CONTAINER_DEBUG
+    lv_obj_set_style_border_width(gauge, 2, 0);                    // Thickness of the outline
+    lv_obj_set_style_border_color(gauge, lv_color_white(), 0);    // White outline
+    lv_obj_set_style_border_opa(gauge, LV_OPA_COVER, 0);          // Fully opaque
+	#endif
 
     lv_obj_t * pid_label = lv_label_create(gauge);
     lv_obj_set_width(pid_label, LV_SIZE_CONTENT);

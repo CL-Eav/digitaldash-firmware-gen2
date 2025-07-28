@@ -13,7 +13,7 @@
 #define FIRMWARE_VERSION_MINOR  0
 #define FIRMWARE_VERSION_HOTFIX 8
 
-#define SPOOF_DATA 0
+#define SPOOF_DATA 1
 #define ENABLE_WHEN_ENGINE_ON 0
 #define SAFE_SHUTDOWN 0 // This is only needed for the Pi
 #define LCD_ALWAYS_ON 1
@@ -109,6 +109,8 @@ typedef enum _ecu_comm {
 	#define ACT_HOR_RES    1024 // Screen horizontal resolution
 	#define ACT_VER_RES    600  // Screen vertical resolution
 	#define DISP_PARTIAL 0 // Enable/disable partial rendering
+
+	#define UI_CONTAINER_DEBUG 0 // Add outlines around UI elements for spacing and theme creation
 #endif
 
 #endif /*End of "Content enable"*/
