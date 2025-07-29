@@ -15,8 +15,8 @@
 #define BAR_LABEL_Y 30
 #define BAR_FONT &lv_font_montserrat_22
 #elif UI_HOR_RES == 1024
-#define BAR_PADDING 20
-#define BAR_Y_OFFSET 10
+#define BAR_PADDING 100
+#define BAR_Y_OFFSET 20
 #define BAR_HEIGHT 50
 #define BAR_FONT &lv_font_montserrat_38
 #define BAR_LABEL_Y BAR_Y_OFFSET + BAR_HEIGHT + 5
