@@ -611,8 +611,9 @@ void ui_service(void)
 	// Update gauges on current view
 	for( uint8_t i = 0; i < get_view_num_gauges(active_view_idx); i++)
 	{
+		if( ui_gauge_pid[active_view_idx][i] == NULL ) { }
 		// Check if new pid data has been received.
-		if( timestamp[active_view_idx][i] != ui_gauge_pid[active_view_idx][i]->timestamp )
+		else if( timestamp[active_view_idx][i] != ui_gauge_pid[active_view_idx][i]->timestamp )
 		{
 			// Log the timestamp
 			timestamp[active_view_idx][i] = ui_gauge_pid[active_view_idx][i]->timestamp;
