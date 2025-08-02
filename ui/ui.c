@@ -179,7 +179,7 @@ lv_obj_t * splash_screen;
 lv_obj_t * ui_view[MAX_VIEWS];
 uint8_t active_view_idx = 0;
 uint32_t timestamp[MAX_VIEWS][MAX_GAUGES_PER_VIEW] = {0};
-float prev_pid_value[MAX_VIEWS][MAX_GAUGES_PER_VIEW] = {0};
+float prev_pid_value[MAX_VIEWS][MAX_GAUGES_PER_VIEW] = {5698.561};
 
 /* Collection of gauges and the associated pid */
 lv_obj_t * ui_gauge[MAX_VIEWS][MAX_GAUGES_PER_VIEW] = {0};
