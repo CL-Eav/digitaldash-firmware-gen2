@@ -404,7 +404,7 @@ static void LCD_Brightness( uint8_t brightness )
 
 void erase_background(uint32_t start_address)
 {
-	for (uint32_t offset = 0; offset < ERASE_TOTAL_BYTES; offset += ERASE_BLOCK_BYTES)
+	for (uint32_t offset = 0; offset < BACKGROUND_IMAGE_SIZE; offset += ERASE_BLOCK_BYTES)
 	{
 		uint32_t block_addr = start_address + offset;
 		int32_t result = BSP_HSPI_NOR_Erase_Block(0, block_addr, ERASE_BLOCK_SIZE);

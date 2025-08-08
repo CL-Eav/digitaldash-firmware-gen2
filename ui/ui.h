@@ -19,6 +19,22 @@
 #define X_PADDING 124
 #define ANIM_SPEED 50
 
+#define BACKGROUND_IMAGE_COUNT      (15U)
+#define BACKGROUND_BLOCK_SIZE       (0x10000U) // 64KB
+#define BACKGROUND_PIXEL_WIDTH      UI_HOR_RES
+#define BACKGROUND_PIXEL_HEIGHT     UI_VER_RES
+#define BACKGROUND_BYTES_PER_PIXEL  UI_BYTES_PER_PIXEL       // e.g. ARGB8888 = 4 bytes, RGB565 = 2 bytes
+#define BACKGROUND_BASE_ADDRESS    (0xA0000000U)
+
+// Macro to perform integer ceiling division
+#define CEIL_DIV(x, y)              (((x) + (y) - 1) / (y))
+
+// Raw image size in bytes
+#define BACKGROUND_RAW_SIZE         (BACKGROUND_PIXEL_WIDTH * BACKGROUND_PIXEL_HEIGHT * BACKGROUND_BYTES_PER_PIXEL)
+
+// Aligned image size (to next 64KB boundary)
+#define BACKGROUND_IMAGE_SIZE       (CEIL_DIV(BACKGROUND_RAW_SIZE, BACKGROUND_BLOCK_SIZE) * BACKGROUND_BLOCK_SIZE)
+
 extern const char *float_with_units[3];
 extern const char *float_only[3];
 extern const char *two_float_with_slash[3];
