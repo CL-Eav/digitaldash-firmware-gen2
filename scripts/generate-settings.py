@@ -38,7 +38,6 @@ print("max_dynamics: " + str(max_dynamics))
 # Create the c file
 config_c = open("../lib/lib_digitaldash_config/src/ke_config.c", "w")
 config_h = open("../lib/lib_digitaldash_config/inc/ke_config.h", "w")
-json_ex = open("../lib/lib_digitaldash_config/src/json_ex.c", "w")
 
 config_c.write( code_header + "\n\n" )
 config_h.write( code_header + "\n\n" )
@@ -150,17 +149,6 @@ def write_array_string_def(file, prefix, cmd, depth):
             file.write(f'    "{option}"{comma}\n')
 
         file.write("};\n\n")
-
-def write_json_example(file, prefix, cmd, depth):
-    if cmd["type"] == "list":
-        array_name = f'{cmd["dataType"].lower()}'
-        file.write(f"{array_name}:[")
-
-        for i, option in enumerate(cmd["options"]):
-            comma = "," if i < len(cmd["options"]) - 1 else ""
-            file.write(f'"{option}"{comma}')
-
-        file.write("],\n")
 
 def write_verify_declare( file, prefix, cmd, depth ):
     if( cmd["type"] == "string" ):
@@ -300,9 +288,10 @@ def write_set_source(file, prefix, cmd, depth):
     file.write("        // Reload the current setting saved in EEPROM\n")
     if( cmd["type"] == "string" ):
       file.write("        load_" + prefix + "_" + cmd["cmd"].lower() + "(" + index + ", " + output + ");\n\n")
+      file.write("        if (strncmp(settings_" + prefix + "_" + cmd["cmd"].lower() + var + ", " + prefix.lower() + "_" + cmd["cmd"].lower() + ", " + cmd["EEBytes"].upper() + ") != 0)\n        {\n")
     else:
-       file.write("        load_" + prefix + "_" + cmd["cmd"].lower() + "(" + index + ", &" + output + ");\n\n")
-    file.write("        if (settings_" + prefix + "_" + cmd["cmd"].lower() + var + " != " + prefix.lower() + "_" + cmd["cmd"].lower() + ")\n        {\n")
+      file.write("        load_" + prefix + "_" + cmd["cmd"].lower() + "(" + index + ", &" + output + ");\n\n")
+      file.write("        if (settings_" + prefix + "_" + cmd["cmd"].lower() + var + " != " + prefix.lower() + "_" + cmd["cmd"].lower() + ")\n        {\n")
     if( cmd["type"] == "string" ):
       file.write("            save_" + prefix + "_" + cmd["cmd"].lower() + "(" + index + ", " + prefix.lower() + "_" + cmd["cmd"].lower() + ");\n")
     else:
@@ -597,7 +586,6 @@ def process_struct( prefix, cmd, depth ):
    write_custom_struct( config_h, prefix, cmd, depth )
    write_array_string_def_extern( config_h, prefix, cmd, depth )
    write_array_string_def( config_c, prefix, cmd, depth )
-   #write_json_example( json_ex, prefix, cmd, depth )
    write_verify_declare( config_h, prefix, cmd, depth )
    write_load_source( config_c, prefix, cmd, depth )
    write_save_source( config_c, prefix, cmd, depth )
