@@ -1,17 +1,20 @@
 {
     "config":
     {
+        "single": 1,
         "max_views": 3,
         "max_gauges_per_view": 3,
         "max_alerts": 5,
         "max_dynamics": 3,
+        "max_generals": 1,
         "alert_message_len": 64,
         "top_level_struc": "digitaldash",
         "top_level_name": "config",
         "struct_list": [
             { "view": ["gauge"] },
             { "alert": [] },
-            { "dynamic": [] }
+            { "dynamic": [] },
+            { "general": [] }
         ]
     },
     "view": [
@@ -340,6 +343,21 @@
             "jsonOverride": "string",
             "getFunc": "get_unit_desc",
             "setFunc": "get_unit_by_string"
+        }
+    ],
+    "general" : [
+        {
+            "index" : true,
+            "count" : "max_generals",
+            "cmd": "EE_Version",
+            "name": "EEPROM Version",
+            "desc": "EEPROM Version",
+            "type": "number",
+            "dataType": "uint8_t",
+            "default": 255,
+            "min": 0,
+            "max": 255,
+            "EEBytes": 1
         }
     ]
 }

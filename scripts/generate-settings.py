@@ -35,6 +35,9 @@ print("Alert_Message_Len: " + str(alert_message_len))
 max_dynamics = config["config"]["max_dynamics"]
 print("max_dynamics: " + str(max_dynamics))
 
+max_generals = config["config"]["max_generals"]
+print("max_generals: " + str(max_generals))
+
 # Create the c file
 config_c = open("../lib/lib_digitaldash_config/src/ke_config.c", "w")
 config_h = open("../lib/lib_digitaldash_config/inc/ke_config.h", "w")
@@ -64,7 +67,8 @@ config_h.write(f"#define MAX_GAUGES_PER_VIEW {max_gauges_per_view}\n")
 config_h.write(f"#define MAX_ALERTS {max_alerts}\n")
 config_h.write(f"#define ALERT_MESSAGE_LEN {alert_message_len}\n")
 config_h.write(f"#define MAX_VIEWS {max_views}\n")
-config_h.write(f"#define MAX_DYNAMICS {max_dynamics}")
+config_h.write(f"#define MAX_DYNAMICS {max_dynamics}\n")
+config_h.write(f"#define MAX_GENERALS {max_generals}")
 
 config_c.write( "#include \"ke_config.h\"\n\n" )
 
