@@ -8,6 +8,7 @@
 #ifndef UI_H_
 #define UI_H_
 
+#include <stdbool.h>
 #include "lvgl.h"
 #include "lib_pid.h"
 #include "lvgl_port_display.h"
@@ -53,8 +54,11 @@ lv_obj_t * add_digital_gauge( int32_t x, int32_t y, int32_t w, int32_t h, lv_obj
 
 lv_obj_t * add_gauge( GAUGE_THEME theme, int32_t x, int32_t y, int32_t w, int32_t h, lv_obj_t * parent, PID_DATA * pid);
 int32_t scale_float( float val, uint8_t precision );
+int32_t round_to_precision( float val, uint8_t precision );
 void label_set_text_fmt_with_check(lv_obj_t * obj, const char * fmt, ...);
 lv_color_t get_needle_color_from_value(float value, float min, float max);
+bool pid_value_changed(GAUGE_DATA *data);
+bool pid_value_label_changed(GAUGE_DATA *data);
 
 lv_obj_t * add_alert( lv_obj_t * parent );
 bool get_alert(void);

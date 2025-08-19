@@ -7,16 +7,26 @@
 
 
 #include "ui.h"
+#include <math.h>
 
 const char *float_with_units[] = {"%.0f%s", "%.1f%s", "%.2f%s"};
 const char *float_only[] = {"%.0f", "%.1f", "%.2f"};
 const char *two_float_with_slash[] = {"%.0f/%.0f", "%.1f/%.1f", "%.2f/%.2f"};
 
-static const float pow10_table[] = {1.0f, 10.0f, 100.0f};
-
 int32_t scale_float( float val, uint8_t precision )
 {
-	return (int32_t)(val * pow10_table[precision]);
+	return (int32_t)(val * powf(10.0f, precision));
+}
+
+int32_t round_to_precision(float val, uint8_t precision)
+{
+    if (precision > 3) precision = 3;  // optional clamp
+
+    int32_t scale = 1;
+    for (uint8_t i = 0; i < precision; i++) scale *= 10;
+
+    // shift, round, convert to int
+    return (int32_t)(val * scale + (val >= 0 ? 0.5f : -0.5f));
 }
 
 void label_set_text_fmt_with_check(lv_obj_t * obj, const char * fmt, ...)
@@ -35,7 +45,41 @@ void label_set_text_fmt_with_check(lv_obj_t * obj, const char * fmt, ...)
 		lv_label_set_text(obj, new_text);
 }
 
-lv_obj_t * add_gauge( GAUGE_THEME theme, int32_t x, int32_t y, int32_t w, int32_t h, lv_obj_t * parent, PID_DATA * pid)
+/**
+ * @brief  Check if a gauge's value has changed since the last update.
+ *
+ * This function compares the current stored value in the gauge data
+ * with the latest PID value. If the value has changed, it updates
+ * the stored value and returns true; otherwise, it returns false.
+ *
+ * @param  data  Pointer to the GAUGE_DATA structure containing the
+ *               current value and associated PID data.
+ *
+ * @retval true   The gauge value has changed and was updated.
+ * @retval false  The gauge value has not changed.
+ */
+bool pid_value_changed(GAUGE_DATA *data)
+{
+	if( data->pid_value != data->pid->pid_value )
+	{
+		data->pid_value = data->pid->pid_value;
+		return true;
+	} else {
+		return false;
+	}
+}
+
+bool pid_value_label_changed(GAUGE_DATA *data)
+{
+	if( data->value_label != round_to_precision(data->pid->pid_value, data->pid->precision) )
+	{
+		data->value_label = round_to_precision(data->pid->pid_value, data->pid->precision);
+		return true;
+	} else {
+		return false;
+	}
+}
+
 {
 	switch(theme)
 	{
