@@ -16,6 +16,15 @@
 #define CONFIG_EEPROM_7BIT_ADDR 0xA0
 #define EEPROM_TIMEOUT 10
 
+// Wait until EEPROM ACKs (ready after internal write cycle)
+static void eeprom_wait_ready(I2C_HandleTypeDef *eeprom_handle)
+{
+    while (HAL_I2C_IsDeviceReady(eeprom_handle, CONFIG_EEPROM_7BIT_ADDR, 1, EEPROM_WRITE_DELAY_MS) != HAL_OK)
+    {
+        // keep polling
+    }
+}
+
 // Function to read data from EEPROM
 uint8_t eeprom_24cw_read(I2C_HandleTypeDef *eeprom_handle, uint16_t bAdd)
 {
@@ -48,7 +57,9 @@ void eeprom_24cw_write(I2C_HandleTypeDef *eeprom_handle, uint16_t bAdd, uint8_t 
 	// Perform I2C write operation
 	HAL_I2C_Mem_Write(eeprom_handle, CONFIG_EEPROM_7BIT_ADDR, bAdd, EEPROM_ADDRESS_SIZE, wbuf, sizeof(wbuf), EEPROM_TIMEOUT);
 
-	HAL_Delay(EEPROM_WRITE_DELAY_MS);
+	eeprom_wait_ready(eeprom_handle);
+
+	//HAL_Delay(EEPROM_WRITE_DELAY_MS);
 
 	/*
     // Wait until EEPROM completes the internal write cycle
