@@ -565,10 +565,13 @@ def write_json_get_entry(cmd, struct, config_c, indentation, depth):
     # Determine cJSON field based on type
     if type_ in ("string", "list"):
         cjson_field = "valuestring"
+        cjson_check = "cJSON_IsString"
     elif type_ == "number" and datatype == "float":
         cjson_field = "valuedouble"
+        cjson_check = "cJSON_IsNumber"
     else:
         cjson_field = "valueint"
+        cjson_check = "cJSON_IsNumber"
 
     # Determine conversion function
     if type_ == "list":
@@ -579,9 +582,11 @@ def write_json_get_entry(cmd, struct, config_c, indentation, depth):
         convert_func = ""
 
     # Compose function call
-    value_expr = f'{convert_func}(cJSON_GetObjectItem({struct}, "{cmd["cmd"]}")->{cjson_field})' if convert_func else f'cJSON_GetObjectItem({struct}, "{cmd["cmd"]}")->{cjson_field}'
+    value_expr = f'{convert_func}({struct}_{cmd_name}->{cjson_field})' if convert_func else f'{struct}_{cmd_name}->{cjson_field}'
     
-    config_c.write(f'{indent}set_{struct}_{cmd_name}{index_args}, {value_expr}, true);\n')
+    config_c.write(f'\n{indent}cJSON *{struct}_{cmd_name} = cJSON_GetObjectItem({struct}, "{cmd["cmd"]}");\n')
+    config_c.write(f'{indent}if({cjson_check}({struct}_{cmd_name}))\n')
+    config_c.write(f'{indent}    set_{struct}_{cmd_name}{index_args}, {value_expr}, true);\n')
 
 
 def process_struct( prefix, cmd, depth ):
