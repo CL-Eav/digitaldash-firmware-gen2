@@ -87,8 +87,12 @@ bool pid_max_label_changed(GAUGE_DATA *data);
 
 lv_obj_t * add_alert( lv_obj_t * parent );
 bool get_alert(void);
-void set_alert(char *msg );
+void set_alert(char *msg);
 void clear_alert(void);
+lv_obj_t * add_system_message( lv_obj_t * parent );
+bool get_system_message(void);
+void set_system_message(char *msg);
+void clear_system_message(void);
 
 typedef enum {
 	ADDR_MEMORYMAPPED_DISABLED,

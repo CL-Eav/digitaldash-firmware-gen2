@@ -516,6 +516,7 @@ void build_ui(void)
 	  switch_screen(splash_screen, SCREEN_FADE_INIT_T);
 
 	  add_alert(ui_screen);
+	  add_system_message(ui_screen);
 	  show_build_info_overlay();
 
 	  splash_screen_t = ui_tick_cnt + SPLASH_SCREEN_T;
