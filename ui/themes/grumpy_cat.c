@@ -10,60 +10,64 @@
 
 LV_IMG_DECLARE(ui_img_grumpy_png);
 
-#define GRUMPY_START_POS 92
+#define GRUMPY_START_POS 80
 #define GRUMPY_END_POS 0
 #define CONTAINER_H_EXTEND 50
 #define Y_ADJUST CONTAINER_H_EXTEND/2
 
 static void event_cb(lv_event_t * e)
 {
-	// Get the PID data
-	GAUGE_DATA * data = (GAUGE_DATA *)lv_event_get_param(e);
+    // Get the PID data
+    GAUGE_DATA * data = (GAUGE_DATA *)lv_event_get_param(e);
 
-    if( pid_value_changed(data) )
+    if ( pid_value_changed(data) )
     {
         lv_obj_t * guage = lv_event_get_target(e);
         lv_obj_t * span_group = lv_obj_get_child(guage, 1);
         lv_span_t * span_val = lv_spangroup_get_child(span_group, 0);
 
-		// Calculate the needle angle
-		int32_t target_y;
-		if( data->pid->pid_value >= data->pid->upper_limit )
-			target_y = GRUMPY_END_POS;
-		else if ( data->pid->pid_value <= data->pid->lower_limit )
-			target_y = GRUMPY_START_POS;
-		else {
-			// Scale all values
-			float value = (float)scale_float(data->pid->pid_value, data->pid->precision);
-			float lower = (float)scale_float(data->pid->lower_limit, data->pid->precision);
-			float upper = (float)scale_float(data->pid->upper_limit, data->pid->precision);
+        // Calculate the needle angle
+        if ( data->pid->pid_value >= data->pid->upper_limit )
+            data->target_y = GRUMPY_END_POS;
+        else if ( data->pid->pid_value <= data->pid->lower_limit )
+            data->target_y = GRUMPY_START_POS;
+        else {
+            // Scale all values
+            float value = (float)scale_float(data->pid->pid_value, data->pid->precision);
+            float lower = (float)scale_float(data->pid->lower_limit, data->pid->precision);
+            float upper = (float)scale_float(data->pid->upper_limit, data->pid->precision);
 
-			// Normalize the value between 0.0 and 1.0
-			float normalized = (value - lower) / (upper - lower);
+            // Normalize the value between 0.0 and 1.0
+            float normalized = (value - lower) / (upper - lower);
 
-			// Map normalized range [0,1] → gauge position
-			target_y = GRUMPY_START_POS + (int32_t)(normalized * (GRUMPY_END_POS - GRUMPY_START_POS));
-		}
+            // Map normalized range [0,1] → gauge position
+            data->target_y = GRUMPY_START_POS +
+                             (int32_t)(normalized * (GRUMPY_END_POS - GRUMPY_START_POS));
+        }
 
-		// Smooth toward target_y (EMA filter)
-		if (data->smoothed_y == -10000) {
-			data->smoothed_y = target_y;  // snap to first value
-		} else {
-			// adjust divisor for smoothness: bigger = slower/smoother
-			data->smoothed_y += (target_y - data->smoothed_y) / 6;
-		}
+        if ( pid_value_label_changed(data) )
+        {
+            // Update value text
+            char value_buf[16];
+            snprintf(value_buf, sizeof(value_buf),
+                     float_only[data->pid->precision], data->pid->pid_value);
+            lv_span_set_text(span_val, value_buf);
+            lv_spangroup_refresh(span_group);
+        }
 
-		// Apply smoothed value
-		lv_obj_set_y(guage, data->smoothed_y);
+        // --- Restartable LVGL animation ---
+        // Cancel any previous needle animation
+        lv_anim_delete(guage, (lv_anim_exec_xcb_t)lv_obj_set_y);
 
-		if( pid_value_label_changed(data) )
-		{
-			// Update value text
-			char value_buf[16];
-			snprintf(value_buf, sizeof(value_buf), float_only[data->pid->precision], data->pid->pid_value);
-			lv_span_set_text(span_val, value_buf);
-			lv_spangroup_refresh(span_group);
-		}
+        // Create new animation from current pos to target
+        lv_anim_t a;
+        lv_anim_init(&a);
+        lv_anim_set_var(&a, guage);
+        lv_anim_set_values(&a, lv_obj_get_y(guage), data->target_y);
+        lv_anim_set_duration(&a, ANIM_SPEED+50); // duration in ms
+        lv_anim_set_exec_cb(&a, (lv_anim_exec_xcb_t)lv_obj_set_y);
+        lv_anim_set_path_cb(&a, lv_anim_path_ease_in_out); // easing
+        lv_anim_start(&a);
     }
 }
 
