@@ -20,12 +20,14 @@
 #define X_PADDING 124
 #define ANIM_SPEED 50
 
+#define OSPI_BASE_ADDRESS           0xA0000000u
+#define BACKGROUND_OFFSET           0x00400000u
 #define BACKGROUND_IMAGE_COUNT      (15U)
 #define BACKGROUND_BLOCK_SIZE       (0x10000U) // 64KB
 #define BACKGROUND_PIXEL_WIDTH      UI_HOR_RES
 #define BACKGROUND_PIXEL_HEIGHT     UI_VER_RES
 #define BACKGROUND_BYTES_PER_PIXEL  UI_BYTES_PER_PIXEL       // e.g. ARGB8888 = 4 bytes, RGB565 = 2 bytes
-#define BACKGROUND_BASE_ADDRESS    (0xA0000000U)
+#define BACKGROUND_BASE_ADDRESS    (OSPI_BASE_ADDRESS + BACKGROUND_OFFSET) // First 4MB is the binary
 
 // Macro to perform integer ceiling division
 #define CEIL_DIV(x, y)              (((x) + (y) - 1) / (y))
