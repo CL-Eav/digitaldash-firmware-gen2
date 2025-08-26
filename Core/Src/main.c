@@ -754,6 +754,8 @@ int main(void)
   settings_setReadHandler(eeprom_read);
   settings_setWriteHandler(eeprom_write);
 
+  __enable_irq();
+
   // Enable UART interrupt
   HAL_UART_Receive_DMA(ESP32_UART, rx_buffer, RX_BUFFER_SIZE);
   __HAL_UART_ENABLE_IT(ESP32_UART, UART_IT_IDLE);
