@@ -14,7 +14,7 @@ app_bin_file = sys.argv[1]
 with open(app_bin_file, "rb") as f:
     app_data = f.read()
 
-app_size = len(app_data) + 0x1000  # Account for header size
+app_size = len(app_data) + 0x2000  # Account for header size
 crc32 = zlib.crc32(app_data) & 0xFFFFFFFF
 sha256 = hashlib.sha256(app_data).digest()
 
@@ -34,7 +34,7 @@ boot_header_bin = struct.pack(
 )
 
 # Pad header to 128 bytes
-boot_header_bin = boot_header_bin.ljust(0x1000, b'\x00')
+boot_header_bin = boot_header_bin.ljust(0x2000, b'\x00')
 
 # Prepend header safely
 new_bin = boot_header_bin + app_data
