@@ -96,6 +96,9 @@ uint16_t can_filters[MAX_CAN_FILTERS] = {CAN_FILTER_UNUSED};
 #define ERASE_BLOCK_BYTES    65536
 #define ERASE_TOTAL_BYTES    UI_HOR_RES * UI_VER_RES * UI_BYTES_PER_PIXEL
 
+#define BOOT_COOKIE     0xB0073A3Fu
+#define BOOT_COOKIE_INV (~BOOT_COOKIE)
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -469,9 +472,9 @@ bool write_background( char *image_buffer, uint32_t image_size, uint8_t idx )
 static void esp32_reset( HOST_PWR_STATE state )
 {
 	if( state == HOST_PWR_ENABLED )
-		HAL_GPIO_WritePin(ESP32_RESET_N_GPIO_Port, ESP32_RESET_N_Pin, GPIO_PIN_SET);
-	else
 		HAL_GPIO_WritePin(ESP32_RESET_N_GPIO_Port, ESP32_RESET_N_Pin, GPIO_PIN_RESET);
+	else
+		HAL_GPIO_WritePin(ESP32_RESET_N_GPIO_Port, ESP32_RESET_N_Pin, GPIO_PIN_SET);
 }
 
 static int esp32_tx( uint8_t *data, uint32_t len )
@@ -701,6 +704,30 @@ void CAN_Init(void)
 	}
 }
 
+static inline bool boot_cookie_is_set(void)
+{
+    uint32_t a = HAL_RTCEx_BKUPRead(&hrtc, RTC_BKP_DR1);
+    uint32_t b = HAL_RTCEx_BKUPRead(&hrtc, RTC_BKP_DR2);
+    return (a == BOOT_COOKIE) && (b == BOOT_COOKIE_INV);
+}
+
+bool first_boot(void)
+{
+    return !boot_cookie_is_set();
+}
+
+void mark_boot_seen(void)
+{
+    HAL_PWR_EnableBkUpAccess();                 // allow backup-domain writes
+    HAL_RTCEx_BKUPWrite(&hrtc, RTC_BKP_DR1, BOOT_COOKIE);
+    HAL_RTCEx_BKUPWrite(&hrtc, RTC_BKP_DR2, BOOT_COOKIE_INV);
+}
+
+void reset_esp32(void)
+{
+
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -779,6 +806,15 @@ int main(void)
   //spoof_config();
 
   //set_general_ee_version(0, 255, true);
+
+  // If this is first power-on, reset the ESP32 to sync
+  if(first_boot()) {
+	  esp32_reset(HOST_PWR_DISABLED);
+	  HAL_Delay(25);
+	  esp32_reset(HOST_PWR_ENABLED);
+  }
+
+  mark_boot_seen();
 
   // Initialize the external flash
   flash_init();

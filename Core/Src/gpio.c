@@ -115,19 +115,12 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Alternate = GPIO_AF7_USART3;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : HSPI_NRST_Pin */
-  GPIO_InitStruct.Pin = HSPI_NRST_Pin;
+  /*Configure GPIO pins : HSPI_NRST_Pin ESP32_RESET_N_Pin */
+  GPIO_InitStruct.Pin = HSPI_NRST_Pin|ESP32_RESET_N_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(HSPI_NRST_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : ESP32_RESET_N_Pin */
-  GPIO_InitStruct.Pin = ESP32_RESET_N_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(ESP32_RESET_N_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pin : LCD_EN_Pin */
   GPIO_InitStruct.Pin = LCD_EN_Pin;
