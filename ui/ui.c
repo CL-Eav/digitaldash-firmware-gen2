@@ -618,20 +618,23 @@ void ui_service(void)
 	// Update gauges on current view
 	for( uint8_t i = 0; i < get_view_num_gauges(active_view_idx); i++)
 	{
-		// Check if new pid data has been received.
-		if( ui_gauge_data[active_view_idx][i].timestamp != ui_gauge_data[active_view_idx][i].pid->timestamp )
+		if( get_view_enable(active_view_idx) == VIEW_STATE_ENABLED )
 		{
-			// Log the timestamp
-			ui_gauge_data[active_view_idx][i].timestamp = ui_gauge_data[active_view_idx][i].pid->timestamp;
+			// Check if new pid data has been received.
+			if( ui_gauge_data[active_view_idx][i].timestamp != ui_gauge_data[active_view_idx][i].pid->timestamp )
+			{
+				// Log the timestamp
+				ui_gauge_data[active_view_idx][i].timestamp = ui_gauge_data[active_view_idx][i].pid->timestamp;
 
-			// Some values are interrupt driven, log the min/max incase they were missed in the main loop
-			log_minmax(ui_gauge_data[active_view_idx][i].pid);
+				// Some values are interrupt driven, log the min/max incase they were missed in the main loop
+				log_minmax(ui_gauge_data[active_view_idx][i].pid);
 
-			// Send an event to the gauge
-			lv_obj_send_event(ui_gauge[active_view_idx][i], LV_EVENT_REFRESH, &ui_gauge_data[active_view_idx][i]);
+				// Send an event to the gauge
+				lv_obj_send_event(ui_gauge[active_view_idx][i], LV_EVENT_REFRESH, &ui_gauge_data[active_view_idx][i]);
 
-			// Log the value
-			ui_gauge_data[active_view_idx][i].pid_value = ui_gauge_data[active_view_idx][i].pid->pid_value;
+				// Log the value
+				ui_gauge_data[active_view_idx][i].pid_value = ui_gauge_data[active_view_idx][i].pid->pid_value;
+			}
 		}
 	}
 }
