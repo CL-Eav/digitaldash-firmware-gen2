@@ -51,11 +51,6 @@ DEFINE_BACKGROUND_USER(7);
 DEFINE_BACKGROUND_USER(8);
 DEFINE_BACKGROUND_USER(9);
 DEFINE_BACKGROUND_USER(10);
-DEFINE_BACKGROUND_USER(11);
-DEFINE_BACKGROUND_USER(12);
-DEFINE_BACKGROUND_USER(13);
-DEFINE_BACKGROUND_USER(14);
-DEFINE_BACKGROUND_USER(15);
 
 /**
  * @brief Check if a memory block is completely erased (all bytes are 0xFF).
@@ -423,11 +418,6 @@ void build_ui(void)
 					case VIEW_BACKGROUND_USER8:  img = &ui_background_user8;  break;
 					case VIEW_BACKGROUND_USER9:  img = &ui_background_user9;  break;
 					case VIEW_BACKGROUND_USER10: img = &ui_background_user10; break;
-					case VIEW_BACKGROUND_USER11: img = &ui_background_user11; break;
-					case VIEW_BACKGROUND_USER12: img = &ui_background_user12; break;
-					case VIEW_BACKGROUND_USER13: img = &ui_background_user13; break;
-					case VIEW_BACKGROUND_USER14: img = &ui_background_user14; break;
-					case VIEW_BACKGROUND_USER15: img = &ui_background_user15; break;
 					default: is_image = 0; break; // Default to black
 			  }
 

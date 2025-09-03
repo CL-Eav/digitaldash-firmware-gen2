@@ -497,9 +497,9 @@ void UART_IdleCallback(UART_HandleTypeDef *huart)
     // Get how many bytes were received before idle
     uint16_t received = RX_BUFFER_SIZE - __HAL_DMA_GET_COUNTER(huart->hdmarx);
 
-    // Process the buffer
-    for( uint16_t i = 0; i < received; i++)
-    	DigitalDash_Add_UART_byte(rx_buffer[i]);
+	// Process the buffer
+	for( uint16_t i = 0; i < received; i++)
+		DigitalDash_Add_UART_byte(rx_buffer[i]);
 
     // Restart DMA for next transfer
     HAL_UART_Receive_DMA(huart, rx_buffer, RX_BUFFER_SIZE);
@@ -578,7 +578,7 @@ void spoof_config(void)
 	// View 1
 	set_view_enable(1, VIEW_STATE_ENABLED, true);
 	set_view_num_gauges(1, 1, true);
-	set_view_background(1, VIEW_BACKGROUND_USER15, true);
+	set_view_background(1, VIEW_BACKGROUND_USER10, true);
 	set_view_gauge_theme(1, 0, GAUGE_THEME_LINEAR, true);
 	set_view_gauge_pid(1, 0, CALC1_BOOST_VACUUM_UUID, true);
 	set_view_gauge_units(1, 0, PID_UNITS_PSI, true);
