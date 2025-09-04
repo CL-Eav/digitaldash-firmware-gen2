@@ -54,6 +54,7 @@ void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
 void UART_IdleCallback(UART_HandleTypeDef *huart);
+void activate_bootloader(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
