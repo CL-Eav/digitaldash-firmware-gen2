@@ -120,12 +120,12 @@ lv_obj_t * add_arc_gauge( int32_t x, int32_t y, int32_t w, int32_t h, lv_obj_t *
     lv_obj_t * span_group = lv_spangroup_create(needle);
     lv_obj_set_size(span_group, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
     lv_obj_set_align(span_group, LV_ALIGN_CENTER);
-    lv_obj_set_y(span_group, -65);
+    lv_obj_set_y(span_group, -70);
     lv_spangroup_set_align(span_group, LV_TEXT_ALIGN_CENTER);
 
     // Create spans
     lv_span_t * span_val = lv_spangroup_new_span(span_group);
-    lv_style_set_text_font(lv_span_get_style(span_val), &lv_font_montserrat_38);
+    lv_style_set_text_font(lv_span_get_style(span_val), &lv_font_montserrat_34);
     lv_style_set_text_color(lv_span_get_style(span_val), lv_color_white());
 
     lv_span_t * span_unit = lv_spangroup_new_span(span_group);
@@ -143,7 +143,7 @@ lv_obj_t * add_arc_gauge( int32_t x, int32_t y, int32_t w, int32_t h, lv_obj_t *
     lv_obj_set_width(minmax, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(minmax, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(minmax, 0);
-    lv_obj_set_y(minmax, -10);
+    lv_obj_set_y(minmax, -15);
     lv_obj_set_align(minmax, LV_ALIGN_CENTER);
     lv_label_set_text(minmax, "min/max");
     lv_obj_set_style_text_font(minmax, &lv_font_montserrat_24, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -152,7 +152,7 @@ lv_obj_t * add_arc_gauge( int32_t x, int32_t y, int32_t w, int32_t h, lv_obj_t *
     lv_obj_set_width(label, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(label, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(label, 0);
-    lv_obj_set_y(label, -35);
+    lv_obj_set_y(label, -40);
     lv_obj_set_align(label, LV_ALIGN_CENTER);
     lv_label_set_text(label, data->pid->label);
     lv_obj_set_style_text_font(label, &lv_font_montserrat_24, LV_PART_MAIN | LV_STATE_DEFAULT);
