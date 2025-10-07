@@ -1,0 +1,27 @@
+[submodule "lvgl"]
+	path = lvgl
+	url = https://github.com/lvgl/lvgl.git
+[submodule "lib/lib_pid"]
+	path = lib/lib_pid
+	url = https://github.com/KaiserEngineering/lib_pid.git
+[submodule "lib/lib_can_bus_sniffer"]
+	path = lib/lib_can_bus_sniffer
+	url = https://github.com/KaiserEngineering/lib_can_bus_sniffer.git
+[submodule "lib/lib_obdii"]
+	path = lib/lib_obdii
+	url = https://github.com/KaiserEngineering/lib_obdii.git
+[submodule "lib/lib_unit_conversion"]
+	path = lib/lib_unit_conversion
+	url = https://github.com/KaiserEngineering/lib_unit_conversion.git
+[submodule "lib/lib_vehicle_data"]
+	path = lib/lib_vehicle_data
+	url = https://github.com/KaiserEngineering/lib_vehicle_data.git
+[submodule "lib/lib_digital_dash"]
+	path = lib/lib_digital_dash
+	url = https://github.com/KaiserEngineering/lib_digital_dash.git
+[submodule "lib/lib_digitaldash_config"]
+	path = lib/lib_digitaldash_config
+	url = https://github.com/KaiserEngineering/lib_digitaldash_config.git
+[submodule "lib/lib_ke_protocol"]
+	path = lib/lib_ke_protocol
+	url = https://github.com/KaiserEngineering/lib_ke_protocol.git
