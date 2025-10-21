@@ -485,8 +485,11 @@ void build_ui(void)
 
 	  for(uint8_t idx = 0; idx < MAX_DYNAMICS; idx++)
 	  {
-		  if( get_dynamic_enable(idx) == DYNAMIC_STATE_ENABLED ) {
-
+		  if( get_dynamic_priority(idx) == DYNAMIC_PRIORITY_LOW )
+		  {
+			  // DYNAMIC_PRIORITY_LOW is default view and shouldn't have a PID
+		  }
+		  else if( get_dynamic_enable(idx) == DYNAMIC_STATE_ENABLED ) {
 			  PID_DATA pid_req;
 
 			  // Get PID universally unique ID, PID, and mode
