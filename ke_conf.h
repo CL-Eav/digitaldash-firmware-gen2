@@ -32,6 +32,13 @@
 
 #define VEHICLE FORD_FOCUS_STRS_2013_2018
 
+#define DD_DEV_SYSTEM        0
+#define DD_DEV_COPROCESSOR   1
+#define DD_DEV_VEHICLE_DATA  2
+#define DD_DEV_UI_VIEW       3
+#define DD_DEV_UI_DYNAMIC    4
+#define DD_DEV_UI_ALERT      5
+
 
 /********************************************************************
 * Hardware configuration                                            *

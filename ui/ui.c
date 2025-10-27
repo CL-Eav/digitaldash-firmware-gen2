@@ -312,29 +312,25 @@ static void switch_view(uint8_t idx)
         if (ui_view[i] == NULL) continue;
 
         if (i == idx) {
+        	// Iterate through each gauge in the view
+            const uint8_t num_gauges = get_view_num_gauges(idx);
+        	for(uint8_t gauge = 0; gauge < num_gauges; gauge++)
+        	{
+        		// Resume the data now that the view is active
+        		if(ui_gauge_data[idx][gauge].pid)
+        			DigitalDash_Resume_PID_In_Stream(ui_gauge_data[idx][gauge].pid, DD_DEV_UI_VIEW);
+        	}
             lv_obj_remove_flag(ui_view[i], LV_OBJ_FLAG_HIDDEN);
             continue;
-        }
-
-        const bool was_visible = !lv_obj_has_flag(ui_view[i], LV_OBJ_FLAG_HIDDEN);
-        if (was_visible) {
+        } else {
             const uint8_t num_gauges = get_view_num_gauges(i);
             for (uint8_t gauge = 0; gauge < num_gauges; gauge++) {
             	if(ui_gauge_data[i][gauge].pid)
-            		DigitalDash_Pause_PID_In_Stream(ui_gauge_data[i][gauge].pid);
+            		DigitalDash_Pause_PID_In_Stream(ui_gauge_data[i][gauge].pid, DD_DEV_UI_VIEW);
             }
+        	lv_obj_add_flag(ui_view[i], LV_OBJ_FLAG_HIDDEN);
         }
-        lv_obj_add_flag(ui_view[i], LV_OBJ_FLAG_HIDDEN);
     }
-
-	// Iterate through each gauge in the view
-    const uint8_t num_gauges = get_view_num_gauges(idx);
-	for(uint8_t gauge = 0; gauge < num_gauges; gauge++)
-	{
-		// Resume the data now that the view is active
-		if(ui_gauge_data[idx][gauge].pid)
-			DigitalDash_Resume_PID_In_Stream(ui_gauge_data[idx][gauge].pid);
-	}
 }
 
 /**
@@ -498,9 +494,9 @@ void build_ui(void)
 					  pid_req.pid_unit = get_pid_base_unit(pid_req.pid_uuid);
 
 					// Start the PID stream and save the pointer
-					ui_gauge_data[view][gauge].pid = DigitalDash_Add_PID_To_Stream( &pid_req );
+					ui_gauge_data[view][gauge].pid = DigitalDash_Add_PID_To_Stream( &pid_req, DD_DEV_UI_VIEW );
 
-					DigitalDash_Pause_PID_In_Stream(ui_gauge_data[view][gauge].pid);
+					DigitalDash_Pause_PID_In_Stream(ui_gauge_data[view][gauge].pid, DD_DEV_UI_VIEW);
 
 				    // Finally, add the gauge to the view
 				    ui_gauge[view][gauge] = add_gauge(get_view_gauge_theme(view, gauge), x_pos[gauge], 0, width, height, ui_view[view], &ui_gauge_data[view][gauge]);
@@ -526,7 +522,7 @@ void build_ui(void)
 				  pid_req.pid_unit = get_pid_base_unit(pid_req.pid_uuid);
 
 			  // Start the PID stream and save the pointer
-			  ui_dynamic_pid[idx] = DigitalDash_Add_PID_To_Stream( &pid_req );
+			  ui_dynamic_pid[idx] = DigitalDash_Add_PID_To_Stream( &pid_req, DD_DEV_UI_DYNAMIC );
 		  }
 	  }
 
@@ -544,7 +540,7 @@ void build_ui(void)
 				  pid_req.pid_unit = get_pid_base_unit(pid_req.pid_uuid);
 
 			  // Start the PID stream and save the pointer
-			  ui_alert_pid[idx] = DigitalDash_Add_PID_To_Stream( &pid_req );
+			  ui_alert_pid[idx] = DigitalDash_Add_PID_To_Stream( &pid_req, DD_DEV_UI_ALERT );
 		  }
 	  }
 
