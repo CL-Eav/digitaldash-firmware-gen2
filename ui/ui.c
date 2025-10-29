@@ -312,14 +312,6 @@ static void switch_view(uint8_t idx)
         if (ui_view[i] == NULL) continue;
 
         if (i == idx) {
-        	// Iterate through each gauge in the view
-            const uint8_t num_gauges = get_view_num_gauges(idx);
-        	for(uint8_t gauge = 0; gauge < num_gauges; gauge++)
-        	{
-        		// Resume the data now that the view is active
-        		if(ui_gauge_data[idx][gauge].pid)
-        			DigitalDash_Resume_PID_In_Stream(ui_gauge_data[idx][gauge].pid, DD_DEV_UI_VIEW);
-        	}
             lv_obj_remove_flag(ui_view[i], LV_OBJ_FLAG_HIDDEN);
             continue;
         } else {
@@ -331,6 +323,15 @@ static void switch_view(uint8_t idx)
         	lv_obj_add_flag(ui_view[i], LV_OBJ_FLAG_HIDDEN);
         }
     }
+
+	// Iterate through each gauge in the view
+    const uint8_t num_gauges = get_view_num_gauges(idx);
+	for(uint8_t gauge = 0; gauge < num_gauges; gauge++)
+	{
+		// Resume the data now that the view is active
+		if(ui_gauge_data[idx][gauge].pid)
+			DigitalDash_Resume_PID_In_Stream(ui_gauge_data[idx][gauge].pid, DD_DEV_UI_VIEW);
+	}
 }
 
 /**
