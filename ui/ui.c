@@ -142,7 +142,7 @@ uint32_t calc_crc32(uint8_t idx, uint32_t reserved) {
 }
 
 // UI Variables
-#define SPLASH_SCREEN_T 5000
+#define SEC_TO_MILLI (1000)
 #define MIN_TO_MILLI (60 * 1000)
 #ifdef DEBUG
 #define SCREEN_SAVER_T 10 * MIN_TO_MILLI // 10 min
@@ -552,7 +552,10 @@ void build_ui(void)
 	  add_system_message(ui_screen);
 	  show_build_info_overlay();
 
-	  splash_screen_t = ui_tick_cnt + SPLASH_SCREEN_T;
+	  splash_screen_t = ui_tick_cnt + (get_general_splash(0) * SEC_TO_MILLI);
+
+	  if(get_general_splash(0) == 0)
+		  skip_splash();
 }
 
 /**

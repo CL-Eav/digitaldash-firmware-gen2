@@ -371,6 +371,12 @@ static uint8_t ECU_CAN_Tx( uint8_t data[], uint8_t len )
 	if( !IS_FDCAN_DLC(len) ) {
 		Error_Handler();
 	}
+
+	/* Do not send on Listen Only mode */
+	if( get_general_can_bus_mode(0) != CAN_BUS_MODE_NORMAL_MODE ) {
+		return 1;
+	}
+
 	FDCAN_TxHeaderTypeDef Header = {
 	           .Identifier          = 0x7E0,
 	           .IdType              = FDCAN_STANDARD_ID,

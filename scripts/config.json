@@ -396,6 +396,22 @@
             "min": 0,
             "max": 65535,
             "EEBytes": 2
+        },
+        {
+            "index" : true,
+            "count" : "max_generals",
+            "cmd": "can_bus_mode",
+            "name": "CAN Bus mode",
+            "desc": "Configure the CAN bus operation mode (Normal Mode for full communication, Listen Only for monitoring)",
+            "type": "list",
+            "dataType": "CAN_BUS_MODE",
+            "default": "Normal Mode",
+            "options": [
+                "Normal Mode",
+                "Listen Only"
+            ],
+            "limit": "Reserved",
+            "EEBytes": 1
         }
     ]
 }
