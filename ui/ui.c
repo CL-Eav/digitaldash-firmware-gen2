@@ -614,8 +614,17 @@ void ui_service(void)
 
 	// Switch to the active view, this can be called each loop. A check will
 	// be made to ensure that the screen is only re-loaded if it is not active.
-	if( get_view_enable(active_view_idx) == VIEW_STATE_ENABLED )
+	if( get_view_enable(active_view_idx) == VIEW_STATE_ENABLED ){
+		if( get_system_message() == false ) {
+			clear_system_message();
+		}
 		switch_view(active_view_idx);
+	} else {
+		if( get_system_message() == true ) {
+			char *msg = "Selected dynamic view is not enabled";
+			set_system_message(msg);
+		}
+	}
 
 	// Parse through each alert and check if it needs to be activated
 	for(uint8_t idx = 0; idx < MAX_ALERTS; idx++)
