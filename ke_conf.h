@@ -21,6 +21,7 @@
 #define LCD_ALWAYS_ON 1
 
 #define USE_KE_PROTOCOL 1
+#define USB_LIB_DIGITALDASH_CONFIG 1
 #define USE_UNIT_CONVERSION 1
 #define USE_LIB_OBDII 1
 #define USE_LIB_CAN_BUS_SNIFFER 1
@@ -44,6 +45,7 @@
 * Hardware configuration                                            *
 ********************************************************************/
 #define SD_CARD_ACTIVE 0
+#define USB_STATE_ACTIVE 1
 #define KE_ACTIVE 1
 #define ECU_ACTIVE 1
 #define BKLT_CTRL_ACTIVE 1
