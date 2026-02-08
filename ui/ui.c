@@ -627,19 +627,23 @@ void ui_service(void)
 	}
 
 	// Parse through each alert and check if it needs to be activated
+	bool alert_active = false;
 	for(uint8_t idx = 0; idx < MAX_ALERTS; idx++)
 	{
 		if( (get_alert_enable(idx) == ALERT_STATE_DISABLED) || (ui_alert_pid[idx] == NULL) ) {
 			// Skip if not enabled or if NULL
 		} else if( compare_values(ui_alert_pid[idx]->pid_value, get_alert_threshold(idx), get_alert_compare(idx) ) ) {
-			if(get_alert()) {
+			alert_active = true;
+			if(get_alert()) { // if TRUE then the alert is hidden/inactive
 				char msg[ALERT_MESSAGE_LEN] = {0};
 				get_alert_message(idx, msg);
 				set_alert(msg);
 			}
-		} else {
-			clear_alert();
+			break; // stop at first active alert
 		}
+	}
+	if( !alert_active ) {
+		clear_alert();
 	}
 
 	// Update gauges on current view
