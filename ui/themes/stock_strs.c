@@ -127,6 +127,7 @@ static lv_obj_t * add_stock_gauge( STOCK_GAUGE type, int32_t x, int32_t y, int32
     lv_obj_align(pid_label, LV_ALIGN_CENTER, 0, 35-Y_ADJUST);
     lv_label_set_text(pid_label, data->pid->label);
     lv_obj_set_style_text_font(pid_label, &Discongnate_24, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(pid_label, lv_color_hex(0x00DFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
     /*
     lv_obj_t * outter_arc = lv_arc_create(gauge);
