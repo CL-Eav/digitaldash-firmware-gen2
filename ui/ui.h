@@ -83,7 +83,7 @@ lv_obj_t * add_gauge( GAUGE_THEME theme, int32_t x, int32_t y, int32_t w, int32_
 int32_t scale_float( float val, uint8_t precision );
 int32_t round_to_precision( float val, uint8_t precision );
 void label_set_text_fmt_with_check(lv_obj_t * obj, const char * fmt, ...);
-lv_color_t get_needle_color_from_value(float value, float min, float max);
+lv_color_t get_needle_color_from_value(float value, float min, float max, const PID_DATA *pid);
 bool pid_value_changed(GAUGE_DATA *data);
 bool pid_value_label_changed(GAUGE_DATA *data);
 bool pid_min_label_changed(GAUGE_DATA *data);

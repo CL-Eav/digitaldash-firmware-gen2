@@ -13,12 +13,12 @@
 #define BAR_WIDTH 600
 #define BAR_HEIGHT 50
 #define BAR_LABEL_Y 30
-#define BAR_FONT &lv_font_montserrat_22
+#define BAR_FONT &Discongnate_22
 #elif UI_HOR_RES == 1024
 #define BAR_PADDING 100
 #define BAR_Y_OFFSET 20
 #define BAR_HEIGHT 50
-#define BAR_FONT &lv_font_montserrat_38
+#define BAR_FONT &Discongnate_38
 #define BAR_LABEL_Y BAR_Y_OFFSET + BAR_HEIGHT + 5
 #endif
 
@@ -49,8 +49,8 @@ static void event_cb(lv_event_t * e)
 			lv_anim_start(&a);
 		}
 
-		// Update needle color immediately
-		lv_color_t needle_color = get_needle_color_from_value(data->pid->pid_value, data->pid->lower_limit, data->pid->upper_limit);
+		// Update needle color immediately - @cl_eav update to pass PID for specific colouring of ECT
+		lv_color_t needle_color = get_needle_color_from_value(data->pid->pid_value, data->pid->lower_limit, data->pid->upper_limit, data->pid);
 		lv_obj_set_style_bg_color(needle, needle_color, LV_PART_INDICATOR);
 
 		if( pid_value_label_changed(data) )
@@ -121,7 +121,7 @@ lv_obj_t * add_linear_gauge( int32_t x, int32_t y, int32_t w, int32_t h, lv_obj_
     // Create spans
     lv_span_t * span_val = lv_spangroup_new_span(span_group);
     lv_style_set_text_font(lv_span_get_style(span_val), &lv_font_montserrat_38);
-    lv_style_set_text_color(lv_span_get_style(span_val), lv_color_white());
+    lv_style_set_text_color(lv_span_get_style(span_val), lv_color_hex(0x00DFFF));
 
     lv_span_t * span_unit = lv_spangroup_new_span(span_group);
     lv_style_set_text_font(lv_span_get_style(span_unit), &lv_font_montserrat_24);
@@ -129,7 +129,7 @@ lv_obj_t * add_linear_gauge( int32_t x, int32_t y, int32_t w, int32_t h, lv_obj_
 
     lv_span_t * span_pid = lv_spangroup_new_span(span_group);
     lv_style_set_text_font(lv_span_get_style(span_pid), &lv_font_montserrat_24);
-    lv_style_set_text_color(lv_span_get_style(span_pid), lv_color_white());
+    lv_style_set_text_color(lv_span_get_style(span_pid), lv_color_hex(0x00DFFF));
 
     // Split value and unit (assuming value is number and unit is already stored)
     char buf[24];
@@ -147,7 +147,7 @@ lv_obj_t * add_linear_gauge( int32_t x, int32_t y, int32_t w, int32_t h, lv_obj_
 		lv_obj_set_height(min, LV_SIZE_CONTENT);    /// 1
 		lv_obj_align(min, LV_ALIGN_TOP_LEFT, BAR_PADDING/2, BAR_LABEL_Y);
 		lv_label_set_text(min, "min");
-		lv_obj_set_style_text_color(min, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+		lv_obj_set_style_text_color(min, lv_color_hex(0x00DFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 		lv_obj_set_style_text_opa(min, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 		lv_obj_set_style_text_font(min, BAR_FONT, LV_PART_MAIN | LV_STATE_DEFAULT);
 
@@ -156,7 +156,7 @@ lv_obj_t * add_linear_gauge( int32_t x, int32_t y, int32_t w, int32_t h, lv_obj_
 		lv_obj_set_height(max, LV_SIZE_CONTENT);    /// 1
 		lv_obj_align(max, LV_ALIGN_TOP_RIGHT, -1*BAR_PADDING/2, BAR_LABEL_Y);
 		lv_label_set_text(max, "max");
-		lv_obj_set_style_text_color(max, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+		lv_obj_set_style_text_color(max, lv_color_hex(0x00DFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 		lv_obj_set_style_text_opa(max, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 		lv_obj_set_style_text_font(max, BAR_FONT, LV_PART_MAIN | LV_STATE_DEFAULT);
     }

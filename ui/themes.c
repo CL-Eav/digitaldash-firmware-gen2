@@ -141,8 +141,23 @@ static lv_color_t lv_color_from_hue(float hue_deg)
     return lv_color_make((uint8_t)(r * 255), (uint8_t)(g * 255), (uint8_t)(b * 255));
 }
 
-lv_color_t get_needle_color_from_value(float value, float min, float max)
+lv_color_t get_needle_color_from_value(float value, float min, float max, const PID_DATA *pid)
 {
+    const uint16_t SPECIAL_PID = 0x0105;  // specifically for the ECT - shows warm-up stage to 80 degC
+
+    // --- Special fixed colour bands for PID 0x0105 ---
+    if (pid && pid->header == SPECIAL_PID) {
+        if (value < 80.0f)
+            return lv_color_make(0, 0, 255);        // Blue
+        else if (value < 100.0f)
+            return lv_color_make(0, 255, 0);        // Green
+        else if (value < 120.0f)
+            return lv_color_make(255, 255, 0);      // Yellow
+        else
+            return lv_color_make(255, 0, 0);        // Red
+    }
+
+    // --- Default behaviour (smooth hue gradient) ---
     float ratio = 0.0f;
     if (max > min) {
         ratio = (value - min) / (max - min);
@@ -150,7 +165,6 @@ lv_color_t get_needle_color_from_value(float value, float min, float max)
         if (ratio > 1.0f) ratio = 1.0f;
     }
 
-    // Hue: 240 (blue) → 0 (red)
-    float hue = 240.0f - (240.0f * ratio);  // In degrees
+    float hue = 240.0f - (240.0f * ratio);  // Blue → Red
     return lv_color_from_hue(hue);
 }

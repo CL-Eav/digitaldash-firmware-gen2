@@ -342,7 +342,7 @@ static void switch_view(uint8_t idx)
  * It's typically used for developer diagnostics or QA purposes.
  *
  * The overlay appears semi-transparent in white text and is aligned to the bottom center
- * of the screen. It uses the `lv_font_montserrat_16` font.
+ * of the screen. It uses the `lv_font_montserrat_16` font by default,  @cl-eav changed to custom font.
  */
 void show_build_info_overlay(void)
 {
@@ -367,7 +367,7 @@ void show_build_info_overlay(void)
     // Style the label
     lv_obj_set_style_text_color(build_label, lv_color_white(), 0);
     lv_obj_set_style_text_opa(build_label, LV_OPA_COVER, 0);
-    lv_obj_set_style_text_font(build_label, &lv_font_montserrat_18, 0);
+    lv_obj_set_style_text_font(build_label, &Discongnate_18, 0);
 
     // Align to bottom center with small vertical padding
     lv_obj_align(build_label, LV_ALIGN_BOTTOM_MID, 0 + X_OFFSET, -5);
