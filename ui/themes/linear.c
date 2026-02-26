@@ -144,6 +144,10 @@ lv_obj_t * add_linear_gauge( int32_t x, int32_t y, int32_t w, int32_t h, lv_obj_
     lv_style_set_text_font(lv_span_get_style(span_pid), &Discongnate_48);
     lv_style_set_text_color(lv_span_get_style(span_pid), lv_color_hex(0x00DFFF));
 
+//    lv_span_t * span_uuid = lv_spangroup_new_span(span_group);                 FOR DEBUGGING
+//    lv_style_set_text_font(lv_span_get_style(span_uuid), &Discongnate_22);
+//    lv_style_set_text_color(lv_span_get_style(span_uuid), lv_color_hex(0xFF00FF));   // magenta so it stands out
+
     // Split value and unit (assuming value is number and unit is already stored)
     char buf[24];
     snprintf(buf, sizeof(buf), float_only[data->pid->precision], data->pid->pid_value);
@@ -151,6 +155,9 @@ lv_obj_t * add_linear_gauge( int32_t x, int32_t y, int32_t w, int32_t h, lv_obj_
     lv_span_set_text(span_unit, data->pid->unit_label);
     snprintf(buf, sizeof(buf), " %s", data->pid->label);
     lv_span_set_text(span_pid, buf);
+//    char uuid_buf[32];              FOR DEBUGGING
+//    snprintf(uuid_buf, sizeof(uuid_buf), "UUID: 0x%08lX", data->pid->pid_uuid);
+//    lv_span_set_text(span_uuid, uuid_buf);
     lv_spangroup_refresh(span_group);
 
     if( w >= 500 )
