@@ -146,7 +146,7 @@ lv_color_t get_needle_color_from_value(float value, float min, float max, const 
     const uint16_t SPECIAL_PID = 0x0105;  // specifically for the ECT - shows warm-up stage to 80 degC
 
     // --- Special fixed colour bands for PID 0x0105 ---
-    if (pid && pid->header == SPECIAL_PID) {
+    if (pid->pid_uuid == SPECIAL_PID) {
         if (value < 80.0f)
             return lv_color_make(0, 0, 255);        // Blue
         else if (value < 100.0f)

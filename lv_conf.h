@@ -634,7 +634,8 @@
     LV_FONT_DECLARE(Discongnate_30) \
     LV_FONT_DECLARE(Discongnate_32) \
     LV_FONT_DECLARE(Discongnate_38) \
-    LV_FONT_DECLARE(Discongnate_48)
+    LV_FONT_DECLARE(Discongnate_48) \
+	LV_FONT_DECLARE(Discongnate_52)
 
 /** Always set a default font */
 #define LV_FONT_DEFAULT &Discongnate_18
