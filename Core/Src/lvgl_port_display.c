@@ -33,7 +33,6 @@ void lvgl_display_init (void)
 #else
   lv_st_ltdc_create_direct(buf_1, buf_2, 0);
 #endif
-  HAL_LTDC_SetAddress(&hltdc, 0x20270000, 0);
 #else
   #error LV_COLOR_DEPTH not supported
 #endif
