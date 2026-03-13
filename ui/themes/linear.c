@@ -119,9 +119,9 @@ lv_obj_t * add_linear_gauge( int32_t x, int32_t y, int32_t w, int32_t h, lv_obj_
     lv_obj_set_style_radius(needle, 10, LV_PART_MAIN);  // add radius to the outline
 
     // Test - add a drop shadow
-    lv_obj_set_style_shadow_width(needle, 12, LV_PART_MAIN);
-    lv_obj_set_style_shadow_color(needle, lv_color_hex(0x000000), LV_PART_MAIN);
-    lv_obj_set_style_shadow_opa(needle, LV_OPA_40, LV_PART_MAIN);
+    lv_obj_set_style_shadow_width(needle, 50, LV_PART_MAIN);
+    lv_obj_set_style_shadow_color(needle, lv_color_hex(0xFFFFFF), LV_PART_MAIN);
+    lv_obj_set_style_shadow_opa(needle, LV_OPA_COVER, LV_PART_MAIN);
     // lv_obj_set_style_shadow_ofs_y(needle, 4, LV_PART_MAIN);
 
 
