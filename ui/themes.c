@@ -118,6 +118,8 @@ lv_obj_t * add_gauge( GAUGE_THEME theme, int32_t x, int32_t y, int32_t w, int32_
 			return add_stock_rs_gauge( x, y, w, h, parent, data);
 		case GAUGE_THEME_ARC:
 			return add_arc_gauge( x, y, w, h, parent, data);
+		case GAUGE_THEME_GRAPH:
+			return add_graph_gauge( x, y, w, h, parent, data);
 		case GAUGE_THEME_STOCK_ST:
 		default:
 			return add_stock_st_gauge( x, y, w, h, parent, data);
