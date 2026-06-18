@@ -119,6 +119,7 @@ typedef enum _ecu_comm {
 	#define UI_HOR_RES    1024 // UI horizontal Resolution (This can be different from screen resolution)
 	#define UI_VER_RES    200  // UI vertical Resolution (This can be different from screen resolution)
 	#define UI_BYTES_PER_PIXEL 4 // Number of bytes per pixel (RGBA = 4)
+	#define UI_DISPLAY_BYTES_PER_PIXEL 3 // LTDC layer is RGB888; background assets still use UI_BYTES_PER_PIXEL
 	#define ACT_HOR_RES    1024 // Screen horizontal resolution
 	#define ACT_VER_RES    600  // Screen vertical resolution
 	#define DISP_PARTIAL 0 // Enable/disable partial rendering
