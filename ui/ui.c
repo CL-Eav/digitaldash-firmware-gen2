@@ -209,20 +209,6 @@ void skip_splash(void)
 	switch_screen(ui_screen, 0);
 }
 
-static void log_minmax( PID_DATA* pid )
-{
-	if( pid == NULL )
-		return;
-
-	// Only log min/max if a value has been read
-	if( pid->timestamp > 0 ) {
-		if( pid->pid_value > pid->pid_max )
-			pid->pid_max = pid->pid_value;
-		if( pid->pid_value < pid->pid_min )
-			pid->pid_min = pid->pid_value;
-	}
-}
-
 static void init_gauge_struct(void)
 {
 	for (int v = 0; v < MAX_VIEWS; v++) {
@@ -597,18 +583,6 @@ void ui_service(void)
 	    switch_screen(ui_screen, SCREEN_FADE_T);
 	}
 
-	// Log minimum and maximum values for all enabled views
-	for (uint8_t view = 0; view < MAX_VIEWS; view++) {
-	    // Check if the current view is enabled
-	    if (get_view_enable(view) == VIEW_STATE_ENABLED) {
-	        // Loop through all gauges in the enabled view
-	        for (uint8_t gauge = 0; gauge < get_view_num_gauges(view); gauge++) {
-	            // Log the min/max values for the PID associated with this gauge
-	            log_minmax(ui_gauge_data[view][gauge].pid);
-	        }
-	    }
-	}
-
 	// Check for dynamic gauge change
 	active_view_idx = dynamic_gauge_check();
 
@@ -656,9 +630,6 @@ void ui_service(void)
 			{
 				// Log the timestamp
 				ui_gauge_data[active_view_idx][i].timestamp = ui_gauge_data[active_view_idx][i].pid->timestamp;
-
-				// Some values are interrupt driven, log the min/max incase they were missed in the main loop
-				log_minmax(ui_gauge_data[active_view_idx][i].pid);
 
 				// Send an event to the gauge
 				lv_obj_send_event(ui_gauge[active_view_idx][i], LV_EVENT_REFRESH, &ui_gauge_data[active_view_idx][i]);
