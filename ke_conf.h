@@ -65,9 +65,6 @@
 #define LCD_MIN_BRIGHTNESS 4
 #define LCD_BKLT_TIMEOUT 1000
 
-/* How long to wait in ms until resuming CAN communication */
-#define TESTER_PRESENT_DELAY 10000
-
 /* How long to wait in ms to shutdown if the engine is OFF */
 #define ENGINE_OFF_SHUTDOWN_TIME 1000
 

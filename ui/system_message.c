@@ -66,7 +66,7 @@ static const char * system_message_text(SYSTEM_MESSAGE_ID id)
     switch (id)
     {
         case SYSTEM_MESSAGE_TESTER_PRESENT:
-            return "OBD-II device detected. Pausing...";
+            return "OBD-II device detected - paused";
         case SYSTEM_MESSAGE_DYNAMIC_VIEW_DISABLED:
             return "Selected dynamic view is not enabled";
         case SYSTEM_MESSAGE_NONE:
