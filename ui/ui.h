@@ -95,7 +95,14 @@ void set_alert(char *msg);
 void clear_alert(void);
 lv_obj_t * add_system_message( lv_obj_t * parent );
 bool get_system_message(void);
-void set_system_message(char *msg);
+typedef enum {
+	SYSTEM_MESSAGE_NONE = 0,
+	SYSTEM_MESSAGE_TESTER_PRESENT,
+	SYSTEM_MESSAGE_DYNAMIC_VIEW_DISABLED,
+	SYSTEM_MESSAGE_RESERVED
+} SYSTEM_MESSAGE_ID;
+void set_system_message(SYSTEM_MESSAGE_ID id, uint32_t duration_ms, bool show_expiration);
+void system_message_service(void);
 void clear_system_message(void);
 
 typedef enum {

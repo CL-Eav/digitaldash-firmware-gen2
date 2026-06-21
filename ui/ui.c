@@ -30,6 +30,7 @@ uint32_t get_background_addr(uint8_t idx, ADDR_MEMORYMAPPED_MODE mode)
 }
 
 #define BACKGROUND_COLOR_FORMAT LV_COLOR_FORMAT_NATIVE_WITH_ALPHA
+#define DYNAMIC_VIEW_MESSAGE_DURATION_MS 500U
 
 #define DEFINE_BACKGROUND_USER(n) \
 const lv_image_dsc_t ui_background_user##n = { \
@@ -563,6 +564,7 @@ void build_ui(void)
 void ui_service(void)
 {
 	lv_timer_handler();
+	system_message_service();
 
 	// Determine which screen to show based on elapsed UI time
 	if (ui_tick_cnt <= splash_screen_t) {
@@ -589,15 +591,10 @@ void ui_service(void)
 	// Switch to the active view, this can be called each loop. A check will
 	// be made to ensure that the screen is only re-loaded if it is not active.
 	if( get_view_enable(active_view_idx) == VIEW_STATE_ENABLED ){
-		if( get_system_message() == false ) {
-			clear_system_message();
-		}
 		switch_view(active_view_idx);
 	} else {
-		if( get_system_message() == true ) {
-			char *msg = "Selected dynamic view is not enabled";
-			set_system_message(msg);
-		}
+		set_system_message(SYSTEM_MESSAGE_DYNAMIC_VIEW_DISABLED,
+		                   DYNAMIC_VIEW_MESSAGE_DURATION_MS, false);
 	}
 
 	// Parse through each alert and check if it needs to be activated
