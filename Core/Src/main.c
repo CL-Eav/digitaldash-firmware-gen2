@@ -959,7 +959,7 @@ int main(void)
   HAL_GPIO_WritePin(DBG_LED1_GPIO_Port, DBG_LED1_Pin, GPIO_PIN_RESET);
 
   if( HAL_GPIO_ReadPin(USB_SLEEP_N_GPIO_Port, USB_SLEEP_N_Pin) )
-	  dd_update_usb_state(USB_STATE_NOT_PRESENT);
+	  dd_update_usb_state(USB_STATE_PRESENT);
   else
 	  dd_update_usb_state(USB_STATE_NOT_PRESENT);
 
