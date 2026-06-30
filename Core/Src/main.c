@@ -67,6 +67,10 @@
 #define EXT_CAN_BUS &hfdcan1 /* External CAN bus channel */
 
 #define RX_BUFFER_SIZE 0xFFFF
+/*
+ * Keep this DMA buffer in internal SRAM.  The STM32U5 system DCACHE caches
+ * external-memory traffic, so internal SRAM remains coherent with GPDMA.
+ */
 uint8_t rx_buffer[RX_BUFFER_SIZE];
 /* USER CODE END PD */
 
@@ -86,6 +90,12 @@ uint32_t CAN_Filter_Count = 0;
 static uint8_t i2c_rx_index = 0;
 static uint8_t i2c_buffer[EEPROM_ADDRESS_SIZE + EEPROM_DATA_SIZE] = {0};
 static uint16_t current_register = 0;
+static uint32_t uart_rx_read_position = 0;
+static volatile bool uart_rx_activity = false;
+static volatile bool uart_rx_recovery_requested = false;
+static volatile uint32_t uart_rx_error_count = 0;
+static volatile uint32_t uart_rx_last_error = HAL_UART_ERROR_NONE;
+static volatile uint32_t uart_rx_recovery_count = 0;
 
 // You cannot search hardware filters by ID directly, therefore maintain a map of filter indexes and their IDs.
 #define CAN_FILTER_UNUSED 0x0000
@@ -105,6 +115,8 @@ uint16_t can_filters[MAX_CAN_FILTERS] = {CAN_FILTER_UNUSED};
 void SystemClock_Config(void);
 static void SystemPower_Config(void);
 /* USER CODE BEGIN PFP */
+static void UART_RecoverRxDma(void);
+static void UART_ProcessRxDma(void);
 
 /* USER CODE END PFP */
 
@@ -608,18 +620,74 @@ static int esp32_tx( uint8_t *data, uint32_t len )
 
 void UART_IdleCallback(UART_HandleTypeDef *huart)
 {
-    // Disable DMA temporarily
-    HAL_UART_DMAStop(huart);
+    if (huart == ESP32_UART)
+        uart_rx_activity = true;
+}
 
-    // Get how many bytes were received before idle
-    uint16_t received = RX_BUFFER_SIZE - __HAL_DMA_GET_COUNTER(huart->hdmarx);
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+{
+    if (huart == ESP32_UART)
+    {
+        uart_rx_last_error = huart->ErrorCode;
+        uart_rx_error_count++;
+        uart_rx_recovery_requested = true;
+    }
+}
 
-	// Process the buffer
-	for( uint16_t i = 0; i < received; i++)
-		DigitalDash_Add_UART_byte(rx_buffer[i]);
+static void UART_RecoverRxDma(void)
+{
+    if (!uart_rx_recovery_requested)
+        return;
 
-    // Restart DMA for next transfer
-    HAL_UART_Receive_DMA(huart, rx_buffer, RX_BUFFER_SIZE);
+    /* HAL calls the error callback after its asynchronous DMA abort completes. */
+    uart_rx_recovery_requested = false;
+    __HAL_UART_DISABLE_IT(ESP32_UART, UART_IT_IDLE);
+    __HAL_UART_CLEAR_FLAG(ESP32_UART,
+                          UART_CLEAR_PEF | UART_CLEAR_FEF |
+                          UART_CLEAR_NEF | UART_CLEAR_OREF |
+                          UART_CLEAR_IDLEF);
+    __HAL_UART_SEND_REQ(ESP32_UART, UART_RXDATA_FLUSH_REQUEST);
+
+    /* The failed frame invalidates the unread contents of the DMA ring. */
+    uart_rx_read_position = 0;
+    uart_rx_activity = false;
+
+    if (HAL_UART_Receive_DMA(ESP32_UART, rx_buffer, RX_BUFFER_SIZE) == HAL_OK)
+    {
+        __HAL_UART_ENABLE_IT(ESP32_UART, UART_IT_IDLE);
+        uart_rx_recovery_count++;
+    }
+    else
+    {
+        /* Retry from the next main-loop iteration if DMA is not ready yet. */
+        uart_rx_recovery_requested = true;
+    }
+}
+
+static void UART_ProcessRxDma(void)
+{
+    uint32_t dma_remaining;
+    uint32_t dma_write_position;
+
+    /* IDLE is only an activity hint; continuous streams may never go idle. */
+    uart_rx_activity = false;
+
+    dma_remaining = __HAL_DMA_GET_COUNTER((ESP32_UART)->hdmarx);
+    dma_write_position = RX_BUFFER_SIZE - dma_remaining;
+    if (dma_write_position >= RX_BUFFER_SIZE)
+        dma_write_position = 0;
+
+    /* Order the DMA counter snapshot before reads from the DMA-written ring. */
+    __DMB();
+
+    while (uart_rx_read_position != dma_write_position)
+    {
+        DigitalDash_Add_UART_byte(rx_buffer[uart_rx_read_position]);
+
+        uart_rx_read_position++;
+        if (uart_rx_read_position >= RX_BUFFER_SIZE)
+            uart_rx_read_position = 0;
+    }
 }
 
 bool read_splash_override( void )
@@ -915,7 +983,10 @@ int main(void)
   settings_setWriteHandler(eeprom_write);
 
   // Enable UART interrupt
-  HAL_UART_Receive_DMA(ESP32_UART, rx_buffer, RX_BUFFER_SIZE);
+  uart_rx_read_position = 0;
+  if (HAL_UART_Receive_DMA(ESP32_UART, rx_buffer, RX_BUFFER_SIZE) != HAL_OK) {
+    Error_Handler();
+  }
   __HAL_UART_ENABLE_IT(ESP32_UART, UART_IT_IDLE);
 
   // Start 1ms timer tick for Digital Dash
@@ -971,6 +1042,9 @@ int main(void)
   while (1)
   {
 	//HAL_I2C_Master_Transmit(ESP32_I2C, 0x5a, aTxBuffer, 4, 0xFFFF);
+	UART_RecoverRxDma();
+	if (!uart_rx_recovery_requested)
+		UART_ProcessRxDma();
 	digitaldash_service();
 
     /* USER CODE END WHILE */

@@ -8,6 +8,8 @@
 #include "ui.h"
 #include "lib_digital_dash.h"
 #include "../build_info.h"
+#include <stdio.h>
+#include <string.h>
 
 LV_IMG_DECLARE(ui_img_ford_performance_logo_png);
 
@@ -164,6 +166,7 @@ lv_obj_t * ui_gauge[MAX_VIEWS][MAX_GAUGES_PER_VIEW] = {0};
 GAUGE_DATA ui_gauge_data[MAX_VIEWS][MAX_GAUGES_PER_VIEW];
 PID_DATA * ui_dynamic_pid[MAX_DYNAMICS] = {0};
 PID_DATA * ui_alert_pid[MAX_ALERTS] = {0};
+static PID_DATA unsupported_pid_data[MAX_VIEWS][MAX_GAUGES_PER_VIEW] = {0};
 
 static uint32_t ui_tick_cnt = 0;
 
@@ -223,6 +226,30 @@ static void init_gauge_struct(void)
 	        ui_gauge_data[v][g].pid = NULL;
 	    }
 	}
+}
+
+static PID_DATA *init_unsupported_pid(uint8_t view, uint8_t gauge, uint32_t attempted_pid_uuid)
+{
+	PID_DATA *unsupported_pid = &unsupported_pid_data[view][gauge];
+
+	memset(unsupported_pid, 0, sizeof(*unsupported_pid));
+	unsupported_pid->pid_initialized = true;
+	unsupported_pid->pid_uuid = attempted_pid_uuid;
+	unsupported_pid->pid_unit = PID_UNITS_NONE;
+	unsupported_pid->base_unit = PID_UNITS_NONE;
+	unsupported_pid->precision = 0;
+	unsupported_pid->lower_limit = 0.0f;
+	unsupported_pid->upper_limit = 1.0f;
+	unsupported_pid->pid_value = 0.0f;
+	unsupported_pid->pid_min = 0.0f;
+	unsupported_pid->pid_max = 0.0f;
+
+	snprintf(unsupported_pid->label, sizeof(unsupported_pid->label),
+			 "0x%06lX", (unsigned long)attempted_pid_uuid);
+	snprintf(unsupported_pid->desc, sizeof(unsupported_pid->desc),
+			 "Unsupported PID 0x%06lX", (unsigned long)attempted_pid_uuid);
+
+	return unsupported_pid;
 }
 
 /**
@@ -464,6 +491,7 @@ void build_ui(void)
 					  x_pos[0] = (-1*width) + X_OFFSET - GAUGE_PADDING;
 					  x_pos[1] = 0 + X_OFFSET;
 					  x_pos[2] = width + X_OFFSET + GAUGE_PADDING;
+					  num_gauges = 3;
 					  break;
 
 			  }
@@ -476,15 +504,21 @@ void build_ui(void)
 					// Get PID universally unique ID, PID, and mode
 					pid_req.pid_uuid = get_view_gauge_pid(view, gauge);
 
-					// Load the unit and default to base unit if error
-					pid_req.pid_unit = get_view_gauge_units(view, gauge);
-					if( pid_req.pid_unit == PID_UNITS_RESERVED )
-					  pid_req.pid_unit = get_pid_base_unit(pid_req.pid_uuid);
+					if(is_pid_supported(pid_req.pid_uuid))
+					{
+						// Load the unit and default to base unit if error
+						pid_req.pid_unit = get_view_gauge_units(view, gauge);
+						if( pid_req.pid_unit == PID_UNITS_RESERVED )
+						  pid_req.pid_unit = get_pid_base_unit(pid_req.pid_uuid);
 
-					// Start the PID stream and save the pointer
-					ui_gauge_data[view][gauge].pid = DigitalDash_Add_PID_To_Stream( &pid_req, DD_DEV_UI_VIEW );
+						// Start the PID stream and save the pointer
+						ui_gauge_data[view][gauge].pid = DigitalDash_Add_PID_To_Stream( &pid_req, DD_DEV_UI_VIEW );
 
-					DigitalDash_Pause_PID_In_Stream(ui_gauge_data[view][gauge].pid, DD_DEV_UI_VIEW);
+						DigitalDash_Pause_PID_In_Stream(ui_gauge_data[view][gauge].pid, DD_DEV_UI_VIEW);
+					} else {
+						PID_DATA *unsupported_pid = init_unsupported_pid(view, gauge, pid_req.pid_uuid);
+						ui_gauge_data[view][gauge].pid = unsupported_pid;
+					}
 
 				    // Finally, add the gauge to the view
 				    ui_gauge[view][gauge] = add_gauge(get_view_gauge_theme(view, gauge), x_pos[gauge], 0, width, height, ui_view[view], &ui_gauge_data[view][gauge]);
