@@ -7,3 +7,7 @@ Release - Auto On Off/
 
 build_info.h
 lvgl
+
+# Cloud/headless CMake build
+build/
+ui/generated_fonts/
